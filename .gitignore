@@ -16,10 +16,6 @@ out/
 .env
 .env.*
 
-# Legacy node output
-legacy_card_generator/node_modules/
-legacy_card_generator/out/
-
 # OS / editor
 .DS_Store
 .idea/

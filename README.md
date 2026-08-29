@@ -45,7 +45,6 @@ src/
   cards/             formulas, codes, render
   languages/sujfi/   translator + image
   routes/
-legacy_card_generator/   historical Node reference
 ```
 
 ## Deploy notes
