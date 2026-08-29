@@ -1,14 +1,13 @@
 {
   "name": "meye",
   "version": "2.0.0",
-  "description": "Meye tools: item cards and constructed languages API + CLI",
+  "description": "Meye tools: item cards and constructed languages API",
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc",
-    "cli": "tsx src/cli.ts"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -26,7 +25,6 @@
     "@sinclair/typebox": "^0.34.38",
     "better-sqlite3": "^11.10.0",
     "canvas": "^3.1.2",
-    "commander": "^14.0.0",
     "fastify": "^5.4.0",
     "number-to-base64": "^1.0.5"
   },

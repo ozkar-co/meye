@@ -1,6 +1,5 @@
 import {
   existsSync,
-  writeFileSync,
 } from "node:fs";
 import path from "node:path";
 import { createCanvas, loadImage, type CanvasRenderingContext2D } from "canvas";
@@ -403,21 +402,4 @@ export async function renderCard(
 
 export async function renderMaterialsTable(): Promise<Buffer> {
   return getOrCreatePng("materials_table_v1", () => renderTable());
-}
-
-/** Write card PNGs to a directory (CLI helper). */
-export async function writeCardFiles(
-  obj: Item,
-  outDir: string,
-  filename?: string
-): Promise<{ front: string; back: string }> {
-  const base = sanitizeFilename(
-    filename || obj.name || `${obj.code}-${obj.custom_code || ""}`
-  );
-  const { front, back } = await renderCard(obj, "both");
-  const frontPath = path.join(outDir, `${base}_front.png`);
-  const backPath = path.join(outDir, `${base}_back.png`);
-  writeFileSync(frontPath, front!);
-  writeFileSync(backPath, back!);
-  return { front: frontPath, back: backPath };
 }

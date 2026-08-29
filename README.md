@@ -1,6 +1,6 @@
 # meye-tools
 
-API and CLI for **Tierras de Meye**: item/card calculator and constructed languages.
+HTTP API for **Tierras de Meye**: item/card calculator and constructed languages.
 
 - Repo: https://github.com/ozkar-co/meye
 - Production: https://meye-tools.ozkr.net
@@ -22,18 +22,6 @@ Open http://localhost:3000/docs
 
 ```bash
 npm run build && npm start
-npm run cli -- --help
-```
-
-## CLI examples
-
-```bash
-npm run cli -- item list
-npm run cli -- item get Bpi3 DuaA-10
-npm run cli -- item card Bpi3 DuaA-10 -o ./out
-npm run cli -- lang translate sujfi hola
-npm run cli -- lang image sujfi marina -o ./out/marina.png
-npm run cli -- materials-table -o ./out/table.png
 ```
 
 ## Data
@@ -52,7 +40,6 @@ Env: `PORT`, `HOST`, `DATA_DIR`, `CACHE_DIR`.
 ```
 src/
   server.ts          Fastify + Swagger
-  cli.ts
   db.ts              SQLite
   cache.ts
   cards/             formulas, codes, render
