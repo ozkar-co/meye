@@ -32,10 +32,8 @@ if [[ ! -d node_modules ]]; then
   exit 1
 fi
 
-if [[ ! -f dist/server.js ]]; then
-  echo "building…" >&2
-  npm run build
-fi
+echo "building…" >&2
+npm run build
 
 export PORT="${PORT:-3008}"
 export HOST="${HOST:-0.0.0.0}"
