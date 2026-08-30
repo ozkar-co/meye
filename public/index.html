@@ -655,11 +655,18 @@
       function refreshClassDeps() {
         const c = $("class").value;
         fillSelect($("type"), meta.typesByClass[c] || []);
-        fillSelect($("sub_type"), ["none", ...(meta.subTypesByClass[c] || [])]);
         fillSelect($("specialization"), [
           "none",
           ...(meta.specializationsByClass[c] || []),
         ]);
+        refreshTypeDeps();
+      }
+
+      function refreshTypeDeps() {
+        const c = $("class").value;
+        const t = $("type").value;
+        const subs = (meta.subTypesByType[c] && meta.subTypesByType[c][t]) || [];
+        fillSelect($("sub_type"), ["none", ...subs]);
       }
 
       function setMode(mode) {
@@ -755,6 +762,7 @@
         setSelectValue($("class"), item.class);
         refreshClassDeps();
         setSelectValue($("type"), item.type);
+        refreshTypeDeps();
         setSelectValue($("material"), item.material);
         setSelectValue($("dimension"), item.dimension);
         setSelectValue($("thickness"), Number(item.thickness));
@@ -936,6 +944,7 @@
       });
 
       $("class").addEventListener("change", refreshClassDeps);
+      $("type").addEventListener("change", refreshTypeDeps);
       $("add-effect").addEventListener("click", () => addEffectRow());
       $("reset-btn").addEventListener("click", () => {
         resetForm();

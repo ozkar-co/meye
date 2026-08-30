@@ -7,7 +7,7 @@ import { all as materials } from "../cards/materials.js";
 
 type DictClass = {
   types: Record<string, number>;
-  sub_types: Record<string, number>;
+  sub_types: Record<string, Record<string, number>>;
   specializations: Record<string, number>;
 };
 
@@ -18,8 +18,11 @@ type Dict = {
   flags: Record<string, number>;
 };
 
-function uniqueKeys(obj: Record<string, unknown>): string[] {
-  return [...new Set(Object.keys(obj))].filter((k) => k !== "desconocido").sort();
+function uniqueKeys(obj: Record<string, unknown> | undefined): string[] {
+  if (!obj) return [];
+  return [...new Set(Object.keys(obj))]
+    .filter((k) => k !== "desconocido" && k !== "none" && k !== "XX")
+    .sort();
 }
 
 const dict: Dict = JSON.parse(
@@ -37,9 +40,10 @@ export const metaRoutes: FastifyPluginAsync = async (app) => {
           200: Type.Object({
             classes: Type.Array(Type.String()),
             typesByClass: Type.Record(Type.String(), Type.Array(Type.String())),
-            subTypesByClass: Type.Record(
+            /** class → type → subtype names */
+            subTypesByType: Type.Record(
               Type.String(),
-              Type.Array(Type.String())
+              Type.Record(Type.String(), Type.Array(Type.String()))
             ),
             specializationsByClass: Type.Record(
               Type.String(),
@@ -62,14 +66,17 @@ export const metaRoutes: FastifyPluginAsync = async (app) => {
     async () => {
       const classes = Object.keys(dict.classes);
       const typesByClass: Record<string, string[]> = {};
-      const subTypesByClass: Record<string, string[]> = {};
+      const subTypesByType: Record<string, Record<string, string[]>> = {};
       const specializationsByClass: Record<string, string[]> = {};
       for (const c of classes) {
         typesByClass[c] = uniqueKeys(dict.classes[c].types);
-        subTypesByClass[c] = uniqueKeys(dict.classes[c].sub_types);
         specializationsByClass[c] = uniqueKeys(
           dict.classes[c].specializations
         );
+        subTypesByType[c] = {};
+        for (const t of typesByClass[c]) {
+          subTypesByType[c][t] = uniqueKeys(dict.classes[c].sub_types?.[t]);
+        }
       }
       const sizes = [
         ...new Set(Object.keys(dict.sizes).map((s) => Number(s))),
@@ -77,7 +84,7 @@ export const metaRoutes: FastifyPluginAsync = async (app) => {
       return {
         classes,
         typesByClass,
-        subTypesByClass,
+        subTypesByType,
         specializationsByClass,
         sizes,
         materials: materials

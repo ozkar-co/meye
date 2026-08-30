@@ -8,45 +8,38 @@
 				"de_hoja": 2,
 				"cizallante": 3,
 				"contundente": 4,
-				"de_tension": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"de_tension": 5
 			},
 			"sub_types": {
-				"recta": 0,
-				"curva": 1,
-				"hoz": 2,
-				"media_luna": 3,
-				"flamigera": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"proyectil": {
+					"none": 15
+				},
+				"penetrante": {
+					"none": 15
+				},
+				"de_hoja": {
+					"recta": 0,
+					"curva": 1,
+					"hoz": 2,
+					"media_luna": 3,
+					"flamigera": 4,
+					"none": 15
+				},
+				"cizallante": {
+					"none": 15
+				},
+				"contundente": {
+					"none": 15
+				},
+				"de_tension": {
+					"none": 15
+				}
 			},
 			"specializations": {
-				"simple": 0,
+				"none": 0,
 				"simple": 1,
 				"doble_filo": 2,
-				"aserrada": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
+				"aserrada": 3
 			}
 		},
 		"armadura": {
@@ -57,45 +50,31 @@
 				"escamada": 2,
 				"tachonada": 3,
 				"malla": 4,
-				"fibras": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"fibras": 5
 			},
 			"sub_types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"coraza": {
+					"none": 15
+				},
+				"placas": {
+					"none": 15
+				},
+				"escamada": {
+					"none": 15
+				},
+				"tachonada": {
+					"none": 15
+				},
+				"malla": {
+					"none": 15
+				},
+				"fibras": {
+					"none": 15
+				}
 			},
 			"specializations": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"reforzado": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
+				"none": 0,
+				"reforzado": 3
 			}
 		},
 		"comun": {
@@ -109,91 +88,84 @@
 				"utilitario": 5,
 				"escritura": 6,
 				"amuleto": 7,
-				"ornamento": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"ornamento": 8
 			},
 			"sub_types": {
-				"simple": 0,
-				"ordinario": 1,
-				"lujoso": 2,
-				"de_cuerda": 3,
-				"percusivo": 4,
-				"de_viento": 5,
-				"pergamino": 6,
-				"libro": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"hueco": {
+					"simple": 0,
+					"ordinario": 1,
+					"lujoso": 2,
+					"none": 15
+				},
+				"solido": {
+					"simple": 0,
+					"ordinario": 1,
+					"lujoso": 2,
+					"none": 15
+				},
+				"instrumento_musical": {
+					"de_cuerda": 3,
+					"percusivo": 4,
+					"de_viento": 5,
+					"none": 15
+				},
+				"comestible": {
+					"simple": 0,
+					"ordinario": 1,
+					"lujoso": 2,
+					"none": 15
+				},
+				"contenedor": {
+					"simple": 0,
+					"ordinario": 1,
+					"lujoso": 2,
+					"none": 15
+				},
+				"utilitario": {
+					"simple": 0,
+					"ordinario": 1,
+					"lujoso": 2,
+					"none": 15
+				},
+				"escritura": {
+					"pergamino": 6,
+					"libro": 7,
+					"none": 15
+				},
+				"amuleto": {
+					"simple": 0,
+					"ordinario": 1,
+					"lujoso": 2,
+					"none": 15
+				},
+				"ornamento": {
+					"simple": 0,
+					"ordinario": 1,
+					"lujoso": 2,
+					"none": 15
+				}
 			},
 			"specializations": {
-				"desconocido": 0,
-				"reliquia": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
+				"none": 0,
+				"reliquia": 1
 			}
 		},
 		"explosivo": {
 			"value": 3,
 			"types": {
 				"deflagrante": 0,
-				"detonante": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"detonante": 1
 			},
 			"sub_types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"deflagrante": {
+					"none": 15
+				},
+				"detonante": {
+					"none": 15
+				}
 			},
 			"specializations": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
+				"none": 0
 			}
 		},
 		"escudo": {
@@ -217,179 +189,57 @@
 				"medialuna": 15
 			},
 			"sub_types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
+				"trigonal": {
+					"none": 15
+				},
+				"ojivado": {
+					"none": 15
+				},
+				"tripuntado": {
+					"none": 15
+				},
+				"bourbon": {
+					"none": 15
+				},
+				"tarja": {
+					"none": 15
+				},
+				"rodela": {
+					"none": 15
+				},
+				"pelta": {
+					"none": 15
+				},
+				"gota_de_agua": {
+					"none": 15
+				},
+				"parma": {
+					"none": 15
+				},
+				"aspis": {
+					"none": 15
+				},
+				"escotado": {
+					"none": 15
+				},
+				"rectangular": {
+					"none": 15
+				},
+				"scutum": {
+					"none": 15
+				},
+				"glagwa": {
+					"none": 15
+				},
+				"adarga": {
+					"none": 15
+				},
+				"medialuna": {
+					"none": 15
+				}
 			},
 			"specializations": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
-			}
-		},
-		"desconocido": {
-			"value": 5,
-			"types": {
-				"simple": 0,
-				"reforzado": 1,
-				"umbonado": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
-			},
-			"sub_types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
-			},
-			"specializations": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
-			}
-		},
-		"desconocido": {
-			"value": 6,
-			"types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
-			},
-			"sub_types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
-			},
-			"specializations": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
-			}
-		},
-		"desconocido": {
-			"value": 7,
-			"types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
-			},
-			"sub_types": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7,
-				"desconocido": 8,
-				"desconocido": 9,
-				"desconocido": 10,
-				"desconocido": 11,
-				"desconocido": 12,
-				"desconocido": 13,
-				"desconocido": 14,
-				"desconocido": 15
-			},
-			"specializations": {
-				"desconocido": 0,
-				"desconocido": 1,
-				"desconocido": 2,
-				"desconocido": 3,
-				"desconocido": 4,
-				"desconocido": 5,
-				"desconocido": 6,
-				"desconocido": 7
+				"none": 0
 			}
 		}
 	},
@@ -468,79 +318,9 @@
 		"TT": 61,
 		"VC": 62,
 		"VT": 63,
-		"XX": 64,
-		"XX": 65,
-		"XX": 66,
-		"XX": 67,
-		"XX": 68,
-		"XX": 69,
-		"XX": 70,
-		"XX": 71,
-		"XX": 72,
-		"XX": 73,
-		"XX": 74,
-		"XX": 75,
-		"XX": 76,
-		"XX": 77,
-		"XX": 78,
-		"XX": 79,
-		"XX": 80,
-		"XX": 81,
-		"XX": 82,
-		"XX": 83,
-		"XX": 84,
-		"XX": 85,
-		"XX": 86,
-		"XX": 87,
-		"XX": 88,
-		"XX": 89,
-		"XX": 90,
-		"XX": 91,
-		"XX": 92,
-		"XX": 93,
-		"XX": 94,
-		"XX": 95,
-		"XX": 96,
-		"XX": 97,
-		"XX": 98,
-		"XX": 99,
-		"XX": 100,
-		"XX": 101,
-		"XX": 102,
-		"XX": 103,
-		"XX": 104,
-		"XX": 105,
-		"XX": 106,
-		"XX": 107,
-		"XX": 108,
-		"XX": 109,
-		"XX": 110,
-		"XX": 111,
-		"XX": 112,
-		"XX": 113,
-		"XX": 114,
-		"XX": 115,
-		"XX": 116,
-		"XX": 117,
-		"XX": 118,
-		"XX": 119,
-		"XX": 120,
-		"XX": 121,
-		"XX": 122,
-		"XX": 123,
-		"XX": 124,
-		"XX": 125,
-		"XX": 126,
 		"XX": 127
 	},
 	"origins": {
-		"desconocido": 0,
-		"desconocido": 1,
-		"desconocido": 2,
-		"desconocido": 3,
-		"desconocido": 4,
-		"desconocido": 5,
-		"desconocido": 6,
 		"stevfel": 7,
 		"pherros": 8,
 		"mar_osdusfe": 9,
@@ -569,99 +349,7 @@
 		"vestkou_gifdsit": 32,
 		"ciudad_de_kotorik": 33,
 		"tierras_de_dufus": 34,
-		"desconocido": 35,
-		"desconocido": 36,
-		"desconocido": 37,
-		"desconocido": 38,
-		"desconocido": 39,
-		"desconocido": 40,
-		"desconocido": 41,
-		"desconocido": 42,
-		"desconocido": 43,
-		"desconocido": 44,
-		"desconocido": 45,
-		"desconocido": 46,
-		"desconocido": 47,
-		"desconocido": 48,
-		"desconocido": 49,
-		"desconocido": 50,
-		"desconocido": 51,
-		"desconocido": 52,
-		"desconocido": 53,
-		"desconocido": 54,
-		"desconocido": 55,
-		"desconocido": 56,
-		"desconocido": 57,
-		"desconocido": 58,
-		"desconocido": 59,
-		"desconocido": 60,
-		"desconocido": 61,
-		"desconocido": 62,
-		"desconocido": 63,
-		"desconocido": 64,
-		"desconocido": 65,
-		"desconocido": 66,
-		"desconocido": 67,
-		"desconocido": 68,
-		"desconocido": 69,
-		"desconocido": 70,
-		"desconocido": 71,
-		"desconocido": 72,
-		"desconocido": 73,
-		"desconocido": 74,
-		"desconocido": 75,
-		"desconocido": 76,
-		"desconocido": 77,
-		"desconocido": 78,
-		"desconocido": 79,
-		"desconocido": 80,
-		"desconocido": 81,
-		"desconocido": 82,
-		"desconocido": 83,
-		"desconocido": 84,
-		"desconocido": 85,
-		"desconocido": 86,
-		"desconocido": 87,
-		"desconocido": 88,
-		"desconocido": 89,
-		"desconocido": 90,
-		"desconocido": 91,
-		"desconocido": 92,
-		"desconocido": 93,
-		"desconocido": 94,
-		"desconocido": 95,
-		"desconocido": 96,
-		"desconocido": 97,
-		"desconocido": 98,
-		"desconocido": 99,
-		"desconocido": 100,
-		"desconocido": 101,
-		"desconocido": 102,
-		"desconocido": 103,
-		"desconocido": 104,
-		"desconocido": 105,
-		"desconocido": 106,
-		"desconocido": 107,
-		"desconocido": 108,
-		"desconocido": 109,
-		"desconocido": 110,
-		"desconocido": 111,
-		"desconocido": 112,
-		"desconocido": 113,
-		"desconocido": 114,
-		"desconocido": 115,
-		"desconocido": 116,
-		"desconocido": 117,
-		"desconocido": 118,
-		"desconocido": 119,
-		"desconocido": 120,
-		"desconocido": 121,
-		"desconocido": 122,
-		"desconocido": 123,
-		"desconocido": 124,
-		"desconocido": 125,
-		"desconocido": 126,
-		"desconocido": 127
+		"desconocido": 0
 	},
 	"modifications": {
 		"damage": "Dñ.",

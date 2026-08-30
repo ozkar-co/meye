@@ -463,7 +463,7 @@ export function load(
     ...decodeBaseAsParams(baseCode),
   };
   if (customCode) {
-    params.extra = code.decodeCustom(customCode, params.class);
+    params.extra = code.decodeCustom(customCode, params.class, params.type);
   }
   if (overlay) {
     if (overlay.name) params.name = overlay.name;
