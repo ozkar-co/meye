@@ -26,9 +26,24 @@ Open http://localhost:3008/docs
 
 Custom Debian service runs `./run.sh` in this directory on **port 3008**, reverse-proxied to https://meye-tools.ozkr.net.
 
+Example unit (`/etc/systemd/system/custom-meye-tools.service`):
+
+```ini
+[Service]
+WorkingDirectory=/home/oz/meye-tools
+User=oz
+Group=oz
+ExecStart=/home/oz/meye-tools/run.sh
+Restart=on-failure
+```
+
+`run.sh` loads that user's **nvm** Node if present (systemd often has a bare PATH). Override with `Environment=NODE_BIN=/path/to/node` if needed.
+
+Logs: `journalctl -u custom-meye-tools -n 80 --no-pager`
+
 Persist `data/meye.sqlite`; `cache/` can be ephemeral.
 
-Env: `PORT` (default 3008), `HOST`, `DATA_DIR`, `CACHE_DIR`.
+Env: `PORT` (default 3008), `HOST`, `NODE_BIN`, `DATA_DIR`, `CACHE_DIR`.
 
 ## Data
 
