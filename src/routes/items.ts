@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginAsync, FastifyReply } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { create, load } from "../cards/formulas.js";
 import { itemId } from "../cards/codes.js";
@@ -94,44 +94,96 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
     }
   );
 
+  const loadByCodes = (base: string, custom?: string) => {
+    const stored = findItem(itemId(base, custom));
+    return load(
+      base,
+      custom,
+      stored
+        ? {
+            name: stored.name,
+            effects: stored.effects,
+            modifications: stored.modifications,
+          }
+        : undefined
+    );
+  };
+
+  const sendCard = async (
+    reply: FastifyReply,
+    base: string,
+    custom: string | undefined,
+    side: "front" | "back"
+  ) => {
+    const item = loadByCodes(base, custom);
+    const pngs = await renderCard(item, side);
+    const buf = side === "back" ? pngs.back! : pngs.front!;
+    return reply.type("image/png").send(buf);
+  };
+
+  const cardParams = Type.Object({
+    base: Type.String(),
+    custom: Type.String(),
+  });
+  const baseParams = Type.Object({ base: Type.String() });
+
   app.get(
-    "/items/:base/:custom/card",
+    "/items/:base/:custom/card/front",
     {
       schema: {
         tags: ["items"],
-        summary: "Render card PNG (front or back)",
-        params: Type.Object({
-          base: Type.String(),
-          custom: Type.String(),
-        }),
-        querystring: Type.Object({
-          side: Type.Optional(
-            Type.Union([Type.Literal("front"), Type.Literal("back")])
-          ),
-        }),
+        summary: "Render card front PNG",
+        params: cardParams,
       },
     },
     async (req, reply) => {
       const { base, custom } = req.params as { base: string; custom: string };
-      const side =
-        ((req.query as { side?: "front" | "back" }).side as
-          | "front"
-          | "back") || "front";
-      const stored = findItem(itemId(base, custom));
-      const item = load(
-        base,
-        custom,
-        stored
-          ? {
-              name: stored.name,
-              effects: stored.effects,
-              modifications: stored.modifications,
-            }
-          : undefined
-      );
-      const pngs = await renderCard(item, side);
-      const buf = side === "back" ? pngs.back! : pngs.front!;
-      return reply.type("image/png").send(buf);
+      return sendCard(reply, base, custom, "front");
+    }
+  );
+
+  app.get(
+    "/items/:base/:custom/card/back",
+    {
+      schema: {
+        tags: ["items"],
+        summary: "Render card back PNG",
+        params: cardParams,
+      },
+    },
+    async (req, reply) => {
+      const { base, custom } = req.params as { base: string; custom: string };
+      return sendCard(reply, base, custom, "back");
+    }
+  );
+
+  app.get(
+    "/items/:base/card/front",
+    {
+      schema: {
+        tags: ["items"],
+        summary: "Render card front PNG (base code only)",
+        params: baseParams,
+      },
+    },
+    async (req, reply) => {
+      const { base } = req.params as { base: string };
+      return sendCard(reply, base, undefined, "front");
+    }
+  );
+
+  app.get(
+    "/items/:base/card/back",
+    {
+      schema: {
+        tags: ["items"],
+        summary: "Render card back PNG (base code only)",
+        params: baseParams,
+      },
+    },
+    async (req, reply) => {
+      const { base } = req.params as { base: string };
+      return sendCard(reply, base, undefined, "back");
     }
   );
 
@@ -141,26 +193,12 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
       schema: {
         tags: ["items"],
         summary: "Load item by base + custom code",
-        params: Type.Object({
-          base: Type.String(),
-          custom: Type.String(),
-        }),
+        params: cardParams,
       },
     },
     async (req) => {
       const { base, custom } = req.params as { base: string; custom: string };
-      const stored = findItem(itemId(base, custom));
-      return load(
-        base,
-        custom,
-        stored
-          ? {
-              name: stored.name,
-              effects: stored.effects,
-              modifications: stored.modifications,
-            }
-          : undefined
-      );
+      return loadByCodes(base, custom);
     }
   );
 
@@ -170,23 +208,12 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
       schema: {
         tags: ["items"],
         summary: "Load item by base code only",
-        params: Type.Object({ base: Type.String() }),
+        params: baseParams,
       },
     },
     async (req) => {
       const { base } = req.params as { base: string };
-      const stored = findItem(base);
-      return load(
-        base,
-        undefined,
-        stored
-          ? {
-              name: stored.name,
-              effects: stored.effects,
-              modifications: stored.modifications,
-            }
-          : undefined
-      );
+      return loadByCodes(base);
     }
   );
 };

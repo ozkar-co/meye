@@ -10,7 +10,7 @@ import { itemsRoutes } from "./routes/items.js";
 import { materialsRoutes } from "./routes/materials.js";
 import { languagesRoutes } from "./routes/languages.js";
 
-const PORT = Number(process.env.PORT || 3000);
+const PORT = Number(process.env.PORT || 3008);
 const HOST = process.env.HOST || "0.0.0.0";
 
 async function main() {
