@@ -5,6 +5,7 @@ HTTP API for **Tierras de Meye**: item/card calculator and constructed languages
 - Repo: https://github.com/ozkar-co/meye
 - Production: https://meye-tools.ozkr.net
 - Interactive API docs: `/docs` (OpenAPI / Swagger UI)
+- UI: `/` — crear / cargar objetos y ver cartas
 
 ## Requirements
 

@@ -1,17 +1,22 @@
 import Fastify from "fastify";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
+import fastifyStatic from "@fastify/static";
 import {
   TypeBoxTypeProvider,
 } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { getDb } from "./db.js";
 import { itemsRoutes } from "./routes/items.js";
 import { materialsRoutes } from "./routes/materials.js";
 import { languagesRoutes } from "./routes/languages.js";
+import { metaRoutes } from "./routes/meta.js";
 
 const PORT = Number(process.env.PORT || 3008);
 const HOST = process.env.HOST || "0.0.0.0";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 async function main() {
   getDb();
@@ -51,9 +56,15 @@ async function main() {
     async () => ({ ok: true })
   );
 
+  await app.register(metaRoutes);
   await app.register(itemsRoutes);
   await app.register(materialsRoutes);
   await app.register(languagesRoutes);
+
+  await app.register(fastifyStatic, {
+    root: path.join(root, "public"),
+    wildcard: false,
+  });
 
   app.setErrorHandler((err: Error & { statusCode?: number }, _req, reply) => {
     const status = err.statusCode || 500;

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>meye tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg0: #0f1412;
+        --bg1: #1a221c;
+        --ink: #e7ede6;
+        --muted: #8a968c;
+        --line: #2c382f;
+        --accent: #c4a35a;
+        --accent-dim: #8a7340;
+        --danger: #d07060;
+        --field: #121916;
+        --radius: 6px;
+        --font: "Instrument Sans", system-ui, sans-serif;
+        --display: "Newsreader", Georgia, serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--font);
+        color: var(--ink);
+        background:
+          radial-gradient(1200px 600px at 10% -10%, #243028 0%, transparent 55%),
+          radial-gradient(900px 500px at 100% 0%, #1c2420 0%, transparent 50%),
+          var(--bg0);
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 4rem;
+      }
+
+      header {
+        margin-bottom: 2rem;
+      }
+
+      header .brand {
+        font-family: var(--display);
+        font-size: clamp(2.4rem, 5vw, 3.4rem);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        margin: 0;
+      }
+
+      header .brand span {
+        color: var(--accent);
+      }
+
+      header p {
+        margin: 0.55rem 0 0;
+        color: var(--muted);
+        max-width: 36rem;
+        font-size: 1.05rem;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 380px) 1fr;
+        gap: 1.75rem;
+        align-items: start;
+      }
+
+      @media (max-width: 860px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: color-mix(in srgb, var(--bg1) 88%, black);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1.15rem 1.2rem 1.35rem;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: 1.1rem;
+      }
+
+      .tabs button {
+        flex: 1;
+        appearance: none;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-weight: 600;
+        padding: 0.55rem 0.7rem;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .tabs button.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #1a1408;
+      }
+
+      label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0.75rem 0 0.35rem;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        appearance: none;
+        background: var(--field);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        font: inherit;
+        border-radius: var(--radius);
+        padding: 0.55rem 0.65rem;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+        border-color: var(--accent-dim);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+      }
+
+      details.extra {
+        margin-top: 0.9rem;
+        border-top: 1px solid var(--line);
+        padding-top: 0.7rem;
+      }
+
+      details.extra summary {
+        cursor: pointer;
+        color: var(--accent);
+        font-weight: 600;
+        list-style: none;
+      }
+
+      details.extra summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .flags {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.35rem 0.75rem;
+        margin-top: 0.55rem;
+      }
+
+      .flags label {
+        display: flex;
+        gap: 0.45rem;
+        align-items: center;
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--ink);
+        margin: 0;
+      }
+
+      .flags input {
+        width: auto;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 1.15rem;
+      }
+
+      .actions button {
+        appearance: none;
+        border: 0;
+        font: inherit;
+        font-weight: 700;
+        border-radius: var(--radius);
+        padding: 0.7rem 1rem;
+        cursor: pointer;
+      }
+
+      .actions .primary {
+        background: var(--accent);
+        color: #1a1408;
+        flex: 1;
+      }
+
+      .actions .ghost {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--line);
+      }
+
+      .error {
+        margin-top: 0.85rem;
+        color: var(--danger);
+        font-size: 0.92rem;
+        white-space: pre-wrap;
+      }
+
+      .result h2 {
+        font-family: var(--display);
+        font-weight: 600;
+        font-size: 1.55rem;
+        margin: 0 0 0.35rem;
+      }
+
+      .codes {
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin-bottom: 1rem;
+      }
+
+      .codes code {
+        color: var(--accent);
+        font-family: ui-monospace, monospace;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 0.55rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .stat {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 0.5rem 0.6rem;
+      }
+
+      .stat b {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .stat span {
+        font-size: 1.05rem;
+        font-weight: 600;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.85rem;
+      }
+
+      @media (max-width: 700px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card-slot {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        background: #0a0d0b;
+        min-height: 180px;
+        display: grid;
+        place-items: center;
+      }
+
+      .card-slot img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .card-slot .ph {
+        color: var(--muted);
+        font-size: 0.9rem;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .empty {
+        color: var(--muted);
+        padding: 2rem 0.5rem;
+      }
+
+      a.docs {
+        color: var(--muted);
+        font-size: 0.85rem;
+        float: right;
+        margin-top: 0.4rem;
+      }
+
+      a.docs:hover {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a class="docs" href="/docs">API docs</a>
+        <h1 class="brand">meye <span>tools</span></h1>
+        <p>
+          Crea un objeto con las reglas del juego o carga uno por código y
+          genera su carta.
+        </p>
+      </header>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="tabs" role="tablist">
+            <button type="button" class="active" data-mode="create">Crear</button>
+            <button type="button" data-mode="load">Cargar</button>
+          </div>
+
+          <form id="create-form">
+            <label for="name">Nombre</label>
+            <input id="name" name="name" placeholder="opcional; si hay, se guarda" />
+
+            <div class="row">
+              <div>
+                <label for="class">Clase</label>
+                <select id="class" name="class" required></select>
+              </div>
+              <div>
+                <label for="type">Tipo</label>
+                <select id="type" name="type" required></select>
+              </div>
+            </div>
+
+            <label for="material">Material</label>
+            <select id="material" name="material" required></select>
+
+            <div class="row">
+              <div>
+                <label for="dimension">Dimensión</label>
+                <select id="dimension" name="dimension" required></select>
+              </div>
+              <div>
+                <label for="thickness">Grosor</label>
+                <select id="thickness" name="thickness" required></select>
+              </div>
+            </div>
+
+            <label for="quality">Calidad</label>
+            <select id="quality" name="quality" required></select>
+
+            <details class="extra">
+              <summary>Extra (origen, subtipo, flags…)</summary>
+              <label for="origin">Origen</label>
+              <select id="origin"></select>
+              <div class="row">
+                <div>
+                  <label for="sub_type">Subtipo</label>
+                  <select id="sub_type"></select>
+                </div>
+                <div>
+                  <label for="specialization">Especialización</label>
+                  <select id="specialization"></select>
+                </div>
+              </div>
+              <label>Flags místicas</label>
+              <div class="flags" id="flags"></div>
+            </details>
+
+            <div class="actions">
+              <button class="primary" type="submit">Crear y ver carta</button>
+            </div>
+          </form>
+
+          <form id="load-form" hidden>
+            <label for="base">Código base</label>
+            <input id="base" name="base" placeholder="Bpi3" required />
+            <label for="custom">Código custom</label>
+            <input id="custom" name="custom" placeholder="DuaA-10" />
+            <div class="actions">
+              <button class="primary" type="submit">Cargar carta</button>
+            </div>
+          </form>
+
+          <div class="error" id="error" hidden></div>
+        </section>
+
+        <section class="panel result" id="result">
+          <div class="empty" id="empty">
+            Aún no hay carta. Crea un objeto o cárgalo por código.
+          </div>
+          <div id="out" hidden>
+            <h2 id="title"></h2>
+            <div class="codes">
+              <code id="code-line"></code>
+            </div>
+            <div class="stats" id="stats"></div>
+            <div class="cards">
+              <div class="card-slot">
+                <span class="ph" id="front-ph">frente…</span>
+                <img id="front" alt="Carta frente" hidden />
+              </div>
+              <div class="card-slot">
+                <span class="ph" id="back-ph">reverso…</span>
+                <img id="back" alt="Carta reverso" hidden />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      let meta = null;
+      let frontUrl = null;
+      let backUrl = null;
+
+      function showError(msg) {
+        const el = $("error");
+        el.hidden = !msg;
+        el.textContent = msg || "";
+      }
+
+      function fillSelect(el, items, labelFn = (x) => x, valueFn = (x) => x) {
+        el.innerHTML = "";
+        for (const item of items) {
+          const opt = document.createElement("option");
+          opt.value = valueFn(item);
+          opt.textContent = labelFn(item);
+          el.appendChild(opt);
+        }
+      }
+
+      function refreshClassDeps() {
+        const c = $("class").value;
+        fillSelect($("type"), meta.typesByClass[c] || []);
+        fillSelect($("sub_type"), ["none", ...(meta.subTypesByClass[c] || [])]);
+        fillSelect($("specialization"), [
+          "none",
+          ...(meta.specializationsByClass[c] || []),
+        ]);
+      }
+
+      function setMode(mode) {
+        document.querySelectorAll(".tabs button").forEach((b) => {
+          b.classList.toggle("active", b.dataset.mode === mode);
+        });
+        $("create-form").hidden = mode !== "create";
+        $("load-form").hidden = mode !== "load";
+        showError("");
+      }
+
+      function cardPath(base, custom, side) {
+        const enc = encodeURIComponent;
+        if (custom) return `/items/${enc(base)}/${enc(custom)}/card/${side}`;
+        return `/items/${enc(base)}/card/${side}`;
+      }
+
+      async function showItem(item) {
+        $("empty").hidden = true;
+        $("out").hidden = false;
+        $("title").textContent = item.name || item.type || "Objeto";
+        const id = item.custom_code
+          ? `${item.code}-${item.custom_code}`
+          : item.code;
+        $("code-line").textContent = `#${id} · ${item.crafting_level} · ${item.rarity}`;
+
+        const stats = [
+          ["Daño", item.damage],
+          ["Corte", item.slice],
+          ["Desangre", item.bleeding],
+          ["Peso", item.weight],
+          ["Lance", item.throwing],
+          ["Amort.", item.damping],
+          ["Resist.", item.resistence],
+          ["Vida", item.useful_life],
+        ];
+        $("stats").innerHTML = stats
+          .map(
+            ([k, v]) =>
+              `<div class="stat"><b>${k}</b><span>${v ?? "—"}</span></div>`
+          )
+          .join("");
+
+        if (frontUrl) URL.revokeObjectURL(frontUrl);
+        if (backUrl) URL.revokeObjectURL(backUrl);
+        $("front").hidden = true;
+        $("back").hidden = true;
+        $("front-ph").hidden = false;
+        $("back-ph").hidden = false;
+        $("front-ph").textContent = "generando frente…";
+        $("back-ph").textContent = "generando reverso…";
+
+        const [frontRes, backRes] = await Promise.all([
+          fetch(cardPath(item.code, item.custom_code, "front")),
+          fetch(cardPath(item.code, item.custom_code, "back")),
+        ]);
+        if (!frontRes.ok) throw new Error("No se pudo generar el frente");
+        if (!backRes.ok) throw new Error("No se pudo generar el reverso");
+
+        frontUrl = URL.createObjectURL(await frontRes.blob());
+        backUrl = URL.createObjectURL(await backRes.blob());
+        $("front").src = frontUrl;
+        $("back").src = backUrl;
+        $("front").hidden = false;
+        $("back").hidden = false;
+        $("front-ph").hidden = true;
+        $("back-ph").hidden = true;
+      }
+
+      document.querySelectorAll(".tabs button").forEach((b) => {
+        b.addEventListener("click", () => setMode(b.dataset.mode));
+      });
+
+      $("class").addEventListener("change", refreshClassDeps);
+
+      $("create-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        showError("");
+        const origin = $("origin").value;
+        const sub_type = $("sub_type").value;
+        const specialization = $("specialization").value;
+        const flags = [...document.querySelectorAll("#flags input:checked")].map(
+          (i) => i.value
+        );
+        const useExtra =
+          origin ||
+          (sub_type && sub_type !== "none") ||
+          (specialization && specialization !== "none") ||
+          flags.length;
+
+        const body = {
+          name: $("name").value.trim() || undefined,
+          class: $("class").value,
+          type: $("type").value,
+          material: $("material").value,
+          dimension: Number($("dimension").value),
+          thickness: Number($("thickness").value),
+          quality: Number($("quality").value),
+          persist: true,
+        };
+        if (useExtra) {
+          body.extra = {
+            origin: origin || "desconocido",
+            sub_type: sub_type || "none",
+            specialization: specialization || "none",
+            flags,
+          };
+        }
+
+        try {
+          const res = await fetch("/items", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || res.statusText);
+          await showItem(data);
+        } catch (err) {
+          showError(err.message || String(err));
+        }
+      });
+
+      $("load-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        showError("");
+        const base = $("base").value.trim();
+        const custom = $("custom").value.trim();
+        try {
+          const url = custom
+            ? `/items/${encodeURIComponent(base)}/${encodeURIComponent(custom)}`
+            : `/items/${encodeURIComponent(base)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || res.statusText);
+          await showItem(data);
+        } catch (err) {
+          showError(err.message || String(err));
+        }
+      });
+
+      (async () => {
+        try {
+          const res = await fetch("/meta");
+          meta = await res.json();
+          if (!res.ok) throw new Error(meta.message || "meta failed");
+          fillSelect($("class"), meta.classes);
+          fillSelect(
+            $("material"),
+            meta.materials,
+            (m) => `${m.symbol} — ${m.name}`,
+            (m) => m.symbol
+          );
+          fillSelect($("dimension"), meta.sizes);
+          fillSelect($("thickness"), meta.sizes);
+          fillSelect($("quality"), meta.qualities);
+          fillSelect($("origin"), ["", ...meta.origins], (o) => o || "(ninguno)");
+          $("flags").innerHTML = meta.flags
+            .map(
+              (f) =>
+                `<label><input type="checkbox" value="${f}" /> ${f}</label>`
+            )
+            .join("");
+          refreshClassDeps();
+          $("dimension").value = "5";
+          $("thickness").value = "2";
+          $("quality").value = "0.7";
+        } catch (err) {
+          showError("No se pudo cargar /meta: " + err.message);
+        }
+      })();
+    </script>
+  </body>
+</html>
