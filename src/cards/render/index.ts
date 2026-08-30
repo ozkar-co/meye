@@ -90,10 +90,12 @@ async function drawPng(
   name: string,
   pos: number[],
   size: number[]
-): Promise<void> {
+): Promise<boolean> {
   const file = path.join(ASSETS_DIR, `${name}.png`);
+  if (!existsSync(file)) return false;
   const img = await loadImage(file);
   ctx.drawImage(img, pos[0], pos[1], size[0], size[1]);
+  return true;
 }
 
 async function renderFront(obj: Item): Promise<Buffer> {
@@ -152,10 +154,7 @@ async function renderFront(obj: Item): Promise<Buffer> {
   const id = sanitizeFilename(
     obj.code + (obj.custom_code ? "-" : "") + (obj.custom_code || "")
   );
-  const objectArt = path.join(ASSETS_DIR, "objects", `${id}.png`);
-  if (existsSync(objectArt)) {
-    await drawPng(ctx, "objects/" + id, L.ART_POS, L.ART_SIZE);
-  } else {
+  if (!(await drawPng(ctx, "objects/" + id, L.ART_POS, L.ART_SIZE))) {
     await drawPng(ctx, "objects/desconocido", L.ART_POS, L.ART_SIZE);
   }
   if (obj.custom_code) {
