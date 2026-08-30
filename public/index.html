@@ -21,117 +21,115 @@
         --accent-dim: #8a7340;
         --danger: #d07060;
         --field: #121916;
-        --radius: 6px;
+        --radius: 8px;
         --font: "Instrument Sans", system-ui, sans-serif;
         --display: "Newsreader", Georgia, serif;
       }
-
-      * {
-        box-sizing: border-box;
-      }
-
+      * { box-sizing: border-box; }
       body {
         margin: 0;
         min-height: 100vh;
         font-family: var(--font);
+        font-size: 16px;
         color: var(--ink);
         background:
           radial-gradient(1200px 600px at 10% -10%, #243028 0%, transparent 55%),
           radial-gradient(900px 500px at 100% 0%, #1c2420 0%, transparent 50%),
           var(--bg0);
       }
-
       .wrap {
-        max-width: 1180px;
+        max-width: 1400px;
         margin: 0 auto;
-        padding: 2rem 1.25rem 4rem;
+        padding: 1.75rem 1.5rem 3.5rem;
       }
-
-      header {
-        margin-bottom: 2rem;
-      }
-
+      header { margin-bottom: 1.5rem; }
       header .brand {
         font-family: var(--display);
-        font-size: clamp(2.4rem, 5vw, 3.4rem);
+        font-size: clamp(2.2rem, 4vw, 3rem);
         font-weight: 600;
         letter-spacing: -0.02em;
-        line-height: 1;
         margin: 0;
       }
-
-      header .brand span {
-        color: var(--accent);
-      }
-
-      header p {
-        margin: 0.55rem 0 0;
+      header .brand span { color: var(--accent); }
+      header p { margin: 0.4rem 0 0; color: var(--muted); }
+      a.docs {
+        float: right;
         color: var(--muted);
-        max-width: 36rem;
-        font-size: 1.05rem;
+        font-size: 0.9rem;
+        margin-top: 0.35rem;
       }
+      a.docs:hover { color: var(--accent); }
 
       .layout {
         display: grid;
-        grid-template-columns: minmax(300px, 400px) 1fr;
-        gap: 1.75rem;
+        grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
+        gap: 1.5rem;
         align-items: start;
       }
-
-      @media (max-width: 860px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
+      @media (max-width: 980px) {
+        .layout { grid-template-columns: 1fr; }
       }
 
       .panel {
-        background: color-mix(in srgb, var(--bg1) 88%, black);
+        background: color-mix(in srgb, var(--bg1) 90%, black);
         border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 1.15rem 1.2rem 1.35rem;
+        border-radius: 14px;
+        padding: 1.25rem 1.35rem 1.5rem;
       }
-
       .panel-form {
-        max-height: calc(100vh - 8rem);
+        max-height: calc(100vh - 7rem);
         overflow: auto;
       }
 
       .tabs {
         display: flex;
-        gap: 0.35rem;
-        margin-bottom: 1.1rem;
-        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
       }
-
       .tabs button {
         flex: 1;
-        min-width: 4.5rem;
         appearance: none;
         border: 1px solid var(--line);
         background: transparent;
         color: var(--muted);
         font: inherit;
         font-weight: 600;
-        padding: 0.55rem 0.55rem;
+        padding: 0.65rem 0.75rem;
         border-radius: 999px;
         cursor: pointer;
       }
-
       .tabs button.active {
         background: var(--accent);
         border-color: var(--accent);
         color: #1a1408;
       }
 
-      label.field-label {
+      .section {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1rem 1.05rem 1.15rem;
+        margin-top: 0.9rem;
+        background: color-mix(in srgb, var(--field) 65%, transparent);
+      }
+      .section:first-of-type { margin-top: 0.35rem; }
+      .section h3 {
+        margin: 0 0 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.02em;
+      }
+
+      .field-label {
         display: block;
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         font-weight: 600;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.03em;
         text-transform: uppercase;
         color: var(--muted);
-        margin: 0.75rem 0 0.35rem;
+        margin: 0.7rem 0 0.35rem;
       }
+      .field-label:first-child { margin-top: 0; }
 
       input[type="text"],
       input[type="number"],
@@ -143,317 +141,205 @@
         border: 1px solid var(--line);
         color: var(--ink);
         font: inherit;
+        font-size: 1rem;
         border-radius: var(--radius);
-        padding: 0.55rem 0.65rem;
+        padding: 0.7rem 0.8rem;
       }
-
-      textarea {
-        min-height: 4.2rem;
-        resize: vertical;
-      }
-
-      input[type="text"]:focus,
-      select:focus,
-      textarea:focus {
-        outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      textarea { min-height: 4.5rem; resize: vertical; }
+      input:focus, select:focus, textarea:focus {
+        outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
         border-color: var(--accent-dim);
       }
 
-      .row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.65rem;
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+      .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+      @media (max-width: 560px) {
+        .row, .row3 { grid-template-columns: 1fr; }
       }
 
-      details.block {
-        margin-top: 0.9rem;
-        border-top: 1px solid var(--line);
-        padding-top: 0.7rem;
-      }
-
-      details.block summary {
-        cursor: pointer;
-        color: var(--accent);
-        font-weight: 600;
-        list-style: none;
-      }
-
-      details.block summary::-webkit-details-marker {
+      .combo { position: relative; }
+      .combo-list {
         display: none;
+        position: absolute;
+        z-index: 20;
+        left: 0; right: 0;
+        top: calc(100% + 4px);
+        max-height: 220px;
+        overflow: auto;
+        margin: 0;
+        padding: 0.25rem;
+        list-style: none;
+        background: #0d1210;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
       }
+      .combo.open .combo-list { display: block; }
+      .combo-list li {
+        padding: 0.55rem 0.65rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .combo-list li:hover, .combo-list li.active {
+        background: color-mix(in srgb, var(--accent) 22%, transparent);
+      }
+      .combo-list .muted { color: var(--muted); font-size: 0.82rem; }
 
       .flags {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0.45rem 0.75rem;
-        margin-top: 0.55rem;
+        gap: 0.55rem 0.85rem;
+        margin-top: 0.35rem;
       }
-
       .flags label {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.55rem;
         align-items: center;
-        font-size: 0.88rem;
-        font-weight: 500;
-        color: var(--ink);
         margin: 0;
         cursor: pointer;
+        font-size: 0.95rem;
       }
-
       .flags input[type="checkbox"] {
         appearance: auto;
         -webkit-appearance: checkbox;
-        width: 1.15rem;
-        height: 1.15rem;
-        margin: 0;
-        flex-shrink: 0;
+        width: 1.2rem;
+        height: 1.2rem;
         accent-color: var(--accent);
+        flex-shrink: 0;
         cursor: pointer;
       }
 
-      .effect {
+      .effect, .mod-row, .rest-row {
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        padding: 0.65rem;
+        padding: 0.75rem;
         margin-top: 0.55rem;
         background: var(--field);
       }
-
-      .effect-head {
+      .effect-head, .mod-row, .rest-row {
         display: flex;
         gap: 0.5rem;
         align-items: end;
       }
-
-      .effect-head > div {
-        flex: 1;
-      }
-
-      .effect .remove {
+      .effect-head > div, .mod-row > div, .rest-row > div { flex: 1; }
+      .remove, .add-btn {
         appearance: none;
         border: 1px solid var(--line);
         background: transparent;
         color: var(--danger);
         border-radius: var(--radius);
-        padding: 0.5rem 0.6rem;
+        padding: 0.65rem 0.75rem;
         cursor: pointer;
         font: inherit;
-        font-size: 0.85rem;
+        font-size: 0.88rem;
+        white-space: nowrap;
       }
-
-      .add-effect {
-        margin-top: 0.6rem;
-        appearance: none;
-        border: 1px dashed var(--line);
-        background: transparent;
-        color: var(--accent);
-        font: inherit;
-        font-weight: 600;
+      .add-btn {
         width: 100%;
-        padding: 0.55rem;
-        border-radius: var(--radius);
-        cursor: pointer;
+        margin-top: 0.65rem;
+        color: var(--accent);
+        border-style: dashed;
+        font-weight: 600;
       }
 
       .actions {
         display: flex;
         gap: 0.6rem;
         margin-top: 1.15rem;
-        flex-wrap: wrap;
+        position: sticky;
+        bottom: 0;
+        padding-top: 0.75rem;
+        background: linear-gradient(transparent, var(--bg1) 30%);
       }
-
       .actions button {
         appearance: none;
         border: 0;
         font: inherit;
         font-weight: 700;
         border-radius: var(--radius);
-        padding: 0.7rem 1rem;
+        padding: 0.8rem 1.05rem;
         cursor: pointer;
       }
-
       .actions .primary {
         background: var(--accent);
         color: #1a1408;
-        flex: 1;
+        flex: 1.4;
       }
-
       .actions .ghost {
         background: transparent;
         color: var(--muted);
         border: 1px solid var(--line);
+        flex: 1;
       }
 
       .error {
-        margin-top: 0.85rem;
+        margin-top: 0.75rem;
         color: var(--danger);
-        font-size: 0.92rem;
         white-space: pre-wrap;
       }
+      .mode-hint { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.6rem; }
 
-      .item-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-      }
-
+      .item-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.45rem; }
       .item-list button {
-        width: 100%;
-        text-align: left;
-        appearance: none;
-        border: 1px solid var(--line);
-        background: var(--field);
-        color: var(--ink);
-        font: inherit;
-        border-radius: var(--radius);
-        padding: 0.65rem 0.75rem;
-        cursor: pointer;
+        width: 100%; text-align: left; appearance: none;
+        border: 1px solid var(--line); background: var(--field);
+        color: var(--ink); font: inherit; border-radius: var(--radius);
+        padding: 0.8rem 0.9rem; cursor: pointer;
       }
-
-      .item-list button:hover {
-        border-color: var(--accent-dim);
-      }
-
-      .item-list .name {
-        display: block;
-        font-weight: 600;
-      }
-
-      .item-list .id {
-        display: block;
-        color: var(--muted);
-        font-size: 0.8rem;
-        font-family: ui-monospace, monospace;
-        margin-top: 0.15rem;
-      }
+      .item-list button:hover { border-color: var(--accent-dim); }
+      .item-list .name { display: block; font-weight: 600; font-size: 1.05rem; }
+      .item-list .id { display: block; color: var(--muted); font-size: 0.82rem; font-family: ui-monospace, monospace; margin-top: 0.2rem; }
 
       .result h2 {
         font-family: var(--display);
         font-weight: 600;
-        font-size: 1.55rem;
+        font-size: 1.7rem;
         margin: 0 0 0.35rem;
       }
-
-      .codes {
-        color: var(--muted);
-        font-size: 0.92rem;
-        margin-bottom: 1rem;
-      }
-
-      .codes code {
-        color: var(--accent);
-        font-family: ui-monospace, monospace;
-      }
-
+      .codes { color: var(--muted); margin-bottom: 1rem; }
+      .codes code { color: var(--accent); font-family: ui-monospace, monospace; }
       .stats {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 0.55rem;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
       }
-
       .stat {
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        padding: 0.5rem 0.6rem;
+        padding: 0.55rem 0.65rem;
       }
-
       .stat b {
         display: block;
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         color: var(--muted);
-        font-weight: 600;
       }
-
-      .stat span {
-        font-size: 1.05rem;
-        font-weight: 600;
-      }
-
-      .effects-out {
-        margin: 0 0 1.1rem;
-        padding: 0;
-        list-style: none;
-      }
-
+      .stat span { font-size: 1.1rem; font-weight: 600; }
+      .effects-out { list-style: none; margin: 0 0 1rem; padding: 0; }
       .effects-out li {
         border-left: 2px solid var(--accent-dim);
-        padding: 0.35rem 0 0.35rem 0.7rem;
-        margin-bottom: 0.55rem;
+        padding: 0.35rem 0 0.35rem 0.75rem;
+        margin-bottom: 0.5rem;
       }
-
-      .effects-out strong {
-        display: block;
-        color: var(--accent);
-        font-size: 0.9rem;
-      }
-
-      .effects-out span {
-        color: var(--muted);
-        font-size: 0.88rem;
-      }
-
-      .cards {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.85rem;
-      }
-
-      @media (max-width: 700px) {
-        .cards {
-          grid-template-columns: 1fr;
-        }
-      }
-
+      .effects-out strong { display: block; color: var(--accent); }
+      .effects-out span { color: var(--muted); font-size: 0.92rem; }
+      .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+      @media (max-width: 700px) { .cards { grid-template-columns: 1fr; } }
       .card-slot {
         border: 1px solid var(--line);
         border-radius: 10px;
         overflow: hidden;
         background: #0a0d0b;
-        min-height: 180px;
+        min-height: 200px;
         display: grid;
         place-items: center;
       }
-
-      .card-slot img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      .card-slot .ph {
-        color: var(--muted);
-        font-size: 0.9rem;
-        padding: 2rem;
-        text-align: center;
-      }
-
-      .empty {
-        color: var(--muted);
-        padding: 2rem 0.5rem;
-      }
-
-      a.docs {
-        color: var(--muted);
-        font-size: 0.85rem;
-        float: right;
-        margin-top: 0.4rem;
-      }
-
-      a.docs:hover {
-        color: var(--accent);
-      }
-
-      .mode-hint {
-        color: var(--muted);
-        font-size: 0.85rem;
-        margin: 0 0 0.5rem;
-      }
+      .card-slot img { width: 100%; display: block; }
+      .card-slot .ph { color: var(--muted); padding: 2rem; text-align: center; }
+      .empty { color: var(--muted); padding: 1.5rem 0.25rem; }
     </style>
   </head>
   <body>
@@ -461,14 +347,12 @@
       <header>
         <a class="docs" href="/docs">API docs</a>
         <h1 class="brand">meye <span>tools</span></h1>
-        <p>
-          Crea, lista y edita objetos; genera frente y reverso de la carta.
-        </p>
+        <p>Editor de objetos y cartas · Tierras de Meye</p>
       </header>
 
       <div class="layout">
         <section class="panel panel-form">
-          <div class="tabs" role="tablist">
+          <div class="tabs">
             <button type="button" class="active" data-mode="edit">Editor</button>
             <button type="button" data-mode="list">Lista</button>
             <button type="button" data-mode="load">Código</button>
@@ -477,88 +361,113 @@
           <form id="edit-form">
             <p class="mode-hint" id="edit-hint">Nuevo objeto</p>
 
-            <label class="field-label" for="name">Nombre</label>
-            <input
-              id="name"
-              type="text"
-              placeholder="requerido para guardar"
-            />
-
-            <div class="row">
-              <div>
-                <label class="field-label" for="class">Clase</label>
-                <select id="class" required></select>
+            <div class="section">
+              <h3>Identidad</h3>
+              <label class="field-label" for="name">Nombre</label>
+              <input id="name" type="text" placeholder="Requerido para guardar" />
+              <div class="row">
+                <div>
+                  <label class="field-label" for="class">Clase</label>
+                  <select id="class" required></select>
+                </div>
+                <div>
+                  <label class="field-label" for="type">Tipo</label>
+                  <select id="type" required></select>
+                </div>
               </div>
-              <div>
-                <label class="field-label" for="type">Tipo</label>
-                <select id="type" required></select>
-              </div>
-            </div>
-
-            <label class="field-label" for="material">Material</label>
-            <select id="material" required></select>
-
-            <div class="row">
-              <div>
-                <label class="field-label" for="dimension">Dimensión</label>
-                <select id="dimension" required></select>
-              </div>
-              <div>
-                <label class="field-label" for="thickness">Grosor</label>
-                <select id="thickness" required></select>
-              </div>
-            </div>
-
-            <label class="field-label" for="quality">Calidad</label>
-            <select id="quality" required></select>
-
-            <details class="block" id="extra-block">
-              <summary>Extra (origen, subtipo, flags…)</summary>
-              <label class="field-label" for="origin">Origen</label>
-              <select id="origin"></select>
               <div class="row">
                 <div>
                   <label class="field-label" for="sub_type">Subtipo</label>
                   <select id="sub_type"></select>
                 </div>
                 <div>
-                  <label class="field-label" for="specialization"
-                    >Especialización</label
-                  >
+                  <label class="field-label" for="specialization">Especialización</label>
                   <select id="specialization"></select>
                 </div>
               </div>
-              <div class="row">
+            </div>
+
+            <div class="section">
+              <h3>Físico</h3>
+              <label class="field-label" for="material_q">Material</label>
+              <div class="combo" id="material_combo">
+                <input id="material_q" type="text" placeholder="Buscar material…" autocomplete="off" />
+                <input id="material" type="hidden" />
+                <ul class="combo-list" id="material_list"></ul>
+              </div>
+              <div class="row3">
                 <div>
-                  <label class="field-label" for="extra_material"
-                    >Material extra</label
-                  >
-                  <select id="extra_material"></select>
+                  <label class="field-label" for="dimension">Dimensión</label>
+                  <select id="dimension" required></select>
                 </div>
                 <div>
-                  <label class="field-label" for="extra_thickness"
-                    >Grosor extra</label
-                  >
+                  <label class="field-label" for="thickness">Grosor</label>
+                  <select id="thickness" required></select>
+                </div>
+                <div>
+                  <label class="field-label" for="quality">Calidad</label>
+                  <select id="quality" required></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h3>Origen y magia</h3>
+              <label class="field-label" for="origin_q">Origen</label>
+              <div class="combo" id="origin_combo">
+                <input id="origin_q" type="text" placeholder="Buscar origen… (opcional)" autocomplete="off" />
+                <input id="origin" type="hidden" />
+                <ul class="combo-list" id="origin_list"></ul>
+              </div>
+              <div class="row">
+                <div>
+                  <label class="field-label" for="extra_material_q">Material extra</label>
+                  <div class="combo" id="extra_material_combo">
+                    <input id="extra_material_q" type="text" placeholder="Opcional…" autocomplete="off" />
+                    <input id="extra_material" type="hidden" />
+                    <ul class="combo-list" id="extra_material_list"></ul>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="extra_thickness">Grosor extra</label>
                   <select id="extra_thickness"></select>
                 </div>
               </div>
               <label class="field-label">Flags místicas</label>
               <div class="flags" id="flags"></div>
-            </details>
+            </div>
 
-            <details class="block" id="effects-block" open>
-              <summary>Efectos / historia (reverso)</summary>
+            <div class="section">
+              <h3>Efectos / historia</h3>
               <div id="effects"></div>
-              <button type="button" class="add-effect" id="add-effect">
-                + Añadir efecto
-              </button>
-            </details>
+              <button type="button" class="add-btn" id="add-effect">+ Añadir efecto</button>
+            </div>
+
+            <div class="section">
+              <h3>Modificadores</h3>
+              <div id="mods"></div>
+              <button type="button" class="add-btn" id="add-mod">+ Añadir modificador numérico</button>
+              <div id="restrictions"></div>
+              <button type="button" class="add-btn" id="add-rest">+ Añadir restricción</button>
+              <div class="row3" style="margin-top:0.75rem">
+                <div>
+                  <label class="field-label" for="mod_price_raw">Precio raw ±</label>
+                  <input id="mod_price_raw" type="number" step="1" placeholder="0" />
+                </div>
+                <div>
+                  <label class="field-label" for="mod_price_craft">Crafting ±</label>
+                  <input id="mod_price_craft" type="number" step="1" placeholder="0" />
+                </div>
+                <div>
+                  <label class="field-label" for="mod_price_fee">Fee ±</label>
+                  <input id="mod_price_fee" type="number" step="1" placeholder="0" />
+                </div>
+              </div>
+            </div>
 
             <div class="actions">
-              <button class="primary" type="submit" id="save-btn">
-                Guardar y ver carta
-              </button>
-              <button class="ghost" type="button" id="reset-btn">Nuevo</button>
+              <button class="primary" type="submit">Guardar y ver carta</button>
+              <button class="ghost" type="button" id="cancel-btn">Cancelar</button>
             </div>
           </form>
 
@@ -580,10 +489,8 @@
           <div class="error" id="error" hidden></div>
         </section>
 
-        <section class="panel result" id="result">
-          <div class="empty" id="empty">
-            Aún no hay carta. Crea o abre un objeto de la lista.
-          </div>
+        <section class="panel result">
+          <div class="empty" id="empty">Crea o abre un objeto para ver su carta.</div>
           <div id="out" hidden>
             <h2 id="title"></h2>
             <div class="codes"><code id="code-line"></code></div>
@@ -592,11 +499,11 @@
             <div class="cards">
               <div class="card-slot">
                 <span class="ph" id="front-ph">frente…</span>
-                <img id="front" alt="Carta frente" hidden />
+                <img id="front" alt="Frente" hidden />
               </div>
               <div class="card-slot">
                 <span class="ph" id="back-ph">reverso…</span>
-                <img id="back" alt="Carta reverso" hidden />
+                <img id="back" alt="Reverso" hidden />
               </div>
             </div>
           </div>
@@ -609,20 +516,31 @@
       let meta = null;
       let frontUrl = null;
       let backUrl = null;
-      let editingId = null;
+      /** Snapshot of last saved/loaded item (or null if new). */
+      let baselineItem = null;
+      let creating = true;
 
-      const EFFECT_SUGGESTIONS = [
-        "Historia",
-        "Transfondo",
-        "Diseño",
-        "Construcción",
-        "Grafia",
-        "Lazado",
-        "Alquimia",
-        "Ilusion",
-        "Cenobia",
-        "Propiedad",
-      ];
+      function label(key) {
+        if (key == null || key === "") return "";
+        if (meta?.labels?.[key]) return meta.labels[key];
+        return String(key)
+          .replace(/_/g, " ")
+          .replace(/^\w/, (c) => c.toUpperCase());
+      }
+
+      /** Fix float noise like 0.6000000000000001 */
+      function cleanNum(n) {
+        if (n == null || n === "") return n;
+        if (typeof n === "string" && n.includes("/")) {
+          return n
+            .split("/")
+            .map((p) => cleanNum(p))
+            .join("/");
+        }
+        const x = Number(n);
+        if (!Number.isFinite(x)) return n;
+        return Math.round(x * 1e6) / 1e6;
+      }
 
       function showError(msg) {
         const el = $("error");
@@ -630,7 +548,7 @@
         el.textContent = msg || "";
       }
 
-      function fillSelect(el, items, labelFn = (x) => x, valueFn = (x) => x) {
+      function fillSelect(el, items, labelFn = (x) => label(x), valueFn = (x) => x) {
         el.innerHTML = "";
         for (const item of items) {
           const opt = document.createElement("option");
@@ -642,15 +560,101 @@
 
       function setSelectValue(el, value) {
         if (value == null || value === "") return;
-        const v = String(value);
+        const v = String(cleanNum(value));
         if (![...el.options].some((o) => o.value === v)) {
           const opt = document.createElement("option");
           opt.value = v;
-          opt.textContent = v;
+          opt.textContent = label(v) || v;
           el.appendChild(opt);
         }
         el.value = v;
       }
+
+      function setupCombo(comboId, inputId, hiddenId, listId, getOptions) {
+        const combo = $(comboId);
+        const input = $(inputId);
+        const hidden = $(hiddenId);
+        const list = $(listId);
+        let active = -1;
+
+        function render(filter = "") {
+          const q = filter.trim().toLowerCase();
+          const opts = getOptions().filter((o) => {
+            const hay = `${o.value} ${o.label}`.toLowerCase();
+            return !q || hay.includes(q);
+          });
+          list.innerHTML = opts
+            .slice(0, 80)
+            .map(
+              (o, i) =>
+                `<li data-value="${escapeAttr(o.value)}" data-i="${i}">${escapeHtml(
+                  o.label
+                )}${
+                  o.hint
+                    ? `<div class="muted">${escapeHtml(o.hint)}</div>`
+                    : ""
+                }</li>`
+            )
+            .join("");
+          active = -1;
+        }
+
+        function pick(value, display) {
+          hidden.value = value;
+          input.value = display;
+          combo.classList.remove("open");
+        }
+
+        input.addEventListener("focus", () => {
+          render(input.value);
+          combo.classList.add("open");
+        });
+        input.addEventListener("input", () => {
+          hidden.value = "";
+          render(input.value);
+          combo.classList.add("open");
+        });
+        list.addEventListener("mousedown", (e) => {
+          const li = e.target.closest("li");
+          if (!li) return;
+          e.preventDefault();
+          const value = li.dataset.value;
+          const opt = getOptions().find((o) => o.value === value);
+          pick(value, opt ? opt.label : value);
+        });
+        input.addEventListener("blur", () => {
+          setTimeout(() => combo.classList.remove("open"), 120);
+        });
+        input.addEventListener("keydown", (e) => {
+          const items = [...list.querySelectorAll("li")];
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            active = Math.min(active + 1, items.length - 1);
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            active = Math.max(active - 1, 0);
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (active >= 0 && items[active]) items[active].dispatchEvent(new Event("mousedown"));
+            return;
+          } else if (e.key === "Escape") {
+            combo.classList.remove("open");
+            return;
+          } else return;
+          items.forEach((li, i) => li.classList.toggle("active", i === active));
+        });
+
+        return {
+          set(value, display) {
+            pick(value || "", display || "");
+          },
+          clear() {
+            pick("", "");
+          },
+        };
+      }
+
+      let materialCombo, originCombo, extraMatCombo;
 
       function refreshClassDeps() {
         const c = $("class").value;
@@ -677,17 +681,18 @@
         $("list-panel").hidden = mode !== "list";
         $("load-form").hidden = mode !== "load";
         showError("");
-        if (mode === "list") refreshList();
+        if (mode === "list") refreshList().catch((e) => showError(e.message));
       }
 
-      function addEffectRow(title = "", description = "") {
+      function addEffectRow(title = "", description = "", flagKey = null) {
         const row = document.createElement("div");
         row.className = "effect";
+        if (flagKey) row.dataset.flag = flagKey;
         row.innerHTML = `
           <div class="effect-head">
             <div>
               <label class="field-label">Título</label>
-              <input type="text" class="effect-title" list="effect-titles" placeholder="Historia, Transfondo…" value="" />
+              <input type="text" class="effect-title" list="effect-titles" />
             </div>
             <button type="button" class="remove">Quitar</button>
           </div>
@@ -696,8 +701,71 @@
         `;
         row.querySelector(".effect-title").value = title;
         row.querySelector(".effect-desc").value = description;
-        row.querySelector(".remove").addEventListener("click", () => row.remove());
+        row.querySelector(".remove").addEventListener("click", () => {
+          const flag = row.dataset.flag;
+          row.remove();
+          if (flag) {
+            const cb = document.querySelector(`#flags input[value="${flag}"]`);
+            if (cb) cb.checked = false;
+          }
+        });
         $("effects").appendChild(row);
+        return row;
+      }
+
+      function addModRow(field = "damage", value = "") {
+        const row = document.createElement("div");
+        row.className = "mod-row";
+        const opts = (meta.modFields || [])
+          .map(
+            (f) =>
+              `<option value="${f}" ${f === field ? "selected" : ""}>${label(
+                f
+              )}</option>`
+          )
+          .join("");
+        row.innerHTML = `
+          <div>
+            <label class="field-label">Campo</label>
+            <select class="mod-field">${opts}</select>
+          </div>
+          <div>
+            <label class="field-label">Valor ±</label>
+            <input type="number" class="mod-value" step="any" />
+          </div>
+          <button type="button" class="remove">Quitar</button>
+        `;
+        row.querySelector(".mod-value").value = value === "" ? "" : cleanNum(value);
+        row.querySelector(".remove").addEventListener("click", () => row.remove());
+        $("mods").appendChild(row);
+      }
+
+      function addRestRow(attr = "F", reduction = "") {
+        const row = document.createElement("div");
+        row.className = "rest-row";
+        const opts = (meta.restrictionAttrs || [])
+          .map(
+            (a) =>
+              `<option value="${a}" ${a === attr ? "selected" : ""}>${a} — ${label(
+                a
+              )}</option>`
+          )
+          .join("");
+        row.innerHTML = `
+          <div>
+            <label class="field-label">Atributo</label>
+            <select class="rest-attr">${opts}</select>
+          </div>
+          <div>
+            <label class="field-label">Reducción</label>
+            <input type="number" class="rest-val" step="1" />
+          </div>
+          <button type="button" class="remove">Quitar</button>
+        `;
+        row.querySelector(".rest-val").value =
+          reduction === "" ? "" : cleanNum(reduction);
+        row.querySelector(".remove").addEventListener("click", () => row.remove());
+        $("restrictions").appendChild(row);
       }
 
       function collectEffects() {
@@ -706,8 +774,35 @@
             title: row.querySelector(".effect-title").value.trim(),
             description: row.querySelector(".effect-desc").value.trim(),
           }))
-          .filter((e) => e.title || e.description)
           .filter((e) => e.title && e.description);
+      }
+
+      function collectModifications() {
+        const mods = {};
+        for (const row of $("mods").querySelectorAll(".mod-row")) {
+          const field = row.querySelector(".mod-field").value;
+          const raw = row.querySelector(".mod-value").value;
+          if (raw === "" || raw == null) continue;
+          mods[field] = cleanNum(Number(raw));
+        }
+        const restrictions = [...$("restrictions").querySelectorAll(".rest-row")]
+          .map((row) => ({
+            restriction: row.querySelector(".rest-attr").value,
+            reduction: cleanNum(Number(row.querySelector(".rest-val").value)),
+          }))
+          .filter((r) => Number.isFinite(r.reduction));
+        if (restrictions.length) mods.restrictions = restrictions;
+        const raw = $("mod_price_raw").value;
+        const craft = $("mod_price_craft").value;
+        const fee = $("mod_price_fee").value;
+        if (raw || craft || fee) {
+          mods.price = {
+            raw: raw ? cleanNum(Number(raw)) : 0,
+            crafting: craft ? cleanNum(Number(craft)) : 0,
+            fee: fee ? cleanNum(Number(fee)) : 0,
+          };
+        }
+        return Object.keys(mods).length ? mods : undefined;
       }
 
       function buildBody() {
@@ -727,15 +822,18 @@
           extraMat;
 
         const name = $("name").value.trim();
+        if (!$("material").value) throw new Error("Selecciona un material de la lista");
+
         const body = {
           name: name || undefined,
           class: $("class").value,
           type: $("type").value,
           material: $("material").value,
-          dimension: Number($("dimension").value),
-          thickness: Number($("thickness").value),
-          quality: Number($("quality").value),
+          dimension: cleanNum(Number($("dimension").value)),
+          thickness: cleanNum(Number($("thickness").value)),
+          quality: cleanNum(Number($("quality").value)),
           effects: collectEffects(),
+          modifications: collectModifications(),
           persist: Boolean(name),
         };
         if (useExtra) {
@@ -747,72 +845,113 @@
           };
           if (extraMat) {
             body.extra.material = extraMat;
-            body.extra.thickness = Number(extraTh || 0);
+            body.extra.thickness = cleanNum(Number(extraTh || 0));
           }
         }
         return body;
       }
 
+      function clearEffectsMods() {
+        $("effects").innerHTML = "";
+        $("mods").innerHTML = "";
+        $("restrictions").innerHTML = "";
+        $("mod_price_raw").value = "";
+        $("mod_price_craft").value = "";
+        $("mod_price_fee").value = "";
+      }
+
       function fillFormFromItem(item) {
-        editingId = item.custom_code
-          ? `${item.code}-${item.custom_code}`
-          : item.code;
-        $("edit-hint").textContent = `Editando ${editingId}`;
+        creating = false;
+        baselineItem = structuredClone(item);
+        $("edit-hint").textContent = `Editando ${
+          item.custom_code ? `${item.code}-${item.custom_code}` : item.code
+        }`;
         $("name").value = item.name || "";
         setSelectValue($("class"), item.class);
         refreshClassDeps();
         setSelectValue($("type"), item.type);
         refreshTypeDeps();
-        setSelectValue($("material"), item.material);
         setSelectValue($("dimension"), item.dimension);
         setSelectValue($("thickness"), Number(item.thickness));
-        setSelectValue($("quality"), Number(item.quality));
+        setSelectValue($("quality"), cleanNum(Number(item.quality)));
+
+        const mat = meta.materials.find((m) => m.symbol === item.material);
+        materialCombo.set(
+          item.material,
+          mat ? `${mat.symbol} — ${mat.name}` : item.material
+        );
 
         const ex = item.extra || {};
-        if (
-          ex.origin ||
-          ex.sub_type ||
-          ex.specialization ||
-          (ex.flags && ex.flags.length) ||
-          ex.material
-        ) {
-          $("extra-block").open = true;
+        if (ex.origin && ex.origin !== "desconocido") {
+          originCombo.set(ex.origin, label(ex.origin));
+        } else {
+          originCombo.clear();
         }
-        setSelectValue($("origin"), ex.origin || "");
         setSelectValue($("sub_type"), ex.sub_type || "none");
         setSelectValue($("specialization"), ex.specialization || "none");
-        setSelectValue($("extra_material"), ex.material || "");
+        if (ex.material) {
+          const em = meta.materials.find((m) => m.symbol === ex.material);
+          extraMatCombo.set(
+            ex.material,
+            em ? `${em.symbol} — ${em.name}` : ex.material
+          );
+        } else {
+          extraMatCombo.clear();
+        }
         setSelectValue($("extra_thickness"), ex.thickness ?? "");
+
         document.querySelectorAll("#flags input").forEach((cb) => {
           cb.checked = Array.isArray(ex.flags) && ex.flags.includes(cb.value);
         });
 
-        $("effects").innerHTML = "";
+        clearEffectsMods();
         const effects = item.effects || [];
-        if (effects.length) {
-          $("effects-block").open = true;
-          effects.forEach((e) => addEffectRow(e.title, e.description));
-        } else {
-          addEffectRow();
+        if (effects.length) effects.forEach((e) => addEffectRow(e.title, e.description));
+        else addEffectRow("Historia", "");
+
+        const mods = item.modifications || {};
+        for (const [k, v] of Object.entries(mods)) {
+          if (k === "restrictions" || k === "price" || k === "range") continue;
+          if (typeof v === "object") continue;
+          addModRow(k, v);
+        }
+        for (const r of mods.restrictions || []) {
+          addRestRow(r.restriction, r.reduction);
+        }
+        if (mods.price) {
+          $("mod_price_raw").value = mods.price.raw ?? "";
+          $("mod_price_craft").value = mods.price.crafting ?? "";
+          $("mod_price_fee").value = mods.price.fee ?? "";
         }
       }
 
-      function resetForm() {
-        editingId = null;
+      function resetNewForm() {
+        creating = true;
+        baselineItem = null;
         $("edit-hint").textContent = "Nuevo objeto";
         $("edit-form").reset();
         refreshClassDeps();
         $("dimension").value = "5";
         $("thickness").value = "2";
         $("quality").value = "0.7";
-        $("origin").value = "";
-        $("extra_material").value = "";
+        materialCombo.clear();
+        originCombo.clear();
+        extraMatCombo.clear();
         document.querySelectorAll("#flags input").forEach((cb) => {
           cb.checked = false;
         });
-        $("effects").innerHTML = "";
+        clearEffectsMods();
         addEffectRow("Historia", "");
         addEffectRow("Transfondo", "");
+      }
+
+      function cancelForm() {
+        showError("");
+        if (creating || !baselineItem) {
+          resetNewForm();
+        } else {
+          fillFormFromItem(baselineItem);
+        }
       }
 
       function cardPath(base, custom, side) {
@@ -824,11 +963,11 @@
       async function showItem(item) {
         $("empty").hidden = true;
         $("out").hidden = false;
-        $("title").textContent = item.name || item.type || "Objeto";
+        $("title").textContent = item.name || label(item.type) || "Objeto";
         const id = item.custom_code
           ? `${item.code}-${item.custom_code}`
           : item.code;
-        $("code-line").textContent = `#${id} · ${item.crafting_level} · ${item.rarity}`;
+        $("code-line").textContent = `#${id} · ${label(item.crafting_level) || item.crafting_level} · ${label(item.rarity) || item.rarity}`;
 
         const stats = [
           ["Daño", item.damage],
@@ -843,12 +982,13 @@
         $("stats").innerHTML = stats
           .map(
             ([k, v]) =>
-              `<div class="stat"><b>${k}</b><span>${v ?? "—"}</span></div>`
+              `<div class="stat"><b>${k}</b><span>${escapeHtml(
+                String(cleanNum(v) ?? "—")
+              )}</span></div>`
           )
           .join("");
 
-        const effects = item.effects || [];
-        $("effects-out").innerHTML = effects
+        $("effects-out").innerHTML = (item.effects || [])
           .map(
             (e) =>
               `<li><strong>${escapeHtml(e.title)}</strong><span>${escapeHtml(
@@ -873,7 +1013,6 @@
         ]);
         if (!frontRes.ok) throw new Error("No se pudo generar el frente");
         if (!backRes.ok) throw new Error("No se pudo generar el reverso");
-
         frontUrl = URL.createObjectURL(await frontRes.blob());
         backUrl = URL.createObjectURL(await backRes.blob());
         $("front").src = frontUrl;
@@ -889,6 +1028,9 @@
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
+      }
+      function escapeAttr(s) {
+        return escapeHtml(s).replace(/"/g, "&quot;");
       }
 
       async function fetchItem(base, custom) {
@@ -914,8 +1056,7 @@
         if (!res.ok) throw new Error(items.message || res.statusText);
         const list = $("item-list");
         if (!items.length) {
-          list.innerHTML =
-            '<li class="empty" style="padding:0.5rem">No hay objetos guardados.</li>';
+          list.innerHTML = '<li class="empty">No hay objetos guardados.</li>';
           return;
         }
         list.innerHTML = "";
@@ -946,20 +1087,19 @@
       $("class").addEventListener("change", refreshClassDeps);
       $("type").addEventListener("change", refreshTypeDeps);
       $("add-effect").addEventListener("click", () => addEffectRow());
-      $("reset-btn").addEventListener("click", () => {
-        resetForm();
-        showError("");
-      });
+      $("add-mod").addEventListener("click", () => addModRow());
+      $("add-rest").addEventListener("click", () => addRestRow());
+      $("cancel-btn").addEventListener("click", cancelForm);
 
       $("edit-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         showError("");
-        const body = buildBody();
-        if (!body.name) {
-          showError("Pon un nombre para guardar el objeto.");
-          return;
-        }
         try {
+          const body = buildBody();
+          if (!body.name) {
+            showError("Pon un nombre para guardar el objeto.");
+            return;
+          }
           const res = await fetch("/items", {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -978,7 +1118,10 @@
         e.preventDefault();
         showError("");
         try {
-          await openItem($("base").value.trim(), $("custom").value.trim() || undefined);
+          await openItem(
+            $("base").value.trim(),
+            $("custom").value.trim() || undefined
+          );
         } catch (err) {
           showError(err.message || String(err));
         }
@@ -992,38 +1135,92 @@
 
           const datalist = document.createElement("datalist");
           datalist.id = "effect-titles";
-          datalist.innerHTML = EFFECT_SUGGESTIONS.map(
-            (t) => `<option value="${t}"></option>`
-          ).join("");
+          const suggest = [
+            "Historia",
+            "Transfondo",
+            "Diseño",
+            "Construcción",
+            ...meta.flags.map((f) => label(f)),
+          ];
+          datalist.innerHTML = suggest
+            .map((t) => `<option value="${escapeAttr(t)}"></option>`)
+            .join("");
           document.body.appendChild(datalist);
 
-          fillSelect($("class"), meta.classes.filter((c) => c !== "desconocido"));
+          fillSelect($("class"), meta.classes);
+          fillSelect($("dimension"), meta.sizes, (s) => String(cleanNum(s)));
+          fillSelect($("thickness"), meta.sizes, (s) => String(cleanNum(s)));
           fillSelect(
-            $("material"),
-            meta.materials,
-            (m) => `${m.symbol} — ${m.name}`,
-            (m) => m.symbol
-          );
-          fillSelect($("dimension"), meta.sizes);
-          fillSelect($("thickness"), meta.sizes);
-          fillSelect($("quality"), meta.qualities);
-          fillSelect($("origin"), ["", ...meta.origins], (o) => o || "(ninguno)");
-          fillSelect(
-            $("extra_material"),
-            [{ symbol: "", name: "(ninguno)" }, ...meta.materials],
-            (m) => (m.symbol ? `${m.symbol} — ${m.name}` : m.name),
-            (m) => m.symbol
+            $("quality"),
+            meta.qualities,
+            (q) => String(cleanNum(q)),
+            (q) => String(cleanNum(q))
           );
           fillSelect($("extra_thickness"), ["", ...meta.sizes], (s) =>
-            s === "" ? "(—)" : s
+            s === "" ? "(—)" : String(cleanNum(s))
           );
+
+          materialCombo = setupCombo(
+            "material_combo",
+            "material_q",
+            "material",
+            "material_list",
+            () =>
+              meta.materials.map((m) => ({
+                value: m.symbol,
+                label: `${m.symbol} — ${m.name}`,
+                hint: m.name,
+              }))
+          );
+          originCombo = setupCombo(
+            "origin_combo",
+            "origin_q",
+            "origin",
+            "origin_list",
+            () =>
+              meta.origins.map((o) => ({
+                value: o,
+                label: label(o),
+              }))
+          );
+          extraMatCombo = setupCombo(
+            "extra_material_combo",
+            "extra_material_q",
+            "extra_material",
+            "extra_material_list",
+            () =>
+              meta.materials.map((m) => ({
+                value: m.symbol,
+                label: `${m.symbol} — ${m.name}`,
+              }))
+          );
+
           $("flags").innerHTML = meta.flags
             .map(
               (f) =>
-                `<label><input type="checkbox" value="${f}" /> <span>${f}</span></label>`
+                `<label><input type="checkbox" value="${f}" /> <span>${label(
+                  f
+                )}</span></label>`
             )
             .join("");
-          resetForm();
+
+          $("flags").addEventListener("change", (e) => {
+            const cb = e.target;
+            if (!(cb instanceof HTMLInputElement) || cb.type !== "checkbox") return;
+            const flag = cb.value;
+            if (cb.checked) {
+              const exists = [...$("effects").querySelectorAll(".effect")].some(
+                (row) => row.dataset.flag === flag
+              );
+              if (!exists) addEffectRow(label(flag), "", flag);
+            } else {
+              [...$("effects").querySelectorAll(`.effect[data-flag="${flag}"]`)].forEach(
+                (row) => row.remove()
+              );
+            }
+          });
+
+          resetNewForm();
         } catch (err) {
           showError("No se pudo cargar /meta: " + err.message);
         }

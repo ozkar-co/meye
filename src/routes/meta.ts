@@ -1,7 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { FastifyPluginAsync } from "fastify";
-import { Type } from "@sinclair/typebox";
 import { DATA_DIR } from "../paths.js";
 import { all as materials } from "../cards/materials.js";
 
@@ -16,6 +15,7 @@ type Dict = {
   sizes: Record<string, number>;
   origins: Record<string, number>;
   flags: Record<string, number>;
+  modifications: Record<string, string>;
 };
 
 function uniqueKeys(obj: Record<string, unknown> | undefined): string[] {
@@ -28,6 +28,21 @@ function uniqueKeys(obj: Record<string, unknown> | undefined): string[] {
 const dict: Dict = JSON.parse(
   readFileSync(path.join(DATA_DIR, "dictionary.json"), "utf8")
 );
+const labels: Record<string, string> = JSON.parse(
+  readFileSync(path.join(DATA_DIR, "labels.json"), "utf8")
+);
+
+const NUMERIC_MODS = [
+  "damage",
+  "slice",
+  "bleeding",
+  "resistence",
+  "size",
+  "throwing",
+  "weight",
+  "damping",
+  "useful_life",
+];
 
 export const metaRoutes: FastifyPluginAsync = async (app) => {
   app.get(
@@ -36,31 +51,6 @@ export const metaRoutes: FastifyPluginAsync = async (app) => {
       schema: {
         tags: ["system"],
         summary: "Form options for the UI",
-        response: {
-          200: Type.Object({
-            classes: Type.Array(Type.String()),
-            typesByClass: Type.Record(Type.String(), Type.Array(Type.String())),
-            /** class → type → subtype names */
-            subTypesByType: Type.Record(
-              Type.String(),
-              Type.Record(Type.String(), Type.Array(Type.String()))
-            ),
-            specializationsByClass: Type.Record(
-              Type.String(),
-              Type.Array(Type.String())
-            ),
-            sizes: Type.Array(Type.Number()),
-            materials: Type.Array(
-              Type.Object({
-                symbol: Type.String(),
-                name: Type.String(),
-              })
-            ),
-            origins: Type.Array(Type.String()),
-            flags: Type.Array(Type.String()),
-            qualities: Type.Array(Type.Number()),
-          }),
-        },
       },
     },
     async () => {
@@ -93,6 +83,9 @@ export const metaRoutes: FastifyPluginAsync = async (app) => {
         origins: uniqueKeys(dict.origins),
         flags: Object.keys(dict.flags),
         qualities: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        labels,
+        modFields: NUMERIC_MODS,
+        restrictionAttrs: ["F", "A", "V", "R", "I", "S", "C", "W"],
       };
     }
   );
