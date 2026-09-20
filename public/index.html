@@ -425,6 +425,28 @@
         gap: 0.75rem;
         flex-wrap: wrap;
       }
+      .xp-toolbar-actions {
+        display: flex;
+        gap: 0.45rem;
+      }
+      .xp-toolbar-actions button {
+        appearance: none;
+        border: 1px solid var(--line);
+        font: inherit;
+        font-weight: 700;
+        border-radius: var(--radius);
+        padding: 0.55rem 0.9rem;
+        cursor: pointer;
+      }
+      #xp-recalc {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #1a1408;
+      }
+      #xp-reset {
+        background: transparent;
+        color: var(--muted);
+      }
       .xp-row {
         display: grid;
         gap: 1rem;
@@ -502,16 +524,6 @@
         margin-top: 0.45rem;
       }
       .trans-row > div { flex: 1; }
-      #xp-reset {
-        appearance: none;
-        background: transparent;
-        color: var(--muted);
-        border: 1px solid var(--line);
-        font: inherit;
-        font-weight: 700;
-        border-radius: var(--radius);
-        cursor: pointer;
-      }
     </style>
   </head>
   <body>
@@ -689,13 +701,16 @@
       </div>
 
       <div id="app-xp" hidden>
-        <form id="xp-form" class="xp-board">
+        <form id="xp-form" class="xp-board" autocomplete="off">
           <div class="xp-toolbar">
             <label class="talent">
               <input id="xp-supernatural-toggle" type="checkbox" />
               <span>Sobrenatural (tipo 3)</span>
             </label>
-            <button class="ghost" type="button" id="xp-reset" style="flex:0;padding:0.55rem 0.9rem">Reiniciar</button>
+            <div class="xp-toolbar-actions">
+              <button type="button" id="xp-recalc">Recalcular</button>
+              <button type="button" id="xp-reset">Reiniciar</button>
+            </div>
           </div>
 
           <div class="xp-row xp-row-3">
@@ -1715,8 +1730,14 @@
       let xpState = loadXpState();
 
       function saveXpState() {
-        localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(xpState));
+        try {
+          localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(xpState));
+        } catch (err) {
+          console.warn("No se pudo guardar la calculadora de XP", err);
+        }
       }
+
+      let xpHydrating = false;
 
       function setApp(app) {
         document.querySelectorAll("#app-nav button").forEach((b) => {
@@ -1771,23 +1792,89 @@
           `;
           root.appendChild(block);
         });
+        wireNumericInputs(root);
+      }
+
+      function applyXpInput(t) {
+        if (!(t instanceof HTMLInputElement)) return false;
+        if (t.id === "xp-supernatural-toggle") {
+          xpState.includeSupernatural = t.checked;
+          $("xp-supernatural-section").hidden = !t.checked;
+          return true;
+        }
+        if (t.dataset.xpPath) {
+          setPath(xpState, t.dataset.xpPath, window.MeyeXp.clampStat(t.value));
+          return true;
+        }
+        if (t.dataset.xpFlag) {
+          setPath(xpState, t.dataset.xpFlag, t.checked);
+          return true;
+        }
+        if (t.dataset.xpEarned) {
+          xpState.earned[t.dataset.xpEarned] = window.MeyeXp.clampStat(t.value);
+          return true;
+        }
+        if (t.dataset.skill != null && t.dataset.trans != null) {
+          const si = Number(t.dataset.skill);
+          const ti = Number(t.dataset.trans);
+          if (xpState.supernatural.skills[si]) {
+            xpState.supernatural.skills[si].transformations[ti] =
+              window.MeyeXp.clampStat(t.value);
+          }
+          return true;
+        }
+        return false;
+      }
+
+      function readXpForm() {
+        for (const input of $("xp-form").querySelectorAll("input")) {
+          applyXpInput(input);
+        }
+      }
+
+      function recalculateXp() {
+        readXpForm();
+        saveXpState();
+        refreshXp();
+      }
+
+      function onXpFormUpdate(e) {
+        if (xpHydrating) return;
+        if (!applyXpInput(e.target)) return;
+        saveXpState();
+        refreshXp();
+      }
+
+      function wireNumericInputs(root) {
+        for (const input of root.querySelectorAll('input[type="number"]')) {
+          input.setAttribute("inputmode", "numeric");
+          input.setAttribute("enterkeyhint", "done");
+        }
       }
 
       function fillXpForm() {
-        $("xp-supernatural-toggle").checked = xpState.includeSupernatural;
-        $("xp-supernatural-section").hidden = !xpState.includeSupernatural;
-        for (const input of document.querySelectorAll("[data-xp-path]")) {
-          const value = getPath(xpState, input.dataset.xpPath);
-          input.value = value === 0 || value ? String(value) : "0";
+        xpHydrating = true;
+        try {
+          $("xp-supernatural-toggle").checked = xpState.includeSupernatural;
+          $("xp-supernatural-section").hidden = !xpState.includeSupernatural;
+          for (const input of document.querySelectorAll("[data-xp-path]")) {
+            const value = getPath(xpState, input.dataset.xpPath);
+            input.value = String(value ?? 0);
+          }
+          for (const input of document.querySelectorAll("[data-xp-flag]")) {
+            input.checked = Boolean(getPath(xpState, input.dataset.xpFlag));
+          }
+          $("xp-earned-basic").value = xpState.earned.basic ? String(xpState.earned.basic) : "";
+          $("xp-earned-special").value = xpState.earned.special ? String(xpState.earned.special) : "";
+          $("xp-earned-super").value = xpState.earned.supernatural
+            ? String(xpState.earned.supernatural)
+            : "";
+          renderXpSkills();
+          wireNumericInputs($("xp-form"));
+          refreshXp();
+        } finally {
+          xpHydrating = false;
         }
-        for (const input of document.querySelectorAll("[data-xp-flag]")) {
-          input.checked = Boolean(getPath(xpState, input.dataset.xpFlag));
-        }
-        $("xp-earned-basic").value = xpState.earned.basic || "";
-        $("xp-earned-special").value = xpState.earned.special || "";
-        $("xp-earned-super").value = xpState.earned.supernatural || "";
-        renderXpSkills();
-        refreshXp();
       }
 
       function refreshXp() {
@@ -1875,40 +1962,14 @@
         b.addEventListener("click", () => setApp(b.dataset.app));
       });
 
-      $("xp-form").addEventListener("input", (e) => {
-        const t = e.target;
-        if (!(t instanceof HTMLInputElement)) return;
-        if (t.dataset.xpPath) {
-          const n = window.MeyeXp.clampStat(t.value);
-          setPath(xpState, t.dataset.xpPath, n);
-        } else if (t.dataset.xpEarned) {
-          xpState.earned[t.dataset.xpEarned] = window.MeyeXp.clampStat(t.value);
-        } else if (t.dataset.skill != null) {
-          const si = Number(t.dataset.skill);
-          const ti = Number(t.dataset.trans);
-          xpState.supernatural.skills[si].transformations[ti] =
-            window.MeyeXp.clampStat(t.value);
-        }
-        saveXpState();
-        refreshXp();
+      $("xp-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        recalculateXp();
       });
-
-      $("xp-form").addEventListener("change", (e) => {
-        const t = e.target;
-        if (!(t instanceof HTMLInputElement)) return;
-        if (t.dataset.xpFlag) {
-          setPath(xpState, t.dataset.xpFlag, t.checked);
-          saveXpState();
-          refreshXp();
-        }
-      });
-
-      $("xp-supernatural-toggle").addEventListener("change", () => {
-        xpState.includeSupernatural = $("xp-supernatural-toggle").checked;
-        $("xp-supernatural-section").hidden = !xpState.includeSupernatural;
-        saveXpState();
-        refreshXp();
-      });
+      $("xp-form").addEventListener("input", onXpFormUpdate);
+      $("xp-form").addEventListener("change", onXpFormUpdate);
+      $("xp-form").addEventListener("focusout", onXpFormUpdate);
+      $("xp-form").addEventListener("keyup", onXpFormUpdate);
 
       $("xp-skills").addEventListener("click", (e) => {
         const btn = e.target.closest("button");
@@ -1926,6 +1987,7 @@
         } else return;
         saveXpState();
         renderXpSkills();
+        wireNumericInputs($("xp-skills"));
         refreshXp();
       });
 
@@ -1933,8 +1995,11 @@
         xpState.supernatural.skills.push({ transformations: [0] });
         saveXpState();
         renderXpSkills();
+        wireNumericInputs($("xp-skills"));
         refreshXp();
       });
+
+      $("xp-recalc").addEventListener("click", recalculateXp);
 
       $("xp-reset").addEventListener("click", () => {
         xpState = defaultXpState();
@@ -1944,6 +2009,17 @@
 
       fillXpForm();
       if (location.hash === "#xp") setApp("xp");
+
+      window.addEventListener("pageshow", (e) => {
+        if (!e.persisted) return;
+        xpState = loadXpState();
+        fillXpForm();
+        if (location.hash === "#xp") setApp("xp");
+      });
+      window.addEventListener("pagehide", () => {
+        readXpForm();
+        saveXpState();
+      });
     </script>
   </body>
 </html>
