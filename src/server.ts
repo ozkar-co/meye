@@ -63,8 +63,13 @@ async function main() {
   await app.register(languagesRoutes);
   await app.register(xpRoutes);
 
+  const publicDir = path.join(root, "public");
   await app.register(fastifyStatic, {
-    root: path.join(root, "public"),
+    root: publicDir,
+    prefix: "/",
+    wildcard: true,
+    index: ["index.html"],
+    decorateReply: true,
   });
 
   app.setErrorHandler((err: Error & { statusCode?: number }, _req, reply) => {
