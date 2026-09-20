@@ -65,7 +65,6 @@ async function main() {
 
   await app.register(fastifyStatic, {
     root: path.join(root, "public"),
-    wildcard: false,
   });
 
   app.setErrorHandler((err: Error & { statusCode?: number }, _req, reply) => {
