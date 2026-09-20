@@ -399,7 +399,7 @@
       .xp-fields {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
+        gap: 0.65rem 0.75rem;
       }
       @media (max-width: 560px) {
         .xp-fields { grid-template-columns: 1fr; }
@@ -411,17 +411,49 @@
       }
       .xp-hint b { color: var(--accent); font-weight: 600; }
       .xp-group-spent {
-        margin-top: 0.8rem;
-        font-size: 0.9rem;
+        margin-top: 0.85rem;
+        font-size: 0.88rem;
         color: var(--muted);
       }
       .xp-group-spent b { color: var(--accent); }
+
+      .xp-board { display: flex; flex-direction: column; gap: 1rem; }
+      .xp-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .xp-row {
+        display: grid;
+        gap: 1rem;
+      }
+      .xp-row-3 { grid-template-columns: repeat(3, 1fr); }
+      .xp-row-2 { grid-template-columns: 1fr 1fr; }
+      @media (max-width: 980px) {
+        .xp-row-3, .xp-row-2 { grid-template-columns: 1fr; }
+      }
+      .xp-card {
+        background: color-mix(in srgb, var(--bg1) 90%, black);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.15rem 1.2rem;
+        min-width: 0;
+      }
+      .xp-card h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.02em;
+      }
+      .xp-card .section-head { margin-bottom: 0.85rem; }
 
       .xp-totals {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 0.55rem;
-        margin-bottom: 1rem;
       }
       @media (max-width: 700px) {
         .xp-totals { grid-template-columns: 1fr 1fr; }
@@ -448,31 +480,6 @@
       .remain.neg { color: var(--danger); }
       .remain.ok { color: #8fca9a; }
 
-      .xp-breakdown { list-style: none; margin: 0; padding: 0; }
-      .xp-breakdown li {
-        display: flex;
-        justify-content: space-between;
-        gap: 0.75rem;
-        padding: 0.38rem 0;
-        border-bottom: 1px solid var(--line);
-        font-size: 0.92rem;
-      }
-      .xp-breakdown .k { color: var(--muted); }
-      .xp-breakdown .v {
-        font-variant-numeric: tabular-nums;
-        font-weight: 600;
-        white-space: nowrap;
-      }
-      .xp-breakdown .indent { padding-left: 0.85rem; font-size: 0.85rem; }
-      .xp-breakdown h4 {
-        margin: 0.85rem 0 0.3rem;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--accent);
-      }
-      .panel-sticky { position: sticky; top: 1rem; }
-
       .skill-block {
         border: 1px solid var(--line);
         border-radius: var(--radius);
@@ -495,7 +502,16 @@
         margin-top: 0.45rem;
       }
       .trans-row > div { flex: 1; }
-      #app-xp .panel-form { max-height: calc(100vh - 11rem); }
+      #xp-reset {
+        appearance: none;
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        font: inherit;
+        font-weight: 700;
+        border-radius: var(--radius);
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -673,231 +689,213 @@
       </div>
 
       <div id="app-xp" hidden>
-        <div class="layout">
-          <section class="panel panel-form">
-            <form id="xp-form">
-              <p class="mode-hint">Asigna los puntos actuales de tu personaje. El gasto se calcula al instante.</p>
+        <form id="xp-form" class="xp-board">
+          <div class="xp-toolbar">
+            <label class="talent">
+              <input id="xp-supernatural-toggle" type="checkbox" />
+              <span>Sobrenatural (tipo 3)</span>
+            </label>
+            <button class="ghost" type="button" id="xp-reset" style="flex:0;padding:0.55rem 0.9rem">Reiniciar</button>
+          </div>
 
-              <div class="section">
-                <h3>Tipo de personaje</h3>
-                <label class="talent" style="margin-top:0.15rem">
-                  <input id="xp-supernatural-toggle" type="checkbox" />
-                  <span>Sobrenatural (activa tipo 3)</span>
-                </label>
+          <div class="xp-row xp-row-3">
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Físico</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="basic.physical.talented" /> Talento</label>
               </div>
-
-              <div class="section">
-                <div class="section-head">
-                  <h3>Tipo 1 · Normal</h3>
+              <div class="xp-fields">
+                <div>
+                  <label class="field-label" for="xp-strength">Fuerza</label>
+                  <input id="xp-strength" type="number" min="0" step="1" data-xp-path="basic.physical.strength" />
                 </div>
-                <p class="section-note">Cada 10 puntos el siguiente cuesta +1 XP. Sin talento empieza en 3; con talento, en 1. Vida: 5 XP por punto.</p>
-
-                <div class="section-head">
-                  <h3 style="color:var(--ink);font-size:0.88rem">Físico</h3>
-                  <label class="talent"><input type="checkbox" data-xp-flag="basic.physical.talented" /> Talento</label>
+                <div>
+                  <label class="field-label" for="xp-agility">Agilidad</label>
+                  <input id="xp-agility" type="number" min="0" step="1" data-xp-path="basic.physical.agility" />
                 </div>
-                <div class="xp-fields">
-                  <div>
-                    <label class="field-label" for="xp-strength">Fuerza</label>
-                    <input id="xp-strength" type="number" min="0" step="1" data-xp-path="basic.physical.strength" />
-                    <div class="xp-hint" data-xp-hint="basic.physical.strength"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-agility">Agilidad</label>
-                    <input id="xp-agility" type="number" min="0" step="1" data-xp-path="basic.physical.agility" />
-                    <div class="xp-hint" data-xp-hint="basic.physical.agility"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-speed">Velocidad</label>
-                    <input id="xp-speed" type="number" min="0" step="1" data-xp-path="basic.physical.speed" />
-                    <div class="xp-hint" data-xp-hint="basic.physical.speed"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-resistance">Resistencia</label>
-                    <input id="xp-resistance" type="number" min="0" step="1" data-xp-path="basic.physical.resistance" />
-                    <div class="xp-hint" data-xp-hint="basic.physical.resistance"></div>
-                  </div>
+                <div>
+                  <label class="field-label" for="xp-speed">Velocidad</label>
+                  <input id="xp-speed" type="number" min="0" step="1" data-xp-path="basic.physical.speed" />
                 </div>
-                <div class="xp-group-spent" data-xp-group="basic.physical"></div>
-
-                <div class="section-head" style="margin-top:1.1rem">
-                  <h3 style="color:var(--ink);font-size:0.88rem">Mental</h3>
-                  <label class="talent"><input type="checkbox" data-xp-flag="basic.mental.talented" /> Talento</label>
-                </div>
-                <div class="xp-fields">
-                  <div>
-                    <label class="field-label" for="xp-intelligence">Inteligencia</label>
-                    <input id="xp-intelligence" type="number" min="0" step="1" data-xp-path="basic.mental.intelligence" />
-                    <div class="xp-hint" data-xp-hint="basic.mental.intelligence"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-wisdom">Sabiduría</label>
-                    <input id="xp-wisdom" type="number" min="0" step="1" data-xp-path="basic.mental.wisdom" />
-                    <div class="xp-hint" data-xp-hint="basic.mental.wisdom"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-concentration">Concentración</label>
-                    <input id="xp-concentration" type="number" min="0" step="1" data-xp-path="basic.mental.concentration" />
-                    <div class="xp-hint" data-xp-hint="basic.mental.concentration"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-will">Voluntad</label>
-                    <input id="xp-will" type="number" min="0" step="1" data-xp-path="basic.mental.will" />
-                    <div class="xp-hint" data-xp-hint="basic.mental.will"></div>
-                  </div>
-                </div>
-                <div class="xp-group-spent" data-xp-group="basic.mental"></div>
-
-                <div class="section-head" style="margin-top:1.1rem">
-                  <h3 style="color:var(--ink);font-size:0.88rem">Coordinación</h3>
-                  <label class="talent"><input type="checkbox" data-xp-flag="basic.coordination.talented" /> Talento</label>
-                </div>
-                <div class="xp-fields">
-                  <div>
-                    <label class="field-label" for="xp-precision">Precisión</label>
-                    <input id="xp-precision" type="number" min="0" step="1" data-xp-path="basic.coordination.precision" />
-                    <div class="xp-hint" data-xp-hint="basic.coordination.precision"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-calculation">Cálculo</label>
-                    <input id="xp-calculation" type="number" min="0" step="1" data-xp-path="basic.coordination.calculation" />
-                    <div class="xp-hint" data-xp-hint="basic.coordination.calculation"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-range">Alcance</label>
-                    <input id="xp-range" type="number" min="0" step="1" data-xp-path="basic.coordination.range" />
-                    <div class="xp-hint" data-xp-hint="basic.coordination.range"></div>
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-reflexes">Reflejos</label>
-                    <input id="xp-reflexes" type="number" min="0" step="1" data-xp-path="basic.coordination.reflexes" />
-                    <div class="xp-hint" data-xp-hint="basic.coordination.reflexes"></div>
-                  </div>
-                </div>
-                <div class="xp-group-spent" data-xp-group="basic.coordination"></div>
-
-                <div style="margin-top:1.1rem">
-                  <label class="field-label" for="xp-life">Vida</label>
-                  <input id="xp-life" type="number" min="0" step="1" data-xp-path="basic.life" />
-                  <div class="xp-hint" data-xp-hint="basic.life"></div>
+                <div>
+                  <label class="field-label" for="xp-resistance">Resistencia</label>
+                  <input id="xp-resistance" type="number" min="0" step="1" data-xp-path="basic.physical.resistance" />
                 </div>
               </div>
+              <div class="xp-group-spent" data-xp-group="basic.physical"></div>
+            </article>
 
-              <div class="section">
-                <div class="section-head">
-                  <h3>Tipo 2 · Especial</h3>
-                </div>
-                <p class="section-note">Las dos habilidades de cada grupo <b>suman</b> para la curva de coste (cada 100 puntos +1). Sin talento empieza en 2; con talento, en 1. El tanque cuesta 10 XP/punto, o 5 con talento de energía.</p>
-
-                <div class="section-head">
-                  <h3 style="color:var(--ink);font-size:0.88rem">Habilidades físicas</h3>
-                  <label class="talent"><input type="checkbox" data-xp-flag="special.physical.talented" /> Talento</label>
-                </div>
-                <div class="xp-fields">
-                  <div>
-                    <label class="field-label" for="xp-empowerment">Empoderamiento</label>
-                    <input id="xp-empowerment" type="number" min="0" step="1" data-xp-path="special.physical.empowerment" />
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-vital">Control vital</label>
-                    <input id="xp-vital" type="number" min="0" step="1" data-xp-path="special.physical.vitalControl" />
-                  </div>
-                </div>
-                <div class="xp-group-spent" data-xp-group="special.physical"></div>
-
-                <div class="section-head" style="margin-top:1.1rem">
-                  <h3 style="color:var(--ink);font-size:0.88rem">Habilidades de energía</h3>
-                  <label class="talent"><input type="checkbox" data-xp-flag="special.energy.talented" /> Talento</label>
-                </div>
-                <div class="xp-fields">
-                  <div>
-                    <label class="field-label" for="xp-energy-handling">Manejo de energía</label>
-                    <input id="xp-energy-handling" type="number" min="0" step="1" data-xp-path="special.energy.energyHandling" />
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-object-handling">Manejo de objetos</label>
-                    <input id="xp-object-handling" type="number" min="0" step="1" data-xp-path="special.energy.objectHandling" />
-                  </div>
-                </div>
-                <div class="xp-group-spent" data-xp-group="special.energy"></div>
-
-                <div class="section-head" style="margin-top:1.1rem">
-                  <h3 style="color:var(--ink);font-size:0.88rem">Habilidades mentales</h3>
-                  <label class="talent"><input type="checkbox" data-xp-flag="special.mental.talented" /> Talento</label>
-                </div>
-                <div class="xp-fields">
-                  <div>
-                    <label class="field-label" for="xp-illusion">Ilusión</label>
-                    <input id="xp-illusion" type="number" min="0" step="1" data-xp-path="special.mental.illusion" />
-                  </div>
-                  <div>
-                    <label class="field-label" for="xp-mental-control">Control mental</label>
-                    <input id="xp-mental-control" type="number" min="0" step="1" data-xp-path="special.mental.mentalControl" />
-                  </div>
-                </div>
-                <div class="xp-group-spent" data-xp-group="special.mental"></div>
-
-                <div class="section-head" style="margin-top:1.1rem">
-                  <h3 style="color:var(--ink);font-size:0.88rem">Tanque de energía</h3>
-                  <label class="talent"><input type="checkbox" data-xp-flag="special.energyTankTalented" /> Talento</label>
-                </div>
-                <input id="xp-energy-tank" type="number" min="0" step="1" data-xp-path="special.energyTank" />
-                <div class="xp-hint" data-xp-hint="special.energyTank"></div>
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Coordinación</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="basic.coordination.talented" /> Talento</label>
               </div>
-
-              <div class="section" id="xp-supernatural-section" hidden>
-                <div class="section-head">
-                  <h3>Tipo 3 · Sobrenatural</h3>
+              <div class="xp-fields">
+                <div>
+                  <label class="field-label" for="xp-precision">Precisión</label>
+                  <input id="xp-precision" type="number" min="0" step="1" data-xp-path="basic.coordination.precision" />
                 </div>
-                <p class="section-note">Cada habilidad suma sus transformaciones. Cada 100 puntos el siguiente cuesta +1 XP, siempre empezando en 1.</p>
-                <div id="xp-skills"></div>
-                <button type="button" class="add-btn" id="xp-add-skill">+ Añadir habilidad</button>
+                <div>
+                  <label class="field-label" for="xp-calculation">Cálculo</label>
+                  <input id="xp-calculation" type="number" min="0" step="1" data-xp-path="basic.coordination.calculation" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-range">Alcance</label>
+                  <input id="xp-range" type="number" min="0" step="1" data-xp-path="basic.coordination.range" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-reflexes">Reflejos</label>
+                  <input id="xp-reflexes" type="number" min="0" step="1" data-xp-path="basic.coordination.reflexes" />
+                </div>
               </div>
+              <div class="xp-group-spent" data-xp-group="basic.coordination"></div>
+            </article>
 
-              <div class="actions">
-                <button class="ghost" type="button" id="xp-reset">Reiniciar</button>
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Mental</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="basic.mental.talented" /> Talento</label>
               </div>
-            </form>
-          </section>
+              <div class="xp-fields">
+                <div>
+                  <label class="field-label" for="xp-intelligence">Inteligencia</label>
+                  <input id="xp-intelligence" type="number" min="0" step="1" data-xp-path="basic.mental.intelligence" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-wisdom">Sabiduría</label>
+                  <input id="xp-wisdom" type="number" min="0" step="1" data-xp-path="basic.mental.wisdom" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-concentration">Concentración</label>
+                  <input id="xp-concentration" type="number" min="0" step="1" data-xp-path="basic.mental.concentration" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-will">Voluntad</label>
+                  <input id="xp-will" type="number" min="0" step="1" data-xp-path="basic.mental.will" />
+                </div>
+              </div>
+              <div class="xp-group-spent" data-xp-group="basic.mental"></div>
+            </article>
+          </div>
 
-          <section class="panel result panel-sticky">
-            <h2>Gastado</h2>
+          <div class="xp-row xp-row-3">
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Físicas</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.physical.talented" /> Talento</label>
+              </div>
+              <div class="xp-fields">
+                <div>
+                  <label class="field-label" for="xp-empowerment">Empoderamiento</label>
+                  <input id="xp-empowerment" type="number" min="0" step="1" data-xp-path="special.physical.empowerment" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-vital">Control vital</label>
+                  <input id="xp-vital" type="number" min="0" step="1" data-xp-path="special.physical.vitalControl" />
+                </div>
+              </div>
+              <div class="xp-group-spent" data-xp-group="special.physical"></div>
+            </article>
+
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Mentales</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.mental.talented" /> Talento</label>
+              </div>
+              <div class="xp-fields">
+                <div>
+                  <label class="field-label" for="xp-illusion">Ilusión</label>
+                  <input id="xp-illusion" type="number" min="0" step="1" data-xp-path="special.mental.illusion" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-mental-control">Control mental</label>
+                  <input id="xp-mental-control" type="number" min="0" step="1" data-xp-path="special.mental.mentalControl" />
+                </div>
+              </div>
+              <div class="xp-group-spent" data-xp-group="special.mental"></div>
+            </article>
+
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Energía</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.energy.talented" /> Talento</label>
+              </div>
+              <div class="xp-fields">
+                <div>
+                  <label class="field-label" for="xp-energy-handling">Manejo de energía</label>
+                  <input id="xp-energy-handling" type="number" min="0" step="1" data-xp-path="special.energy.energyHandling" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-object-handling">Manejo de objetos</label>
+                  <input id="xp-object-handling" type="number" min="0" step="1" data-xp-path="special.energy.objectHandling" />
+                </div>
+              </div>
+              <div class="xp-group-spent" data-xp-group="special.energy"></div>
+            </article>
+          </div>
+
+          <div class="xp-row xp-row-2">
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Contenedor de vida</h3>
+              </div>
+              <label class="field-label" for="xp-life">Vida</label>
+              <input id="xp-life" type="number" min="0" step="1" data-xp-path="basic.life" />
+              <div class="xp-hint" data-xp-hint="basic.life"></div>
+            </article>
+
+            <article class="xp-card">
+              <div class="section-head">
+                <h3>Tanque de energía</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.energyTankTalented" /> Talento</label>
+              </div>
+              <label class="field-label" for="xp-energy-tank">Tanque</label>
+              <input id="xp-energy-tank" type="number" min="0" step="1" data-xp-path="special.energyTank" />
+              <div class="xp-hint" data-xp-hint="special.energyTank"></div>
+            </article>
+          </div>
+
+          <article class="xp-card" id="xp-supernatural-section" hidden>
+            <div class="section-head">
+              <h3>Sobrenatural</h3>
+            </div>
+            <p class="section-note">Cada habilidad suma sus transformaciones. Cada 100 puntos el siguiente cuesta +1 XP.</p>
+            <div id="xp-skills"></div>
+            <button type="button" class="add-btn" id="xp-add-skill">+ Añadir habilidad</button>
+          </article>
+
+          <article class="xp-card">
+            <div class="section-head">
+              <h3>Gastado</h3>
+            </div>
             <div class="xp-totals">
               <div class="xp-total"><b>Tipo 1</b><span id="xp-spent-basic">0</span></div>
               <div class="xp-total"><b>Tipo 2</b><span id="xp-spent-special">0</span></div>
               <div class="xp-total"><b>Tipo 3</b><span id="xp-spent-super">0</span></div>
               <div class="xp-total emph"><b>Total</b><span id="xp-spent-total">0</span></div>
             </div>
-
-            <div class="section" style="margin-top:0">
-              <h3>XP ganada (opcional)</h3>
-              <p class="section-note">Si pones lo que has ganado, verás cuánto te queda.</p>
-              <div class="row3">
-                <div>
-                  <label class="field-label" for="xp-earned-basic">Tipo 1</label>
-                  <input id="xp-earned-basic" type="number" min="0" step="1" data-xp-earned="basic" />
-                </div>
-                <div>
-                  <label class="field-label" for="xp-earned-special">Tipo 2</label>
-                  <input id="xp-earned-special" type="number" min="0" step="1" data-xp-earned="special" />
-                </div>
-                <div>
-                  <label class="field-label" for="xp-earned-super">Tipo 3</label>
-                  <input id="xp-earned-super" type="number" min="0" step="1" data-xp-earned="supernatural" />
-                </div>
+            <div class="row3" style="margin-top:0.9rem">
+              <div>
+                <label class="field-label" for="xp-earned-basic">Ganada tipo 1</label>
+                <input id="xp-earned-basic" type="number" min="0" step="1" data-xp-earned="basic" />
               </div>
-              <div class="xp-totals" style="margin:0.85rem 0 0">
-                <div class="xp-total"><b>Queda 1</b><span class="remain" id="xp-left-basic">—</span></div>
-                <div class="xp-total"><b>Queda 2</b><span class="remain" id="xp-left-special">—</span></div>
-                <div class="xp-total"><b>Queda 3</b><span class="remain" id="xp-left-super">—</span></div>
-                <div class="xp-total emph"><b>Queda</b><span class="remain" id="xp-left-total">—</span></div>
+              <div>
+                <label class="field-label" for="xp-earned-special">Ganada tipo 2</label>
+                <input id="xp-earned-special" type="number" min="0" step="1" data-xp-earned="special" />
+              </div>
+              <div>
+                <label class="field-label" for="xp-earned-super">Ganada tipo 3</label>
+                <input id="xp-earned-super" type="number" min="0" step="1" data-xp-earned="supernatural" />
               </div>
             </div>
-
-            <h3 style="margin:1rem 0 0.35rem;font-size:0.95rem;color:var(--accent)">Desglose</h3>
-            <div id="xp-breakdown"></div>
-          </section>
-        </div>
+            <div class="xp-totals" style="margin-top:0.85rem">
+              <div class="xp-total"><b>Queda 1</b><span class="remain" id="xp-left-basic">—</span></div>
+              <div class="xp-total"><b>Queda 2</b><span class="remain" id="xp-left-special">—</span></div>
+              <div class="xp-total"><b>Queda 3</b><span class="remain" id="xp-left-super">—</span></div>
+              <div class="xp-total emph"><b>Queda</b><span class="remain" id="xp-left-total">—</span></div>
+            </div>
+          </article>
+        </form>
       </div>
     </div>
 
@@ -1618,28 +1616,6 @@
       })();
 
       const XP_STORAGE_KEY = "meye-xp-calc";
-      const STAT_LABELS = {
-        "basic.physical.strength": "Fuerza",
-        "basic.physical.agility": "Agilidad",
-        "basic.physical.speed": "Velocidad",
-        "basic.physical.resistance": "Resistencia",
-        "basic.mental.intelligence": "Inteligencia",
-        "basic.mental.wisdom": "Sabiduría",
-        "basic.mental.concentration": "Concentración",
-        "basic.mental.will": "Voluntad",
-        "basic.coordination.precision": "Precisión",
-        "basic.coordination.calculation": "Cálculo",
-        "basic.coordination.range": "Alcance",
-        "basic.coordination.reflexes": "Reflejos",
-        "basic.life": "Vida",
-        "special.physical.empowerment": "Empoderamiento",
-        "special.physical.vitalControl": "Control vital",
-        "special.energy.energyHandling": "Manejo de energía",
-        "special.energy.objectHandling": "Manejo de objetos",
-        "special.mental.illusion": "Ilusión",
-        "special.mental.mentalControl": "Control mental",
-        "special.energyTank": "Tanque de energía",
-      };
 
       function defaultXpState() {
         return {
@@ -1814,10 +1790,6 @@
         refreshXp();
       }
 
-      function row(label, value, indent = false) {
-        return `<li class="${indent ? "indent" : ""}"><span class="k">${label}</span><span class="v">${value}</span></li>`;
-      }
-
       function refreshXp() {
         if (!window.MeyeXp) return;
         const result = window.MeyeXp.calculateExperience({
@@ -1859,24 +1831,9 @@
           (xpState.includeSupernatural ? xpState.earned.supernatural || 0 : 0);
         setLeft("xp-left-total", earnedTotal, result.total);
 
-        const basicHints = [
-          ["basic.physical.strength", result.basic.physical.stats.strength],
-          ["basic.physical.agility", result.basic.physical.stats.agility],
-          ["basic.physical.speed", result.basic.physical.stats.speed],
-          ["basic.physical.resistance", result.basic.physical.stats.resistance],
-          ["basic.mental.intelligence", result.basic.mental.stats.intelligence],
-          ["basic.mental.wisdom", result.basic.mental.stats.wisdom],
-          ["basic.mental.concentration", result.basic.mental.stats.concentration],
-          ["basic.mental.will", result.basic.mental.stats.will],
-          ["basic.coordination.precision", result.basic.coordination.stats.precision],
-          ["basic.coordination.calculation", result.basic.coordination.stats.calculation],
-          ["basic.coordination.range", result.basic.coordination.stats.range],
-          ["basic.coordination.reflexes", result.basic.coordination.stats.reflexes],
-          ["basic.life", result.basic.life],
-        ];
-        for (const [path, info] of basicHints) {
-          const el = document.querySelector(`[data-xp-hint="${path}"]`);
-          if (el) el.innerHTML = hintText(info.spent, info.next);
+        const lifeHint = document.querySelector('[data-xp-hint="basic.life"]');
+        if (lifeHint) {
+          lifeHint.innerHTML = hintText(result.basic.life.spent, result.basic.life.next);
         }
         const tankHint = document.querySelector('[data-xp-hint="special.energyTank"]');
         if (tankHint) {
@@ -1887,7 +1844,7 @@
         }
 
         const groupText = (group, extra = "") =>
-          `Gastado en el grupo: <b>${fmtXp(group.spent)}</b>${extra}`;
+          `Gastado: <b>${fmtXp(group.spent)}</b>${extra}`;
         const pairExtra = (group) =>
           ` · suma ${fmtXp(group.sum)} · próximo <b>${fmtXp(group.next)}</b>`;
 
@@ -1912,59 +1869,6 @@
             skill.spent
           )}</b> · próximo <b>${fmtXp(skill.next)}</b>`;
         });
-
-        const lines = [];
-        lines.push("<h4>Tipo 1</h4><ul class='xp-breakdown'>");
-        lines.push(row("Físico", fmtXp(result.basic.physical.spent)));
-        for (const [key, info] of Object.entries(result.basic.physical.stats)) {
-          lines.push(row(STAT_LABELS[`basic.physical.${key}`], fmtXp(info.spent), true));
-        }
-        lines.push(row("Mental", fmtXp(result.basic.mental.spent)));
-        for (const [key, info] of Object.entries(result.basic.mental.stats)) {
-          lines.push(row(STAT_LABELS[`basic.mental.${key}`], fmtXp(info.spent), true));
-        }
-        lines.push(row("Coordinación", fmtXp(result.basic.coordination.spent)));
-        for (const [key, info] of Object.entries(result.basic.coordination.stats)) {
-          lines.push(row(STAT_LABELS[`basic.coordination.${key}`], fmtXp(info.spent), true));
-        }
-        lines.push(row("Vida", fmtXp(result.basic.life.spent)));
-        lines.push("</ul>");
-
-        lines.push("<h4>Tipo 2</h4><ul class='xp-breakdown'>");
-        lines.push(
-          row(
-            `Físicas (suma ${fmtXp(result.special.physical.sum)})`,
-            fmtXp(result.special.physical.spent)
-          )
-        );
-        lines.push(
-          row(
-            `Energía (suma ${fmtXp(result.special.energy.sum)})`,
-            fmtXp(result.special.energy.spent)
-          )
-        );
-        lines.push(
-          row(
-            `Mentales (suma ${fmtXp(result.special.mental.sum)})`,
-            fmtXp(result.special.mental.spent)
-          )
-        );
-        lines.push(row("Tanque", fmtXp(result.special.energyTank.spent)));
-        lines.push("</ul>");
-
-        if (xpState.includeSupernatural) {
-          lines.push("<h4>Tipo 3</h4><ul class='xp-breakdown'>");
-          result.supernatural.skills.forEach((skill, i) => {
-            lines.push(
-              row(
-                `Habilidad ${i + 1} (suma ${fmtXp(skill.sum)})`,
-                fmtXp(skill.spent)
-              )
-            );
-          });
-          lines.push("</ul>");
-        }
-        $("xp-breakdown").innerHTML = lines.join("");
       }
 
       document.querySelectorAll("#app-nav button").forEach((b) => {
