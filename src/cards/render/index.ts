@@ -154,7 +154,11 @@ async function renderFront(obj: Item): Promise<Buffer> {
   const id = sanitizeFilename(
     obj.code + (obj.custom_code ? "-" : "") + (obj.custom_code || "")
   );
-  if (!(await drawPng(ctx, "objects/" + id, L.ART_POS, L.ART_SIZE))) {
+  const typeDefault = `objects/types/${obj.class}__${obj.type}`;
+  if (
+    !(await drawPng(ctx, "objects/" + id, L.ART_POS, L.ART_SIZE)) &&
+    !(await drawPng(ctx, typeDefault, L.ART_POS, L.ART_SIZE))
+  ) {
     await drawPng(ctx, "objects/desconocido", L.ART_POS, L.ART_SIZE);
   }
   if (obj.custom_code) {

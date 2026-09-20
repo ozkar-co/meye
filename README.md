@@ -52,8 +52,27 @@ Env: `PORT` (default 3008), `HOST`, `NODE_BIN`, `DATA_DIR`, `CACHE_DIR`.
 |------|------|
 | `data/*.json` | Materials, dictionary, object formulas |
 | `data/assets/` | Card art |
+| `data/assets/objects/types/` | Default art per class/type (Genkit) |
 | `data/meye.sqlite` | Persisted named items (**tracked in git**) |
 | `cache/images/` | Generated PNG cache (gitignored, disposable) |
+
+## Default object art (Genkit)
+
+Cartas usan arte específico por código (`objects/{code}.png`), luego el
+default de clase/tipo (`objects/types/{class}__{type}.png`), y si no
+existe, `desconocido.png`.
+
+Generar los 39 defaults (subtipo y especialización excluidos):
+
+```bash
+# requiere ../genkit o GENKIT_DIR apuntando al repo genkit
+npm run generate:type-images -- --dry-run          # ver prompts y rutas
+npm run generate:type-images                       # genera faltantes
+npm run generate:type-images -- --force            # regenerar todo
+npm run generate:type-images -- --filter arma/de_hoja
+```
+
+Perfil: `fantasy-item-alpha` (fondo transparente vía rembg).
 
 ## Layout
 

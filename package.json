@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc"
+    "build": "tsc",
+    "generate:type-images": "tsx scripts/generate-type-images.ts"
   },
   "repository": {
     "type": "git",

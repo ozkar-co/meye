@@ -1,0 +1,31 @@
+{
+  "endpoint_id": "black-forest-labs-flux-1-dev",
+  "delayTime": 4587,
+  "executionTime": 12593,
+  "cost": 0.012,
+  "job_id": 168,
+  "provider_job_id": "3321c92c-0371-470c-95bc-32f4d2e26d6c-u2",
+  "profile_id": "fantasy-item-alpha",
+  "modality": "image",
+  "provider": "runpod",
+  "model": null,
+  "params": {
+    "width": 1024,
+    "height": 1024,
+    "num_inference_steps": 28,
+    "guidance": 3.5,
+    "image_format": "png",
+    "negative_prompt": "multiple objects, collage, grid, split screen, two items, clutter, person, hands, face, fingers, text, watermark, logo, blurry, busy background, scenic background, room interior, table clutter, colored backdrop, gradient backdrop, cast shadows\n"
+  },
+  "batch": "type-images-20260903",
+  "project": "meye",
+  "out_path": "/home/oz/Code/meye/data/assets/objects/types/comun__instrumento_musical.png",
+  "timestamp": "2026-09-03T00:27:36.076661+00:00",
+  "cost_usd": 0.013,
+  "cost_source": "runpod_billed",
+  "post_process": "remove_bg",
+  "post_process_model": "851-labs/background-remover",
+  "post_process_job_id": "4npxghz9fxrga0d0cjms0h85fc",
+  "post_process_cost_usd": 0.001,
+  "post_process_cost_source": "profile_approx"
+}

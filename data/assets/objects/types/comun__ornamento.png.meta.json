@@ -1,0 +1,31 @@
+{
+  "endpoint_id": "black-forest-labs-flux-1-dev",
+  "delayTime": 150,
+  "executionTime": 16244,
+  "cost": 0.012,
+  "job_id": 169,
+  "provider_job_id": "faba9464-7878-4334-940d-36777e96efa1-u2",
+  "profile_id": "fantasy-item-alpha",
+  "modality": "image",
+  "provider": "runpod",
+  "model": null,
+  "params": {
+    "width": 1024,
+    "height": 1024,
+    "num_inference_steps": 28,
+    "guidance": 3.5,
+    "image_format": "png",
+    "negative_prompt": "multiple objects, collage, grid, split screen, two items, clutter, person, hands, face, fingers, text, watermark, logo, blurry, busy background, scenic background, room interior, table clutter, colored backdrop, gradient backdrop, cast shadows\n"
+  },
+  "batch": "type-images-20260903",
+  "project": "meye",
+  "out_path": "/home/oz/Code/meye/data/assets/objects/types/comun__ornamento.png",
+  "timestamp": "2026-09-03T00:28:02.314111+00:00",
+  "cost_usd": 0.013,
+  "cost_source": "runpod_billed",
+  "post_process": "remove_bg",
+  "post_process_model": "851-labs/background-remover",
+  "post_process_job_id": "3w1gq12gyhrgc0d0cjn9kgr7xg",
+  "post_process_cost_usd": 0.001,
+  "post_process_cost_source": "profile_approx"
+}
