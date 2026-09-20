@@ -340,6 +340,162 @@
       .card-slot img { width: 100%; display: block; }
       .card-slot .ph { color: var(--muted); padding: 2rem; text-align: center; }
       .empty { color: var(--muted); padding: 1.5rem 0.25rem; }
+
+      .app-nav {
+        display: flex;
+        gap: 0.4rem;
+        margin: 1.15rem 0 0;
+      }
+      .app-nav button {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-weight: 600;
+        padding: 0.55rem 1.15rem;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .app-nav button.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #1a1408;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .section .section-head h3 { margin: 0; }
+      .talent {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .talent input {
+        appearance: auto;
+        -webkit-appearance: checkbox;
+        width: 1.1rem;
+        height: 1.1rem;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+      .section-note {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin: 0 0 0.85rem;
+        line-height: 1.45;
+      }
+      .xp-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+      @media (max-width: 560px) {
+        .xp-fields { grid-template-columns: 1fr; }
+      }
+      .xp-hint {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 0.28rem;
+      }
+      .xp-hint b { color: var(--accent); font-weight: 600; }
+      .xp-group-spent {
+        margin-top: 0.8rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .xp-group-spent b { color: var(--accent); }
+
+      .xp-totals {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.55rem;
+        margin-bottom: 1rem;
+      }
+      @media (max-width: 700px) {
+        .xp-totals { grid-template-columns: 1fr 1fr; }
+      }
+      .xp-total {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 0.7rem 0.75rem;
+        background: var(--field);
+      }
+      .xp-total.emph { border-color: var(--accent-dim); }
+      .xp-total b {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .xp-total span {
+        font-size: 1.45rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .remain.neg { color: var(--danger); }
+      .remain.ok { color: #8fca9a; }
+
+      .xp-breakdown { list-style: none; margin: 0; padding: 0; }
+      .xp-breakdown li {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.38rem 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.92rem;
+      }
+      .xp-breakdown .k { color: var(--muted); }
+      .xp-breakdown .v {
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .xp-breakdown .indent { padding-left: 0.85rem; font-size: 0.85rem; }
+      .xp-breakdown h4 {
+        margin: 0.85rem 0 0.3rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+      }
+      .panel-sticky { position: sticky; top: 1rem; }
+
+      .skill-block {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        margin-top: 0.55rem;
+        background: var(--field);
+      }
+      .skill-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.35rem;
+      }
+      .skill-head strong { font-size: 0.92rem; }
+      .trans-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: end;
+        margin-top: 0.45rem;
+      }
+      .trans-row > div { flex: 1; }
+      #app-xp .panel-form { max-height: calc(100vh - 11rem); }
     </style>
   </head>
   <body>
@@ -347,9 +503,14 @@
       <header>
         <a class="docs" href="/docs">API docs</a>
         <h1 class="brand">meye <span>tools</span></h1>
-        <p>Editor de objetos y cartas · Tierras de Meye</p>
+        <p id="tagline">Editor de objetos y cartas · Tierras de Meye</p>
+        <nav class="app-nav" id="app-nav">
+          <button type="button" class="active" data-app="items">Objetos</button>
+          <button type="button" data-app="xp">Experiencia</button>
+        </nav>
       </header>
 
+      <div id="app-items">
       <div class="layout">
         <section class="panel panel-form">
           <div class="tabs">
@@ -509,8 +670,238 @@
           </div>
         </section>
       </div>
+      </div>
+
+      <div id="app-xp" hidden>
+        <div class="layout">
+          <section class="panel panel-form">
+            <form id="xp-form">
+              <p class="mode-hint">Asigna los puntos actuales de tu personaje. El gasto se calcula al instante.</p>
+
+              <div class="section">
+                <h3>Tipo de personaje</h3>
+                <label class="talent" style="margin-top:0.15rem">
+                  <input id="xp-supernatural-toggle" type="checkbox" />
+                  <span>Sobrenatural (activa tipo 3)</span>
+                </label>
+              </div>
+
+              <div class="section">
+                <div class="section-head">
+                  <h3>Tipo 1 · Normal</h3>
+                </div>
+                <p class="section-note">Cada 10 puntos el siguiente cuesta +1 XP. Sin talento empieza en 3; con talento, en 1. Vida: 5 XP por punto.</p>
+
+                <div class="section-head">
+                  <h3 style="color:var(--ink);font-size:0.88rem">Físico</h3>
+                  <label class="talent"><input type="checkbox" data-xp-flag="basic.physical.talented" /> Talento</label>
+                </div>
+                <div class="xp-fields">
+                  <div>
+                    <label class="field-label" for="xp-strength">Fuerza</label>
+                    <input id="xp-strength" type="number" min="0" step="1" data-xp-path="basic.physical.strength" />
+                    <div class="xp-hint" data-xp-hint="basic.physical.strength"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-agility">Agilidad</label>
+                    <input id="xp-agility" type="number" min="0" step="1" data-xp-path="basic.physical.agility" />
+                    <div class="xp-hint" data-xp-hint="basic.physical.agility"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-speed">Velocidad</label>
+                    <input id="xp-speed" type="number" min="0" step="1" data-xp-path="basic.physical.speed" />
+                    <div class="xp-hint" data-xp-hint="basic.physical.speed"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-resistance">Resistencia</label>
+                    <input id="xp-resistance" type="number" min="0" step="1" data-xp-path="basic.physical.resistance" />
+                    <div class="xp-hint" data-xp-hint="basic.physical.resistance"></div>
+                  </div>
+                </div>
+                <div class="xp-group-spent" data-xp-group="basic.physical"></div>
+
+                <div class="section-head" style="margin-top:1.1rem">
+                  <h3 style="color:var(--ink);font-size:0.88rem">Mental</h3>
+                  <label class="talent"><input type="checkbox" data-xp-flag="basic.mental.talented" /> Talento</label>
+                </div>
+                <div class="xp-fields">
+                  <div>
+                    <label class="field-label" for="xp-intelligence">Inteligencia</label>
+                    <input id="xp-intelligence" type="number" min="0" step="1" data-xp-path="basic.mental.intelligence" />
+                    <div class="xp-hint" data-xp-hint="basic.mental.intelligence"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-wisdom">Sabiduría</label>
+                    <input id="xp-wisdom" type="number" min="0" step="1" data-xp-path="basic.mental.wisdom" />
+                    <div class="xp-hint" data-xp-hint="basic.mental.wisdom"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-concentration">Concentración</label>
+                    <input id="xp-concentration" type="number" min="0" step="1" data-xp-path="basic.mental.concentration" />
+                    <div class="xp-hint" data-xp-hint="basic.mental.concentration"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-will">Voluntad</label>
+                    <input id="xp-will" type="number" min="0" step="1" data-xp-path="basic.mental.will" />
+                    <div class="xp-hint" data-xp-hint="basic.mental.will"></div>
+                  </div>
+                </div>
+                <div class="xp-group-spent" data-xp-group="basic.mental"></div>
+
+                <div class="section-head" style="margin-top:1.1rem">
+                  <h3 style="color:var(--ink);font-size:0.88rem">Coordinación</h3>
+                  <label class="talent"><input type="checkbox" data-xp-flag="basic.coordination.talented" /> Talento</label>
+                </div>
+                <div class="xp-fields">
+                  <div>
+                    <label class="field-label" for="xp-precision">Precisión</label>
+                    <input id="xp-precision" type="number" min="0" step="1" data-xp-path="basic.coordination.precision" />
+                    <div class="xp-hint" data-xp-hint="basic.coordination.precision"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-calculation">Cálculo</label>
+                    <input id="xp-calculation" type="number" min="0" step="1" data-xp-path="basic.coordination.calculation" />
+                    <div class="xp-hint" data-xp-hint="basic.coordination.calculation"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-range">Alcance</label>
+                    <input id="xp-range" type="number" min="0" step="1" data-xp-path="basic.coordination.range" />
+                    <div class="xp-hint" data-xp-hint="basic.coordination.range"></div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-reflexes">Reflejos</label>
+                    <input id="xp-reflexes" type="number" min="0" step="1" data-xp-path="basic.coordination.reflexes" />
+                    <div class="xp-hint" data-xp-hint="basic.coordination.reflexes"></div>
+                  </div>
+                </div>
+                <div class="xp-group-spent" data-xp-group="basic.coordination"></div>
+
+                <div style="margin-top:1.1rem">
+                  <label class="field-label" for="xp-life">Vida</label>
+                  <input id="xp-life" type="number" min="0" step="1" data-xp-path="basic.life" />
+                  <div class="xp-hint" data-xp-hint="basic.life"></div>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-head">
+                  <h3>Tipo 2 · Especial</h3>
+                </div>
+                <p class="section-note">Las dos habilidades de cada grupo <b>suman</b> para la curva de coste (cada 100 puntos +1). Sin talento empieza en 2; con talento, en 1. El tanque cuesta 10 XP/punto, o 5 con talento de energía.</p>
+
+                <div class="section-head">
+                  <h3 style="color:var(--ink);font-size:0.88rem">Habilidades físicas</h3>
+                  <label class="talent"><input type="checkbox" data-xp-flag="special.physical.talented" /> Talento</label>
+                </div>
+                <div class="xp-fields">
+                  <div>
+                    <label class="field-label" for="xp-empowerment">Empoderamiento</label>
+                    <input id="xp-empowerment" type="number" min="0" step="1" data-xp-path="special.physical.empowerment" />
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-vital">Control vital</label>
+                    <input id="xp-vital" type="number" min="0" step="1" data-xp-path="special.physical.vitalControl" />
+                  </div>
+                </div>
+                <div class="xp-group-spent" data-xp-group="special.physical"></div>
+
+                <div class="section-head" style="margin-top:1.1rem">
+                  <h3 style="color:var(--ink);font-size:0.88rem">Habilidades de energía</h3>
+                  <label class="talent"><input type="checkbox" data-xp-flag="special.energy.talented" /> Talento</label>
+                </div>
+                <div class="xp-fields">
+                  <div>
+                    <label class="field-label" for="xp-energy-handling">Manejo de energía</label>
+                    <input id="xp-energy-handling" type="number" min="0" step="1" data-xp-path="special.energy.energyHandling" />
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-object-handling">Manejo de objetos</label>
+                    <input id="xp-object-handling" type="number" min="0" step="1" data-xp-path="special.energy.objectHandling" />
+                  </div>
+                </div>
+                <div class="xp-group-spent" data-xp-group="special.energy"></div>
+
+                <div class="section-head" style="margin-top:1.1rem">
+                  <h3 style="color:var(--ink);font-size:0.88rem">Habilidades mentales</h3>
+                  <label class="talent"><input type="checkbox" data-xp-flag="special.mental.talented" /> Talento</label>
+                </div>
+                <div class="xp-fields">
+                  <div>
+                    <label class="field-label" for="xp-illusion">Ilusión</label>
+                    <input id="xp-illusion" type="number" min="0" step="1" data-xp-path="special.mental.illusion" />
+                  </div>
+                  <div>
+                    <label class="field-label" for="xp-mental-control">Control mental</label>
+                    <input id="xp-mental-control" type="number" min="0" step="1" data-xp-path="special.mental.mentalControl" />
+                  </div>
+                </div>
+                <div class="xp-group-spent" data-xp-group="special.mental"></div>
+
+                <div class="section-head" style="margin-top:1.1rem">
+                  <h3 style="color:var(--ink);font-size:0.88rem">Tanque de energía</h3>
+                  <label class="talent"><input type="checkbox" data-xp-flag="special.energyTankTalented" /> Talento</label>
+                </div>
+                <input id="xp-energy-tank" type="number" min="0" step="1" data-xp-path="special.energyTank" />
+                <div class="xp-hint" data-xp-hint="special.energyTank"></div>
+              </div>
+
+              <div class="section" id="xp-supernatural-section" hidden>
+                <div class="section-head">
+                  <h3>Tipo 3 · Sobrenatural</h3>
+                </div>
+                <p class="section-note">Cada habilidad suma sus transformaciones. Cada 100 puntos el siguiente cuesta +1 XP, siempre empezando en 1.</p>
+                <div id="xp-skills"></div>
+                <button type="button" class="add-btn" id="xp-add-skill">+ Añadir habilidad</button>
+              </div>
+
+              <div class="actions">
+                <button class="ghost" type="button" id="xp-reset">Reiniciar</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel result panel-sticky">
+            <h2>Gastado</h2>
+            <div class="xp-totals">
+              <div class="xp-total"><b>Tipo 1</b><span id="xp-spent-basic">0</span></div>
+              <div class="xp-total"><b>Tipo 2</b><span id="xp-spent-special">0</span></div>
+              <div class="xp-total"><b>Tipo 3</b><span id="xp-spent-super">0</span></div>
+              <div class="xp-total emph"><b>Total</b><span id="xp-spent-total">0</span></div>
+            </div>
+
+            <div class="section" style="margin-top:0">
+              <h3>XP ganada (opcional)</h3>
+              <p class="section-note">Si pones lo que has ganado, verás cuánto te queda.</p>
+              <div class="row3">
+                <div>
+                  <label class="field-label" for="xp-earned-basic">Tipo 1</label>
+                  <input id="xp-earned-basic" type="number" min="0" step="1" data-xp-earned="basic" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-earned-special">Tipo 2</label>
+                  <input id="xp-earned-special" type="number" min="0" step="1" data-xp-earned="special" />
+                </div>
+                <div>
+                  <label class="field-label" for="xp-earned-super">Tipo 3</label>
+                  <input id="xp-earned-super" type="number" min="0" step="1" data-xp-earned="supernatural" />
+                </div>
+              </div>
+              <div class="xp-totals" style="margin:0.85rem 0 0">
+                <div class="xp-total"><b>Queda 1</b><span class="remain" id="xp-left-basic">—</span></div>
+                <div class="xp-total"><b>Queda 2</b><span class="remain" id="xp-left-special">—</span></div>
+                <div class="xp-total"><b>Queda 3</b><span class="remain" id="xp-left-super">—</span></div>
+                <div class="xp-total emph"><b>Queda</b><span class="remain" id="xp-left-total">—</span></div>
+              </div>
+            </div>
+
+            <h3 style="margin:1rem 0 0.35rem;font-size:0.95rem;color:var(--accent)">Desglose</h3>
+            <div id="xp-breakdown"></div>
+          </section>
+        </div>
+      </div>
     </div>
 
+    <script src="/xp-calc.js"></script>
     <script>
       const $ = (id) => document.getElementById(id);
       let meta = null;
@@ -1225,6 +1616,430 @@
           showError("No se pudo cargar /meta: " + err.message);
         }
       })();
+
+      const XP_STORAGE_KEY = "meye-xp-calc";
+      const STAT_LABELS = {
+        "basic.physical.strength": "Fuerza",
+        "basic.physical.agility": "Agilidad",
+        "basic.physical.speed": "Velocidad",
+        "basic.physical.resistance": "Resistencia",
+        "basic.mental.intelligence": "Inteligencia",
+        "basic.mental.wisdom": "Sabiduría",
+        "basic.mental.concentration": "Concentración",
+        "basic.mental.will": "Voluntad",
+        "basic.coordination.precision": "Precisión",
+        "basic.coordination.calculation": "Cálculo",
+        "basic.coordination.range": "Alcance",
+        "basic.coordination.reflexes": "Reflejos",
+        "basic.life": "Vida",
+        "special.physical.empowerment": "Empoderamiento",
+        "special.physical.vitalControl": "Control vital",
+        "special.energy.energyHandling": "Manejo de energía",
+        "special.energy.objectHandling": "Manejo de objetos",
+        "special.mental.illusion": "Ilusión",
+        "special.mental.mentalControl": "Control mental",
+        "special.energyTank": "Tanque de energía",
+      };
+
+      function defaultXpState() {
+        return {
+          includeSupernatural: false,
+          earned: { basic: 0, special: 0, supernatural: 0 },
+          basic: {
+            physical: {
+              strength: 0,
+              agility: 0,
+              speed: 0,
+              resistance: 0,
+              talented: false,
+            },
+            mental: {
+              intelligence: 0,
+              wisdom: 0,
+              concentration: 0,
+              will: 0,
+              talented: false,
+            },
+            coordination: {
+              precision: 0,
+              calculation: 0,
+              range: 0,
+              reflexes: 0,
+              talented: false,
+            },
+            life: 0,
+          },
+          special: {
+            physical: { empowerment: 0, vitalControl: 0, talented: false },
+            energy: { energyHandling: 0, objectHandling: 0, talented: false },
+            mental: { illusion: 0, mentalControl: 0, talented: false },
+            energyTank: 0,
+            energyTankTalented: false,
+          },
+          supernatural: { skills: [{ transformations: [0] }] },
+        };
+      }
+
+      function getPath(obj, path) {
+        return path.split(".").reduce((cur, key) => (cur == null ? cur : cur[key]), obj);
+      }
+
+      function setPath(obj, path, value) {
+        const parts = path.split(".");
+        let cur = obj;
+        for (let i = 0; i < parts.length - 1; i++) cur = cur[parts[i]];
+        cur[parts[parts.length - 1]] = value;
+      }
+
+      function fmtXp(n) {
+        return Number(n || 0).toLocaleString("es");
+      }
+
+      function loadXpState() {
+        try {
+          const raw = localStorage.getItem(XP_STORAGE_KEY);
+          if (!raw) return defaultXpState();
+          const parsed = JSON.parse(raw);
+          const base = defaultXpState();
+          return {
+            ...base,
+            ...parsed,
+            earned: { ...base.earned, ...(parsed.earned || {}) },
+            basic: {
+              physical: { ...base.basic.physical, ...(parsed.basic?.physical || {}) },
+              mental: { ...base.basic.mental, ...(parsed.basic?.mental || {}) },
+              coordination: {
+                ...base.basic.coordination,
+                ...(parsed.basic?.coordination || {}),
+              },
+              life: parsed.basic?.life ?? 0,
+            },
+            special: {
+              physical: { ...base.special.physical, ...(parsed.special?.physical || {}) },
+              energy: { ...base.special.energy, ...(parsed.special?.energy || {}) },
+              mental: { ...base.special.mental, ...(parsed.special?.mental || {}) },
+              energyTank: parsed.special?.energyTank ?? 0,
+              energyTankTalented: Boolean(parsed.special?.energyTankTalented),
+            },
+            supernatural: {
+              skills:
+                parsed.supernatural?.skills?.length
+                  ? parsed.supernatural.skills.map((s) => ({
+                      transformations:
+                        s.transformations?.length ? s.transformations : [0],
+                    }))
+                  : base.supernatural.skills,
+            },
+          };
+        } catch {
+          return defaultXpState();
+        }
+      }
+
+      let xpState = loadXpState();
+
+      function saveXpState() {
+        localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(xpState));
+      }
+
+      function setApp(app) {
+        document.querySelectorAll("#app-nav button").forEach((b) => {
+          b.classList.toggle("active", b.dataset.app === app);
+        });
+        $("app-items").hidden = app !== "items";
+        $("app-xp").hidden = app !== "xp";
+        $("tagline").textContent =
+          app === "xp"
+            ? "Calculadora de experiencia · Tierras de Meye"
+            : "Editor de objetos y cartas · Tierras de Meye";
+        const url = new URL(location.href);
+        if (app === "xp") url.hash = "xp";
+        else url.hash = "";
+        history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
+
+      function hintText(spent, next) {
+        return `gastado <b>${fmtXp(spent)}</b> · próximo <b>${fmtXp(next)}</b>`;
+      }
+
+      function renderXpSkills() {
+        const root = $("xp-skills");
+        root.innerHTML = "";
+        xpState.supernatural.skills.forEach((skill, si) => {
+          const block = document.createElement("div");
+          block.className = "skill-block";
+          const rows = skill.transformations
+            .map(
+              (value, ti) => `
+            <div class="trans-row">
+              <div>
+                <label class="field-label">Transformación ${ti + 1}</label>
+                <input type="number" min="0" step="1" value="${value}" data-skill="${si}" data-trans="${ti}" />
+              </div>
+              <button type="button" class="remove" data-remove-trans="${si}:${ti}" ${
+                skill.transformations.length <= 1 ? "disabled" : ""
+              }>Quitar</button>
+            </div>`
+            )
+            .join("");
+          block.innerHTML = `
+            <div class="skill-head">
+              <strong>Habilidad ${si + 1}</strong>
+              <button type="button" class="remove" data-remove-skill="${si}" ${
+                xpState.supernatural.skills.length <= 1 ? "disabled" : ""
+              }>Quitar</button>
+            </div>
+            ${rows}
+            <button type="button" class="add-btn" data-add-trans="${si}">+ Añadir transformación</button>
+            <div class="xp-group-spent" data-xp-skill="${si}"></div>
+          `;
+          root.appendChild(block);
+        });
+      }
+
+      function fillXpForm() {
+        $("xp-supernatural-toggle").checked = xpState.includeSupernatural;
+        $("xp-supernatural-section").hidden = !xpState.includeSupernatural;
+        for (const input of document.querySelectorAll("[data-xp-path]")) {
+          const value = getPath(xpState, input.dataset.xpPath);
+          input.value = value === 0 || value ? String(value) : "0";
+        }
+        for (const input of document.querySelectorAll("[data-xp-flag]")) {
+          input.checked = Boolean(getPath(xpState, input.dataset.xpFlag));
+        }
+        $("xp-earned-basic").value = xpState.earned.basic || "";
+        $("xp-earned-special").value = xpState.earned.special || "";
+        $("xp-earned-super").value = xpState.earned.supernatural || "";
+        renderXpSkills();
+        refreshXp();
+      }
+
+      function row(label, value, indent = false) {
+        return `<li class="${indent ? "indent" : ""}"><span class="k">${label}</span><span class="v">${value}</span></li>`;
+      }
+
+      function refreshXp() {
+        if (!window.MeyeXp) return;
+        const result = window.MeyeXp.calculateExperience({
+          basic: xpState.basic,
+          special: xpState.special,
+          supernatural: xpState.supernatural,
+          includeSupernatural: xpState.includeSupernatural,
+        });
+
+        $("xp-spent-basic").textContent = fmtXp(result.basic.total);
+        $("xp-spent-special").textContent = fmtXp(result.special.total);
+        $("xp-spent-super").textContent = xpState.includeSupernatural
+          ? fmtXp(result.supernatural.total)
+          : "—";
+        $("xp-spent-total").textContent = fmtXp(result.total);
+
+        const setLeft = (id, earned, spent, enabled = true) => {
+          const el = $(id);
+          if (!enabled || !earned) {
+            el.textContent = "—";
+            el.className = "remain";
+            return;
+          }
+          const left = earned - spent;
+          el.textContent = fmtXp(left);
+          el.className = left < 0 ? "remain neg" : "remain ok";
+        };
+        setLeft("xp-left-basic", xpState.earned.basic, result.basic.total);
+        setLeft("xp-left-special", xpState.earned.special, result.special.total);
+        setLeft(
+          "xp-left-super",
+          xpState.earned.supernatural,
+          result.supernatural.total,
+          xpState.includeSupernatural
+        );
+        const earnedTotal =
+          (xpState.earned.basic || 0) +
+          (xpState.earned.special || 0) +
+          (xpState.includeSupernatural ? xpState.earned.supernatural || 0 : 0);
+        setLeft("xp-left-total", earnedTotal, result.total);
+
+        const basicHints = [
+          ["basic.physical.strength", result.basic.physical.stats.strength],
+          ["basic.physical.agility", result.basic.physical.stats.agility],
+          ["basic.physical.speed", result.basic.physical.stats.speed],
+          ["basic.physical.resistance", result.basic.physical.stats.resistance],
+          ["basic.mental.intelligence", result.basic.mental.stats.intelligence],
+          ["basic.mental.wisdom", result.basic.mental.stats.wisdom],
+          ["basic.mental.concentration", result.basic.mental.stats.concentration],
+          ["basic.mental.will", result.basic.mental.stats.will],
+          ["basic.coordination.precision", result.basic.coordination.stats.precision],
+          ["basic.coordination.calculation", result.basic.coordination.stats.calculation],
+          ["basic.coordination.range", result.basic.coordination.stats.range],
+          ["basic.coordination.reflexes", result.basic.coordination.stats.reflexes],
+          ["basic.life", result.basic.life],
+        ];
+        for (const [path, info] of basicHints) {
+          const el = document.querySelector(`[data-xp-hint="${path}"]`);
+          if (el) el.innerHTML = hintText(info.spent, info.next);
+        }
+        const tankHint = document.querySelector('[data-xp-hint="special.energyTank"]');
+        if (tankHint) {
+          tankHint.innerHTML = hintText(
+            result.special.energyTank.spent,
+            result.special.energyTank.next
+          );
+        }
+
+        const groupText = (group, extra = "") =>
+          `Gastado en el grupo: <b>${fmtXp(group.spent)}</b>${extra}`;
+        const pairExtra = (group) =>
+          ` · suma ${fmtXp(group.sum)} · próximo <b>${fmtXp(group.next)}</b>`;
+
+        document.querySelector('[data-xp-group="basic.physical"]').innerHTML =
+          groupText(result.basic.physical);
+        document.querySelector('[data-xp-group="basic.mental"]').innerHTML =
+          groupText(result.basic.mental);
+        document.querySelector('[data-xp-group="basic.coordination"]').innerHTML =
+          groupText(result.basic.coordination);
+        document.querySelector('[data-xp-group="special.physical"]').innerHTML =
+          groupText(result.special.physical, pairExtra(result.special.physical));
+        document.querySelector('[data-xp-group="special.energy"]').innerHTML =
+          groupText(result.special.energy, pairExtra(result.special.energy));
+        document.querySelector('[data-xp-group="special.mental"]').innerHTML =
+          groupText(result.special.mental, pairExtra(result.special.mental));
+
+        document.querySelectorAll("[data-xp-skill]").forEach((el) => {
+          const i = Number(el.dataset.xpSkill);
+          const skill = result.supernatural.skills[i];
+          if (!skill) return;
+          el.innerHTML = `Suma ${fmtXp(skill.sum)} · gastado <b>${fmtXp(
+            skill.spent
+          )}</b> · próximo <b>${fmtXp(skill.next)}</b>`;
+        });
+
+        const lines = [];
+        lines.push("<h4>Tipo 1</h4><ul class='xp-breakdown'>");
+        lines.push(row("Físico", fmtXp(result.basic.physical.spent)));
+        for (const [key, info] of Object.entries(result.basic.physical.stats)) {
+          lines.push(row(STAT_LABELS[`basic.physical.${key}`], fmtXp(info.spent), true));
+        }
+        lines.push(row("Mental", fmtXp(result.basic.mental.spent)));
+        for (const [key, info] of Object.entries(result.basic.mental.stats)) {
+          lines.push(row(STAT_LABELS[`basic.mental.${key}`], fmtXp(info.spent), true));
+        }
+        lines.push(row("Coordinación", fmtXp(result.basic.coordination.spent)));
+        for (const [key, info] of Object.entries(result.basic.coordination.stats)) {
+          lines.push(row(STAT_LABELS[`basic.coordination.${key}`], fmtXp(info.spent), true));
+        }
+        lines.push(row("Vida", fmtXp(result.basic.life.spent)));
+        lines.push("</ul>");
+
+        lines.push("<h4>Tipo 2</h4><ul class='xp-breakdown'>");
+        lines.push(
+          row(
+            `Físicas (suma ${fmtXp(result.special.physical.sum)})`,
+            fmtXp(result.special.physical.spent)
+          )
+        );
+        lines.push(
+          row(
+            `Energía (suma ${fmtXp(result.special.energy.sum)})`,
+            fmtXp(result.special.energy.spent)
+          )
+        );
+        lines.push(
+          row(
+            `Mentales (suma ${fmtXp(result.special.mental.sum)})`,
+            fmtXp(result.special.mental.spent)
+          )
+        );
+        lines.push(row("Tanque", fmtXp(result.special.energyTank.spent)));
+        lines.push("</ul>");
+
+        if (xpState.includeSupernatural) {
+          lines.push("<h4>Tipo 3</h4><ul class='xp-breakdown'>");
+          result.supernatural.skills.forEach((skill, i) => {
+            lines.push(
+              row(
+                `Habilidad ${i + 1} (suma ${fmtXp(skill.sum)})`,
+                fmtXp(skill.spent)
+              )
+            );
+          });
+          lines.push("</ul>");
+        }
+        $("xp-breakdown").innerHTML = lines.join("");
+      }
+
+      document.querySelectorAll("#app-nav button").forEach((b) => {
+        b.addEventListener("click", () => setApp(b.dataset.app));
+      });
+
+      $("xp-form").addEventListener("input", (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLInputElement)) return;
+        if (t.dataset.xpPath) {
+          const n = window.MeyeXp.clampStat(t.value);
+          setPath(xpState, t.dataset.xpPath, n);
+        } else if (t.dataset.xpEarned) {
+          xpState.earned[t.dataset.xpEarned] = window.MeyeXp.clampStat(t.value);
+        } else if (t.dataset.skill != null) {
+          const si = Number(t.dataset.skill);
+          const ti = Number(t.dataset.trans);
+          xpState.supernatural.skills[si].transformations[ti] =
+            window.MeyeXp.clampStat(t.value);
+        }
+        saveXpState();
+        refreshXp();
+      });
+
+      $("xp-form").addEventListener("change", (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLInputElement)) return;
+        if (t.dataset.xpFlag) {
+          setPath(xpState, t.dataset.xpFlag, t.checked);
+          saveXpState();
+          refreshXp();
+        }
+      });
+
+      $("xp-supernatural-toggle").addEventListener("change", () => {
+        xpState.includeSupernatural = $("xp-supernatural-toggle").checked;
+        $("xp-supernatural-section").hidden = !xpState.includeSupernatural;
+        saveXpState();
+        refreshXp();
+      });
+
+      $("xp-skills").addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        if (btn.dataset.addTrans != null) {
+          xpState.supernatural.skills[Number(btn.dataset.addTrans)].transformations.push(0);
+        } else if (btn.dataset.removeTrans) {
+          const [si, ti] = btn.dataset.removeTrans.split(":").map(Number);
+          const list = xpState.supernatural.skills[si].transformations;
+          if (list.length > 1) list.splice(ti, 1);
+        } else if (btn.dataset.removeSkill != null) {
+          if (xpState.supernatural.skills.length > 1) {
+            xpState.supernatural.skills.splice(Number(btn.dataset.removeSkill), 1);
+          }
+        } else return;
+        saveXpState();
+        renderXpSkills();
+        refreshXp();
+      });
+
+      $("xp-add-skill").addEventListener("click", () => {
+        xpState.supernatural.skills.push({ transformations: [0] });
+        saveXpState();
+        renderXpSkills();
+        refreshXp();
+      });
+
+      $("xp-reset").addEventListener("click", () => {
+        xpState = defaultXpState();
+        saveXpState();
+        fillXpForm();
+      });
+
+      fillXpForm();
+      if (location.hash === "#xp") setApp("xp");
     </script>
   </body>
 </html>

@@ -13,6 +13,7 @@ import { itemsRoutes } from "./routes/items.js";
 import { materialsRoutes } from "./routes/materials.js";
 import { languagesRoutes } from "./routes/languages.js";
 import { metaRoutes } from "./routes/meta.js";
+import { xpRoutes } from "./routes/xp.js";
 
 const PORT = Number(process.env.PORT || 3008);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -30,7 +31,7 @@ async function main() {
       info: {
         title: "meye-tools",
         description:
-          "Item cards and constructed languages for Tierras de Meye",
+          "Item cards, experience calculator, and constructed languages for Tierras de Meye",
         version: "2.0.0",
       },
       servers: [
@@ -60,6 +61,7 @@ async function main() {
   await app.register(itemsRoutes);
   await app.register(materialsRoutes);
   await app.register(languagesRoutes);
+  await app.register(xpRoutes);
 
   await app.register(fastifyStatic, {
     root: path.join(root, "public"),
