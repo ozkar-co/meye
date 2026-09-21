@@ -216,10 +216,9 @@ async function renderFront(obj: Item): Promise<Buffer> {
   text(ctx, labelThickness, [1260, 170], 40, "start");
   text(ctx, round1(Number(obj.dimension)) + " D", [1260, 220], 40, "start");
 
-  ctx.fillStyle = "#777";
-  ctx.fillRect(...L.ART_BG);
-  if (obj.extra?.origin) {
-    await drawPng(ctx, "origins/" + obj.extra.origin, L.ART_POS, L.ART_SIZE);
+  const originKey = obj.extra?.origin;
+  if (originKey && originKey !== "desconocido") {
+    await drawPng(ctx, "origins/" + originKey, L.ART_POS, L.ART_SIZE);
   }
   const id = sanitizeFilename(
     obj.code + (obj.custom_code ? "-" : "") + (obj.custom_code || "")
@@ -421,7 +420,7 @@ async function renderTable(): Promise<Buffer> {
     text(ctx, String(group), pos, 65, "center", "#000", "bold");
   }
 
-  for (const mat of allMaterials) {
+  for (const mat of allMaterials()) {
     if (mat.symbol.includes("+")) continue;
     const pos = util.addVec(initPos, [
       mat.group * boxW,
@@ -455,7 +454,7 @@ export async function renderCard(
   side: "front" | "back" | "both" = "both"
 ): Promise<{ front?: Buffer; back?: Buffer }> {
   const keyBase = cacheKey({
-    rev: 7,
+    rev: 8,
     code: obj.code,
     custom: obj.custom_code,
     mods: obj.modifications,
@@ -475,5 +474,9 @@ export async function renderCard(
 }
 
 export async function renderMaterialsTable(): Promise<Buffer> {
-  return getOrCreatePng("materials_table_v1", () => renderTable());
+  const mats = allMaterials().map((m) => m.symbol);
+  return getOrCreatePng(
+    `materials_table_${cacheKey(mats)}`,
+    () => renderTable()
+  );
 }

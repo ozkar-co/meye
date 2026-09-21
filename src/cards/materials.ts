@@ -1,6 +1,5 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { DATA_DIR } from "../paths.js";
+import { getMaterialRow, listMaterials } from "../catalog.js";
+import type { CatalogMaterial } from "../catalog.js";
 
 export type Material = {
   symbol: string;
@@ -18,19 +17,31 @@ export type Material = {
   group: number;
 };
 
-const materials: Material[] = JSON.parse(
-  readFileSync(path.join(DATA_DIR, "materials.json"), "utf8")
-);
+function toMaterial(row: CatalogMaterial): Material {
+  return {
+    symbol: row.symbol,
+    name: row.name,
+    weight: row.weight,
+    resistence: row.resistence,
+    damping: row.damping,
+    slice: row.slice,
+    damage: row.damage,
+    useful_life: row.useful_life,
+    level: row.level,
+    price: row.price,
+    category: row.category,
+    decadency: row.decadency,
+    group: row.group,
+  };
+}
 
-export const all = materials;
+export function all(): Material[] {
+  return listMaterials().map(toMaterial);
+}
 
 /** Fail fast if material symbol is unknown. */
 export function get(symbol: string): Material {
-  const mat = materials.find((element) => element.symbol === symbol);
-  if (!mat) {
-    throw new Error(`Unknown material: ${symbol}`);
-  }
-  return mat;
+  return toMaterial(getMaterialRow(symbol));
 }
 
 export type RawStats = {

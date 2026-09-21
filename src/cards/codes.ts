@@ -2,24 +2,20 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import numberToBase64 from "number-to-base64";
 import { DATA_DIR } from "../paths.js";
+import * as catalog from "../catalog.js";
 import * as util from "./util.js";
 import type { ItemExtra, ItemMods, ItemParams } from "./models.js";
 
 const { ntob } = numberToBase64 as { ntob: (n: number) => string };
 
 type Dict = {
-  materials: Record<string, number>;
   sizes: Record<string, number>;
-  origins: Record<string, number>;
   modifications: Record<string, string>;
   classes: Record<
     string,
     {
       value: number;
       types: Record<string, number>;
-      /** Subtypes keyed by type name (e.g. de_hoja → recta, flamigera…). */
-      sub_types: Record<string, Record<string, number>>;
-      specializations: Record<string, number>;
     }
   >;
 };
@@ -27,14 +23,6 @@ type Dict = {
 const dict: Dict = JSON.parse(
   readFileSync(path.join(DATA_DIR, "dictionary.json"), "utf8")
 );
-
-function subTypeMap(
-  itemClass: string,
-  itemType: string
-): Record<string, number> {
-  const byType = dict.classes[itemClass]?.sub_types?.[itemType];
-  return byType || { none: 15 };
-}
 
 function atob3(code: string): number {
   const raw = Buffer.from(code, "base64").toString("binary");
@@ -51,7 +39,7 @@ export function decodeBase(code: string) {
     (data >> 14) & 0x7
   );
   if (!itemClass) throw new Error(`Invalid base code class bits: ${code}`);
-  const material = util.getKey(dict.materials, data >> 17);
+  const material = util.getKey(catalog.materialIds(), data >> 17);
   const type = util.getKey(dict.classes[itemClass].types, (data >> 10) & 0xf);
   const dimension = util.getKey(dict.sizes, (data >> 7) & 0x7);
   const thickness = util.getKey(dict.sizes, (data >> 4) & 0x7);
@@ -69,12 +57,14 @@ export function decodeBase(code: string) {
 }
 
 export function encodeBase(params: ItemParams): string {
+  const matId = catalog.materialIds()[params.material];
+  if (matId == null) throw new Error(`Unknown material: ${params.material}`);
   let result = Number(params.quality) * 10;
   result += dict.sizes[String(params.thickness)] << 4;
   result += dict.sizes[String(params.dimension)] << 7;
   result += dict.classes[params.class].types[params.type] << 10;
   result += dict.classes[params.class].value << 14;
-  result += dict.materials[params.material] << 17;
+  result += matId << 17;
   return ntob(result);
 }
 
@@ -98,16 +88,14 @@ export function decodeCustom(
     vital_control: data & 0x1,
   };
   const subId = (data >> 13) & 0xf;
-  const subMap = subTypeMap(itemClass, itemType);
+  const subMap = catalog.subTypeMap(itemClass, itemType);
   const sub_type = util.getKey(subMap, subId) || "none";
   const result: ItemExtra = {
-    origin: util.getKey(dict.origins, (data >> 17) & 0x7f) || "desconocido",
+    origin:
+      util.getKey(catalog.originIds(), (data >> 17) & 0x7f) || "desconocido",
     sub_type: sub_type === "desconocido" ? "none" : sub_type,
     specialization:
-      util.getKey(
-        dict.classes[itemClass].specializations,
-        (data >> 10) & 0x7
-      ) || "none",
+      util.getKey(catalog.specMap(itemClass), (data >> 10) & 0x7) || "none",
     flags: Object.keys(flagsMap).filter((key) => flagsMap[key]),
   };
   if (result.specialization === "desconocido") {
@@ -115,7 +103,7 @@ export function decodeCustom(
   }
   if (extraPart) {
     const hexData = parseInt(extraPart, 16);
-    result.material = util.getKey(dict.materials, hexData >> 3);
+    result.material = util.getKey(catalog.materialIds(), hexData >> 3);
     const th = util.getKey(dict.sizes, hexData & 0x7);
     result.thickness = th !== undefined ? Number(th) : undefined;
   }
@@ -124,13 +112,13 @@ export function decodeCustom(
 
 export function encodeCustom(params: ItemParams): string {
   if (!params.extra) throw new Error("encodeCustom requires params.extra");
-  const subMap = subTypeMap(params.class, params.type);
+  const subMap = catalog.subTypeMap(params.class, params.type);
   const subKey = params.extra.sub_type || "none";
   const subId = subMap[subKey] ?? 15;
   const specKey = params.extra.specialization || "none";
-  const specId = dict.classes[params.class].specializations[specKey] ?? 0;
+  const specId = catalog.specMap(params.class)[specKey] ?? 0;
 
-  let result = (dict.origins[params.extra.origin] ?? 0) << 17;
+  let result = (catalog.originIds()[params.extra.origin] ?? 0) << 17;
   result += subId << 13;
   result += specId << 10;
   if (params.extra.flags) {
@@ -149,7 +137,11 @@ export function encodeCustom(params: ItemParams): string {
   }
   let out = ntob(result);
   if (params.extra.material && params.extra.thickness != null) {
-    let hex = dict.materials[params.extra.material] << 3;
+    const extraMat = catalog.materialIds()[params.extra.material];
+    if (extraMat == null) {
+      throw new Error(`Unknown extra material: ${params.extra.material}`);
+    }
+    let hex = extraMat << 3;
     hex += dict.sizes[String(params.extra.thickness)];
     out += "-" + hex.toString(16);
   }

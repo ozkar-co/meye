@@ -2,9 +2,15 @@ import type { FastifyPluginAsync, FastifyReply } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { create, load } from "../cards/formulas.js";
 import { itemId } from "../cards/codes.js";
-import { findItem, listItems, upsertItem } from "../db.js";
+import { deleteItem, findItem, listItems, upsertItem } from "../db.js";
 import { renderCard } from "../cards/render/index.js";
 import type { ItemParams } from "../cards/models.js";
+import {
+  deleteObjectImage,
+  renameObjectImage,
+  saveObjectImage,
+} from "../assets.js";
+import { httpError } from "../catalog.js";
 
 const EffectSchema = Type.Object({
   title: Type.String(),
@@ -32,6 +38,7 @@ const CreateBody = Type.Object({
   modifications: Type.Optional(Type.Record(Type.String(), Type.Any())),
   effects: Type.Optional(Type.Array(EffectSchema)),
   persist: Type.Optional(Type.Boolean()),
+  previous_id: Type.Optional(Type.String()),
 });
 
 export const itemsRoutes: FastifyPluginAsync = async (app) => {
@@ -76,19 +83,35 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
       },
     },
     async (req) => {
-      const body = req.body as ItemParams & { persist?: boolean };
+      const body = req.body as ItemParams & {
+        persist?: boolean;
+        previous_id?: string;
+      };
       const item = create(body);
       const shouldPersist = Boolean(body.name) && body.persist !== false;
       if (shouldPersist && body.name) {
         const id = itemId(item.code, item.custom_code);
-        upsertItem({
-          id,
-          base_code: item.code,
-          custom_code: item.custom_code,
-          name: body.name,
-          effects: body.effects,
-          modifications: body.modifications,
-        });
+        if (body.previous_id && body.previous_id !== id) {
+          upsertItem({
+            id,
+            base_code: item.code,
+            custom_code: item.custom_code,
+            name: body.name,
+            effects: body.effects,
+            modifications: body.modifications,
+          });
+          deleteItem(body.previous_id);
+          renameObjectImage(body.previous_id, id);
+        } else {
+          upsertItem({
+            id,
+            base_code: item.code,
+            custom_code: item.custom_code,
+            name: body.name,
+            effects: body.effects,
+            modifications: body.modifications,
+          });
+        }
       }
       return item;
     }
@@ -126,6 +149,86 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
     custom: Type.String(),
   });
   const baseParams = Type.Object({ base: Type.String() });
+
+  const removeStored = (base: string, custom?: string) => {
+    const id = itemId(base, custom);
+    const ok = deleteItem(id);
+    if (!ok) throw httpError(404, `No existe el objeto ${id}`);
+    deleteObjectImage(id);
+    return { ok: true, id };
+  };
+
+  const saveImage = async (
+    base: string,
+    custom: string | undefined,
+    req: { file: () => Promise<{ toBuffer: () => Promise<Buffer> } | undefined> }
+  ) => {
+    const id = itemId(base, custom);
+    const file = await req.file();
+    if (!file) throw httpError(400, "Falta el archivo");
+    await saveObjectImage(id, await file.toBuffer());
+    return { ok: true, id };
+  };
+
+  app.delete(
+    "/items/:base/:custom",
+    {
+      schema: {
+        tags: ["items"],
+        summary: "Delete persisted item",
+        params: cardParams,
+      },
+    },
+    async (req) => {
+      const { base, custom } = req.params as { base: string; custom: string };
+      return removeStored(base, custom);
+    }
+  );
+
+  app.delete(
+    "/items/:base",
+    {
+      schema: {
+        tags: ["items"],
+        summary: "Delete persisted item (base code only)",
+        params: baseParams,
+      },
+    },
+    async (req) => {
+      const { base } = req.params as { base: string };
+      return removeStored(base);
+    }
+  );
+
+  app.post(
+    "/items/:base/:custom/image",
+    {
+      schema: {
+        tags: ["items"],
+        summary: "Upload object art PNG",
+        params: cardParams,
+      },
+    },
+    async (req) => {
+      const { base, custom } = req.params as { base: string; custom: string };
+      return saveImage(base, custom, req);
+    }
+  );
+
+  app.post(
+    "/items/:base/image",
+    {
+      schema: {
+        tags: ["items"],
+        summary: "Upload object art PNG (base code only)",
+        params: baseParams,
+      },
+    },
+    async (req) => {
+      const { base } = req.params as { base: string };
+      return saveImage(base, undefined, req);
+    }
+  );
 
   app.get(
     "/items/:base/:custom/card/front",

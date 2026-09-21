@@ -14,6 +14,8 @@ import { materialsRoutes } from "./routes/materials.js";
 import { languagesRoutes } from "./routes/languages.js";
 import { metaRoutes } from "./routes/meta.js";
 import { xpRoutes } from "./routes/xp.js";
+import { catalogRoutes } from "./routes/catalog.js";
+import multipart from "@fastify/multipart";
 
 const PORT = Number(process.env.PORT || 3008);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -57,7 +59,10 @@ async function main() {
     async () => ({ ok: true })
   );
 
+  await app.register(multipart, { limits: { fileSize: 8 * 1024 * 1024 } });
+
   await app.register(metaRoutes);
+  await app.register(catalogRoutes);
   await app.register(itemsRoutes);
   await app.register(materialsRoutes);
   await app.register(languagesRoutes);

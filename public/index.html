@@ -17,27 +17,51 @@
       <header>
         <a class="docs" href="/docs">API docs</a>
         <h1 class="brand">meye <span>tools</span></h1>
-        <p id="tagline">Editor de objetos y cartas · Tierras de Meye</p>
+        <p id="tagline">Herramientas · Tierras de Meye</p>
         <nav class="app-nav" id="app-nav">
-          <button type="button" class="active" data-app="items">Objetos</button>
+          <button type="button" data-app="info">Info</button>
+          <button type="button" class="active" data-app="create">Crear objeto</button>
+          <button type="button" data-app="view">Ver objeto</button>
           <button type="button" data-app="xp">Experiencia</button>
+          <button type="button" data-app="lang">Lenguajes</button>
         </nav>
       </header>
 
-      <div id="app-items">
-      <div class="layout">
-        <section class="panel panel-form">
-          <div class="tabs">
-            <button type="button" class="active" data-mode="edit">Editor</button>
-            <button type="button" data-mode="list">Lista</button>
-            <button type="button" data-mode="load">Código</button>
-          </div>
+      <div id="app-info" hidden>
+        <article class="panel info-doc">
+          <h2>Objetos</h2>
+          <p>Un objeto se identifica por <b>clase</b> y <b>tipo</b>. El tipo entra en el código base y en las fórmulas. El <b>subtipo</b> depende del tipo; la <b>especialización</b> depende de la clase. Ambos son flavor: no cambian daño, peso ni precio.</p>
+          <h3>Clases y tipos</h3>
+          <ul>
+            <li><b>Arma</b> — proyectil, penetrante, de hoja, cizallante, contundente, de tensión. Subtipos de hoja: recta, curva, hoz, media luna, flamígera. Especializaciones: simple, doble filo, aserrada.</li>
+            <li><b>Armadura</b> — coraza, placas, escamada, tachonada, malla, fibras (cada una limita el grosor máximo). Especialización: reforzado.</li>
+            <li><b>Común</b> — hueco, sólido, instrumento, comestible, contenedor, utilitario, escritura, amuleto, ornamento. Casi todos usan simple/ordinario/lujoso; instrumentos (cuerda/percusión/viento) y escritura (pergamino/libro) van aparte. Especialización: reliquia.</li>
+            <li><b>Explosivo</b> — deflagrante o detonante.</li>
+            <li><b>Escudo</b> — la forma (trigonal, rodela, scutum…) es el tipo.</li>
+          </ul>
+          <h3>Cómo se calcula</h3>
+          <p>Tamaño = dimensión × grosor. Peso y precio de materia prima = stats del material × tamaño. En objetos comunes el peso se multiplica por un factor del tipo (hueco ×0.5, sólido ×1.5…).</p>
+          <p><b>Armas.</b> Daño: polinomio del grosor según tipo, o peso (contundente), o amortiguación×dimensión (tensión). Corte y desangre también salen de coeficientes del tipo (0 en contundente y tensión). El daño variable reduce el golpe si la calidad &lt; 1. Alcance: dimensión × factor del tipo, o logaritmo en tensión.</p>
+          <p><b>Explosivos.</b> Daño ≈ resistencia × grosor × dimensión. El “rango” son radios de peso.</p>
+          <p><b>Nivel de fabricación</b> = el más alto entre material, tipo/tamaño, calidad y grosor fuera de límites. Rareza sube con ese nivel (comun → raro/especial/legendario; calidad 1 es magistral). Precio = raw + crafting (según |dim−grosor|) + tasa del nivel. Origen/flags/material extra van en el código custom; las flags místicas suben rareza y tasa.</p>
+          <h2>Experiencia</h2>
+          <p>Hay tres monedas: <b>tipo 1</b> (básico), <b>tipo 2</b> (especial) y <b>tipo 3</b> (sobrenatural).</p>
+          <p>El coste de un atributo es triangular: cada bloque de puntos cuesta 1 XP más que el anterior. En tipo 1 el bloque es 10 puntos; en tipo 2 y 3 es 100. El primer bloque cuesta 3 XP (básico) o 2 XP (especial), o 1 XP si hay <b>talento</b> en ese grupo.</p>
+          <p>Los grupos básicos (físico, mental, coordinación) cuentan cada estadística por separado. Vida cuesta 5 XP por punto. En tipo 2, cada par (p. ej. potenciación + control vital) se <b>suma</b> antes de aplicar la fórmula. El tanque de energía cuesta 10 por punto (5 con talento). Cada habilidad sobrenatural suma sus transformaciones; cada 100 puntos el siguiente cuesta +1 XP.</p>
+        </article>
+      </div>
 
+      <div id="app-create">
+      <div class="layout layout-single">
+        <section class="panel panel-form">
           <form id="edit-form">
             <p class="mode-hint" id="edit-hint">Nuevo objeto</p>
 
             <div class="section">
-              <h3>Identidad</h3>
+              <div class="section-head">
+                <h3>Identidad</h3>
+                <button type="button" class="text-btn" id="open-variants">Administrar subtipos</button>
+              </div>
               <label class="field-label" for="name">Nombre</label>
               <input id="name" type="text" placeholder="Requerido para guardar" />
               <div class="row">
@@ -60,10 +84,16 @@
                   <select id="specialization"></select>
                 </div>
               </div>
+              <label class="field-label" for="object-image">Imagen del objeto</label>
+              <input id="object-image" type="file" accept="image/*" />
+              <p class="mode-hint" id="object-image-hint">Opcional. Se guarda en data/assets/objects al crear o editar.</p>
             </div>
 
             <div class="section">
-              <h3>Físico</h3>
+              <div class="section-head">
+                <h3>Físico</h3>
+                <button type="button" class="text-btn" id="open-materials">Administrar materiales</button>
+              </div>
               <label class="field-label" for="material_q">Material</label>
               <div class="combo" id="material_combo">
                 <input id="material_q" type="text" placeholder="Buscar material…" autocomplete="off" />
@@ -87,7 +117,10 @@
             </div>
 
             <div class="section">
-              <h3>Origen y magia</h3>
+              <div class="section-head">
+                <h3>Origen y magia</h3>
+                <button type="button" class="text-btn" id="open-origins">Administrar orígenes</button>
+              </div>
               <label class="field-label" for="origin_q">Origen</label>
               <div class="combo" id="origin_combo">
                 <input id="origin_q" type="text" placeholder="Buscar origen… (opcional)" autocomplete="off" />
@@ -145,22 +178,6 @@
               <button class="ghost" type="button" id="cancel-btn">Cancelar</button>
             </div>
           </form>
-
-          <div id="list-panel" hidden>
-            <p class="mode-hint">Objetos guardados — clic para editar</p>
-            <ul class="item-list" id="item-list"></ul>
-          </div>
-
-          <form id="load-form" hidden>
-            <label class="field-label" for="base">Código base</label>
-            <input id="base" type="text" placeholder="Bpi3" required />
-            <label class="field-label" for="custom">Código custom</label>
-            <input id="custom" type="text" placeholder="DuaA-10" />
-            <div class="actions">
-              <button class="primary" type="submit">Cargar en editor</button>
-            </div>
-          </form>
-
           <div class="error" id="error" hidden></div>
         </section>
 
@@ -184,6 +201,72 @@
           </div>
         </section>
       </div>
+      </div>
+
+      <div id="app-view" hidden>
+        <div class="view-layout">
+          <section class="panel">
+            <h3>Guardados</h3>
+            <form id="load-form" class="code-load">
+              <input id="base" type="text" placeholder="Código base" required />
+              <input id="custom" type="text" placeholder="Custom (opcional)" />
+              <button class="primary" type="submit">Cargar</button>
+            </form>
+            <ul class="item-list" id="item-list"></ul>
+          </section>
+          <section class="panel result">
+            <div class="empty" id="view-empty">Elige un objeto de la lista.</div>
+            <div id="view-out" hidden>
+              <div class="section-head">
+                <h2 id="view-title"></h2>
+                <div class="view-actions">
+                  <button type="button" class="primary" id="view-edit">Editar</button>
+                  <button type="button" class="danger-btn" id="view-delete">Eliminar</button>
+                </div>
+              </div>
+              <div class="codes"><code id="view-code-line"></code></div>
+              <div class="stats" id="view-stats"></div>
+              <ul class="effects-out" id="view-effects-out"></ul>
+              <div class="cards">
+                <div class="card-slot">
+                  <span class="ph" id="view-front-ph">frente…</span>
+                  <img id="view-front" alt="Frente" hidden />
+                </div>
+                <div class="card-slot">
+                  <span class="ph" id="view-back-ph">reverso…</span>
+                  <img id="view-back" alt="Reverso" hidden />
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div id="app-lang" hidden>
+        <section class="panel">
+          <h2>Sujfi</h2>
+          <form id="lang-form">
+            <label class="field-label" for="lang-word">Palabra</label>
+            <input id="lang-word" type="text" required />
+            <div class="row">
+              <div>
+                <label class="field-label" for="lang-dir">Dirección</label>
+                <select id="lang-dir">
+                  <option value="to">Al sujfi</option>
+                  <option value="from">Desde sujfi</option>
+                </select>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="primary" type="submit">Traducir</button>
+            </div>
+          </form>
+          <p class="lang-result" id="lang-result" hidden></p>
+          <div class="card-slot lang-art">
+            <span class="ph" id="lang-ph">La imagen aparece al traducir.</span>
+            <img id="lang-img" alt="Sujfi" hidden />
+          </div>
+        </section>
       </div>
 
       <div id="app-xp" hidden>
@@ -399,6 +482,129 @@
         </form>
       </div>
     </div>
+
+    <dialog id="modal-materials" class="modal">
+      <form method="dialog" class="modal-head">
+        <h2>Materiales</h2>
+        <button type="submit" class="ghost">Cerrar</button>
+      </form>
+      <div id="mat-list" class="catalog-list"></div>
+      <form id="mat-form" class="catalog-form">
+        <h3>Añadir</h3>
+        <div class="row">
+          <div>
+            <label class="field-label" for="mat-symbol">Símbolo</label>
+            <input id="mat-symbol" required maxlength="4" />
+          </div>
+          <div>
+            <label class="field-label" for="mat-name">Nombre</label>
+            <input id="mat-name" required />
+          </div>
+        </div>
+        <div class="row3">
+          <div>
+            <label class="field-label" for="mat-weight">Peso</label>
+            <input id="mat-weight" type="number" step="0.1" required />
+          </div>
+          <div>
+            <label class="field-label" for="mat-group">Grupo</label>
+            <input id="mat-group" type="number" step="1" required />
+          </div>
+          <div>
+            <label class="field-label" for="mat-price">Precio</label>
+            <input id="mat-price" type="number" step="1" required />
+          </div>
+        </div>
+        <div class="row3">
+          <div>
+            <label class="field-label" for="mat-res">Resistencia</label>
+            <input id="mat-res" type="number" step="1" required />
+          </div>
+          <div>
+            <label class="field-label" for="mat-damp">Amort.</label>
+            <input id="mat-damp" type="number" step="1" required />
+          </div>
+          <div>
+            <label class="field-label" for="mat-life">Vida útil</label>
+            <input id="mat-life" type="number" step="1" required />
+          </div>
+        </div>
+        <div class="row3">
+          <div>
+            <label class="field-label" for="mat-slice">Corte</label>
+            <input id="mat-slice" type="number" step="1" value="0" />
+          </div>
+          <div>
+            <label class="field-label" for="mat-damage">Daño</label>
+            <input id="mat-damage" type="number" step="1" value="0" />
+          </div>
+          <div>
+            <label class="field-label" for="mat-dec">Decadencia</label>
+            <input id="mat-dec" value="-" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label class="field-label" for="mat-level">Nivel</label>
+            <select id="mat-level"></select>
+          </div>
+          <div>
+            <label class="field-label" for="mat-cat">Categoría</label>
+            <select id="mat-cat"></select>
+          </div>
+        </div>
+        <button class="primary" type="submit">Crear material</button>
+        <p class="mode-hint">Máximo 127 materiales en el código (0–126).</p>
+      </form>
+    </dialog>
+
+    <dialog id="modal-origins" class="modal">
+      <form method="dialog" class="modal-head">
+        <h2>Orígenes</h2>
+        <button type="submit" class="ghost">Cerrar</button>
+      </form>
+      <div id="origin-admin-list" class="catalog-list"></div>
+      <form id="origin-form" class="catalog-form">
+        <h3>Añadir</h3>
+        <label class="field-label" for="origin-label">Nombre</label>
+        <input id="origin-label" required />
+        <label class="field-label" for="origin-new-image">Imagen (opcional)</label>
+        <input id="origin-new-image" type="file" accept="image/*" />
+        <button class="primary" type="submit">Crear origen</button>
+      </form>
+    </dialog>
+
+    <dialog id="modal-variants" class="modal">
+      <form method="dialog" class="modal-head">
+        <h2>Subtipos y especializaciones</h2>
+        <button type="submit" class="ghost">Cerrar</button>
+      </form>
+      <p class="mode-hint">No cambian los cálculos. Subtipo 0–14; especialización 1–7.</p>
+      <div class="row">
+        <div>
+          <label class="field-label" for="var-class">Clase</label>
+          <select id="var-class"></select>
+        </div>
+        <div>
+          <label class="field-label" for="var-type">Tipo (subtipos)</label>
+          <select id="var-type"></select>
+        </div>
+      </div>
+      <h3>Subtipos</h3>
+      <div id="sub-list" class="catalog-list"></div>
+      <form id="sub-form" class="catalog-form">
+        <label class="field-label" for="sub-label">Nuevo subtipo</label>
+        <input id="sub-label" required />
+        <button class="primary" type="submit">Añadir subtipo</button>
+      </form>
+      <h3>Especializaciones</h3>
+      <div id="spec-list" class="catalog-list"></div>
+      <form id="spec-form" class="catalog-form">
+        <label class="field-label" for="spec-label">Nueva especialización</label>
+        <input id="spec-label" required />
+        <button class="primary" type="submit">Añadir especialización</button>
+      </form>
+    </dialog>
 
     <script src="/xp-calc.js"></script>
     <script src="/app.js"></script>

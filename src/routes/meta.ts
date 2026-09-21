@@ -2,20 +2,13 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { FastifyPluginAsync } from "fastify";
 import { DATA_DIR } from "../paths.js";
-import { all as materials } from "../cards/materials.js";
-
-type DictClass = {
-  types: Record<string, number>;
-  sub_types: Record<string, Record<string, number>>;
-  specializations: Record<string, number>;
-};
+import { all as allMaterials } from "../cards/materials.js";
+import * as catalog from "../catalog.js";
 
 type Dict = {
-  classes: Record<string, DictClass>;
+  classes: Record<string, { types: Record<string, number> }>;
   sizes: Record<string, number>;
-  origins: Record<string, number>;
   flags: Record<string, number>;
-  modifications: Record<string, string>;
 };
 
 function uniqueKeys(obj: Record<string, unknown> | undefined): string[] {
@@ -28,7 +21,7 @@ function uniqueKeys(obj: Record<string, unknown> | undefined): string[] {
 const dict: Dict = JSON.parse(
   readFileSync(path.join(DATA_DIR, "dictionary.json"), "utf8")
 );
-const labels: Record<string, string> = JSON.parse(
+const staticLabels: Record<string, string> = JSON.parse(
   readFileSync(path.join(DATA_DIR, "labels.json"), "utf8")
 );
 
@@ -60,32 +53,51 @@ export const metaRoutes: FastifyPluginAsync = async (app) => {
       const specializationsByClass: Record<string, string[]> = {};
       for (const c of classes) {
         typesByClass[c] = uniqueKeys(dict.classes[c].types);
-        specializationsByClass[c] = uniqueKeys(
-          dict.classes[c].specializations
-        );
+        specializationsByClass[c] = catalog.listSpecs(c).map((s) => s.key);
         subTypesByType[c] = {};
         for (const t of typesByClass[c]) {
-          subTypesByType[c][t] = uniqueKeys(dict.classes[c].sub_types?.[t]);
+          subTypesByType[c][t] = catalog.listSubTypes(c, t).map((s) => s.key);
         }
       }
       const sizes = [
         ...new Set(Object.keys(dict.sizes).map((s) => Number(s))),
       ].sort((a, b) => a - b);
+      const origins = catalog.listOrigins();
       return {
         classes,
         typesByClass,
         subTypesByType,
         specializationsByClass,
         sizes,
-        materials: materials
+        materials: allMaterials()
           .filter((m) => !m.symbol.includes("+"))
           .map((m) => ({ symbol: m.symbol, name: m.name })),
-        origins: uniqueKeys(dict.origins),
+        origins: origins.map((o) => o.key),
+        originDetails: origins,
         flags: Object.keys(dict.flags),
         qualities: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-        labels,
+        labels: { ...staticLabels, ...catalog.catalogLabels() },
         modFields: NUMERIC_MODS,
         restrictionAttrs: ["F", "A", "V", "R", "I", "S", "C", "W"],
+        craftingLevels: [
+          "aprendiz",
+          "funcion",
+          "disciplina",
+          "ciencia",
+          "mistico",
+          "divino",
+        ],
+        materialCategories: [
+          "Volatil",
+          "Reactivo",
+          "Precioso",
+          "Organico",
+          "No_Metalico",
+          "Mistico",
+          "Metalico",
+          "Metal_Blando",
+          "Alquimenidos",
+        ],
       };
     }
   );

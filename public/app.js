@@ -71,16 +71,20 @@
           });
           list.innerHTML = opts
             .slice(0, 80)
-            .map(
-              (o, i) =>
-                `<li data-value="${escapeAttr(o.value)}" data-i="${i}">${escapeHtml(
-                  o.label
-                )}${
-                  o.hint
-                    ? `<div class="muted">${escapeHtml(o.hint)}</div>`
-                    : ""
-                }</li>`
-            )
+            .map((o, i) => {
+              const thumb = o.thumb
+                ? `<img class="origin-thumb" src="${escapeAttr(o.thumb)}" alt="" />`
+                : o.missingThumb
+                ? `<div class="origin-missing"></div>`
+                : "";
+              return `<li data-value="${escapeAttr(o.value)}" data-i="${i}">${thumb}<span>${escapeHtml(
+                o.label
+              )}${
+                o.hint
+                  ? `<div class="muted">${escapeHtml(o.hint)}</div>`
+                  : ""
+              }</span></li>`;
+            })
             .join("");
           active = -1;
         }
@@ -159,16 +163,8 @@
         fillSelect($("sub_type"), ["none", ...subs]);
       }
 
-      function setMode(mode) {
-        document.querySelectorAll(".tabs button").forEach((b) => {
-          b.classList.toggle("active", b.dataset.mode === mode);
-        });
-        $("edit-form").hidden = mode !== "edit";
-        $("list-panel").hidden = mode !== "list";
-        $("load-form").hidden = mode !== "load";
-        showError("");
-        if (mode === "list") refreshList().catch((e) => showError(e.message));
-      }
+      let viewedItem = null;
+      let pendingObjectImage = null;
 
       function addEffectRow(title = "", description = "", flagKey = null) {
         const row = document.createElement("div");
@@ -416,6 +412,8 @@
         baselineItem = null;
         $("edit-hint").textContent = "Nuevo objeto";
         $("edit-form").reset();
+        pendingObjectImage = null;
+        if ($("object-image")) $("object-image").value = "";
         refreshClassDeps();
         $("dimension").value = "5";
         $("thickness").value = "2";
@@ -446,14 +444,17 @@
         return `/items/${enc(base)}/card/${side}`;
       }
 
-      async function showItem(item) {
-        $("empty").hidden = true;
-        $("out").hidden = false;
-        $("title").textContent = item.name || label(item.type) || "Objeto";
+      async function showItem(item, prefix = "") {
+        const empty = $(prefix ? `${prefix}-empty` : "empty");
+        const out = $(prefix ? `${prefix}-out` : "out");
+        empty.hidden = true;
+        out.hidden = false;
+        $(prefix ? `${prefix}-title` : "title").textContent =
+          item.name || label(item.type) || "Objeto";
         const id = item.custom_code
           ? `${item.code}-${item.custom_code}`
           : item.code;
-        $("code-line").textContent = `#${id} · ${label(item.crafting_level) || item.crafting_level} · ${label(item.rarity) || item.rarity}`;
+        $(prefix ? `${prefix}-code-line` : "code-line").textContent = `#${id} · ${label(item.crafting_level) || item.crafting_level} · ${label(item.rarity) || item.rarity}`;
 
         const stats = [
           ["Daño", item.damage],
@@ -465,7 +466,7 @@
           ["Resist.", item.resistence],
           ["Vida", item.useful_life],
         ];
-        $("stats").innerHTML = stats
+        $(prefix ? `${prefix}-stats` : "stats").innerHTML = stats
           .map(
             ([k, v]) =>
               `<div class="stat"><b>${k}</b><span>${escapeHtml(
@@ -474,7 +475,7 @@
           )
           .join("");
 
-        $("effects-out").innerHTML = (item.effects || [])
+        $(prefix ? `${prefix}-effects-out` : "effects-out").innerHTML = (item.effects || [])
           .map(
             (e) =>
               `<li><strong>${escapeHtml(e.title)}</strong><span>${escapeHtml(
@@ -483,14 +484,18 @@
           )
           .join("");
 
+        const frontEl = $(prefix ? `${prefix}-front` : "front");
+        const backEl = $(prefix ? `${prefix}-back` : "back");
+        const frontPh = $(prefix ? `${prefix}-front-ph` : "front-ph");
+        const backPh = $(prefix ? `${prefix}-back-ph` : "back-ph");
         if (frontUrl) URL.revokeObjectURL(frontUrl);
         if (backUrl) URL.revokeObjectURL(backUrl);
-        $("front").hidden = true;
-        $("back").hidden = true;
-        $("front-ph").hidden = false;
-        $("back-ph").hidden = false;
-        $("front-ph").textContent = "generando frente…";
-        $("back-ph").textContent = "generando reverso…";
+        frontEl.hidden = true;
+        backEl.hidden = true;
+        frontPh.hidden = false;
+        backPh.hidden = false;
+        frontPh.textContent = "generando frente…";
+        backPh.textContent = "generando reverso…";
 
         const bust = `?t=${Date.now()}`;
         const [frontRes, backRes] = await Promise.all([
@@ -501,12 +506,12 @@
         if (!backRes.ok) throw new Error("No se pudo generar el reverso");
         frontUrl = URL.createObjectURL(await frontRes.blob());
         backUrl = URL.createObjectURL(await backRes.blob());
-        $("front").src = frontUrl;
-        $("back").src = backUrl;
-        $("front").hidden = false;
-        $("back").hidden = false;
-        $("front-ph").hidden = true;
-        $("back-ph").hidden = true;
+        frontEl.src = frontUrl;
+        backEl.src = backUrl;
+        frontEl.hidden = false;
+        backEl.hidden = false;
+        frontPh.hidden = true;
+        backPh.hidden = true;
       }
 
       function escapeHtml(s) {
@@ -529,11 +534,17 @@
         return data;
       }
 
-      async function openItem(base, custom) {
+      async function openItem(base, custom, { edit = false } = {}) {
         const item = await fetchItem(base, custom);
-        fillFormFromItem(item);
-        setMode("edit");
-        await showItem(item);
+        viewedItem = item;
+        if (edit) {
+          fillFormFromItem(item);
+          setApp("create");
+          await showItem(item);
+        } else {
+          setApp("view");
+          await showItem(item, "view");
+        }
       }
 
       async function refreshList() {
@@ -566,16 +577,34 @@
         }
       }
 
-      document.querySelectorAll(".tabs button").forEach((b) => {
-        b.addEventListener("click", () => setMode(b.dataset.mode));
-      });
-
       $("class").addEventListener("change", refreshClassDeps);
       $("type").addEventListener("change", refreshTypeDeps);
       $("add-effect").addEventListener("click", () => addEffectRow());
       $("add-mod").addEventListener("click", () => addModRow());
       $("add-rest").addEventListener("click", () => addRestRow());
       $("cancel-btn").addEventListener("click", cancelForm);
+      $("object-image").addEventListener("change", (e) => {
+        pendingObjectImage = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+      });
+
+      async function uploadObjectImage(item) {
+        if (!pendingObjectImage) return;
+        const id = item.custom_code
+          ? `${item.code}/${item.custom_code}`
+          : item.code;
+        const fd = new FormData();
+        fd.append("file", pendingObjectImage, pendingObjectImage.name);
+        const res = await fetch(`/items/${id.split("/").map(encodeURIComponent).join("/")}/image`, {
+          method: "POST",
+          body: fd,
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || "No se pudo subir la imagen");
+        }
+        pendingObjectImage = null;
+        $("object-image").value = "";
+      }
 
       $("edit-form").addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -586,6 +615,11 @@
             showError("Pon un nombre para guardar el objeto.");
             return;
           }
+          if (!creating && baselineItem) {
+            body.previous_id = baselineItem.custom_code
+              ? `${baselineItem.code}-${baselineItem.custom_code}`
+              : baselineItem.code;
+          }
           const res = await fetch("/items", {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -593,6 +627,7 @@
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || res.statusText);
+          await uploadObjectImage(data);
           fillFormFromItem(data);
           await showItem(data);
         } catch (err) {
@@ -611,6 +646,34 @@
         } catch (err) {
           showError(err.message || String(err));
         }
+      });
+
+      $("view-edit").addEventListener("click", async () => {
+        if (!viewedItem) return;
+        fillFormFromItem(viewedItem);
+        setApp("create");
+        await showItem(viewedItem);
+      });
+
+      $("view-delete").addEventListener("click", async () => {
+        if (!viewedItem) return;
+        const id = viewedItem.custom_code
+          ? `${viewedItem.code}-${viewedItem.custom_code}`
+          : viewedItem.code;
+        if (!confirm(`¿Eliminar ${viewedItem.name || id}?`)) return;
+        const path = viewedItem.custom_code
+          ? `/items/${encodeURIComponent(viewedItem.code)}/${encodeURIComponent(viewedItem.custom_code)}`
+          : `/items/${encodeURIComponent(viewedItem.code)}`;
+        const res = await fetch(path, { method: "DELETE" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          showError(data.message || res.statusText);
+          return;
+        }
+        viewedItem = null;
+        $("view-out").hidden = true;
+        $("view-empty").hidden = false;
+        await refreshList();
       });
 
       (async () => {
@@ -634,6 +697,9 @@
           document.body.appendChild(datalist);
 
           fillSelect($("class"), meta.classes);
+          fillSelect($("var-class"), meta.classes);
+          fillSelect($("mat-level"), meta.craftingLevels || []);
+          fillSelect($("mat-cat"), meta.materialCategories || []);
           fillSelect($("dimension"), meta.sizes, (s) => String(cleanNum(s)));
           fillSelect($("thickness"), meta.sizes, (s) => String(cleanNum(s)));
           fillSelect(
@@ -664,10 +730,17 @@
             "origin",
             "origin_list",
             () =>
-              meta.origins.map((o) => ({
-                value: o,
-                label: label(o),
-              }))
+              (meta.originDetails || meta.origins.map((o) => ({ key: o, has_image: false }))).map(
+                (o) => {
+                  const key = o.key || o;
+                  return {
+                    value: key,
+                    label: label(key),
+                    thumb: o.has_image ? `/media/origins/${encodeURIComponent(key)}` : "",
+                    missingThumb: !o.has_image,
+                  };
+                }
+              )
           );
           extraMatCombo = setupCombo(
             "extra_material_combo",
@@ -707,10 +780,315 @@
           });
 
           resetNewForm();
+          wireCatalogUi();
         } catch (err) {
           showError("No se pudo cargar /meta: " + err.message);
         }
       })();
+
+      async function apiJson(url, opts) {
+        const res = await fetch(url, opts);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || res.statusText);
+        return data;
+      }
+
+      async function reloadMeta() {
+        const res = await fetch("/meta");
+        meta = await res.json();
+        if (!res.ok) throw new Error(meta.message || "meta failed");
+        refreshClassDeps();
+      }
+
+      async function refreshMaterialsModal() {
+        const rows = await apiJson("/materials");
+        $("mat-list").innerHTML = rows
+          .filter((m) => !m.symbol.includes("+"))
+          .map(
+            (m) =>
+              `<div class="catalog-row"><span><b>${escapeHtml(m.symbol)}</b> ${escapeHtml(
+                m.name
+              )} <span class="muted">id ${m.encoding_id}</span></span><button type="button" class="remove" data-del-mat="${escapeAttr(
+                m.symbol
+              )}">Quitar</button></div>`
+          )
+          .join("");
+      }
+
+      async function refreshOriginsModal() {
+        const rows = await apiJson("/origins");
+        $("origin-admin-list").innerHTML = rows
+          .map((o) => {
+            const img = o.has_image
+              ? `<img src="/media/origins/${encodeURIComponent(o.key)}?t=${Date.now()}" alt="" />`
+              : `<div class="origin-missing"></div>`;
+            return `<div class="catalog-row">${img}<span><b>${escapeHtml(
+              o.label
+            )}</b> <span class="muted">${escapeHtml(o.key)}</span>${
+              o.has_image ? "" : " · falta imagen"
+            }</span><input type="file" accept="image/*" data-origin-file="${escapeAttr(
+              o.key
+            )}" /><button type="button" class="remove" data-del-origin="${escapeAttr(
+              o.key
+            )}">Quitar</button></div>`;
+          })
+          .join("");
+      }
+
+      function fillVariantSelects() {
+        fillSelect($("var-class"), meta.classes);
+        const c = $("var-class").value;
+        fillSelect($("var-type"), meta.typesByClass[c] || []);
+      }
+
+      async function refreshVariantsModal() {
+        const c = $("var-class").value;
+        const t = $("var-type").value;
+        const subs = await apiJson(
+          `/sub-types?class=${encodeURIComponent(c)}&type=${encodeURIComponent(t)}`
+        );
+        const specs = await apiJson(`/specializations?class=${encodeURIComponent(c)}`);
+        $("sub-list").innerHTML = subs
+          .map(
+            (s) =>
+              `<div class="catalog-row"><span>${escapeHtml(s.label)} <span class="muted">${escapeHtml(
+                s.key
+              )} · ${s.encoding_id}</span></span><button type="button" class="remove" data-del-sub="${escapeAttr(
+                `${s.class}/${s.type}/${s.key}`
+              )}">Quitar</button></div>`
+          )
+          .join("") || '<p class="mode-hint">Ninguno</p>';
+        $("spec-list").innerHTML = specs
+          .map(
+            (s) =>
+              `<div class="catalog-row"><span>${escapeHtml(s.label)} <span class="muted">${escapeHtml(
+                s.key
+              )} · ${s.encoding_id}</span></span><button type="button" class="remove" data-del-spec="${escapeAttr(
+                `${s.class}/${s.key}`
+              )}">Quitar</button></div>`
+          )
+          .join("") || '<p class="mode-hint">Ninguna</p>';
+      }
+
+      function wireCatalogUi() {
+        $("open-materials").addEventListener("click", async () => {
+          await refreshMaterialsModal();
+          $("modal-materials").showModal();
+        });
+        $("open-origins").addEventListener("click", async () => {
+          await refreshOriginsModal();
+          $("modal-origins").showModal();
+        });
+        $("open-variants").addEventListener("click", async () => {
+          fillVariantSelects();
+          await refreshVariantsModal();
+          $("modal-variants").showModal();
+        });
+
+        $("mat-list").addEventListener("click", async (e) => {
+          const btn = e.target.closest("[data-del-mat]");
+          if (!btn) return;
+          if (!confirm(`¿Eliminar material ${btn.dataset.delMat}?`)) return;
+          try {
+            await apiJson(`/materials/${encodeURIComponent(btn.dataset.delMat)}`, {
+              method: "DELETE",
+            });
+            await reloadMeta();
+            await refreshMaterialsModal();
+          } catch (err) {
+            showError(err.message);
+          }
+        });
+
+        $("mat-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            await apiJson("/materials", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                symbol: $("mat-symbol").value,
+                name: $("mat-name").value,
+                weight: Number($("mat-weight").value),
+                group: Number($("mat-group").value),
+                price: Number($("mat-price").value),
+                resistence: Number($("mat-res").value),
+                damping: Number($("mat-damp").value),
+                useful_life: Number($("mat-life").value),
+                slice: Number($("mat-slice").value || 0),
+                damage: Number($("mat-damage").value || 0),
+                decadency: $("mat-dec").value || "-",
+                level: $("mat-level").value,
+                category: $("mat-cat").value,
+              }),
+            });
+            $("mat-form").reset();
+            await reloadMeta();
+            await refreshMaterialsModal();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+
+        $("origin-admin-list").addEventListener("click", async (e) => {
+          const btn = e.target.closest("[data-del-origin]");
+          if (!btn) return;
+          if (!confirm(`¿Eliminar origen ${btn.dataset.delOrigin}?`)) return;
+          try {
+            await apiJson(`/origins/${encodeURIComponent(btn.dataset.delOrigin)}`, {
+              method: "DELETE",
+            });
+            await reloadMeta();
+            await refreshOriginsModal();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+        $("origin-admin-list").addEventListener("change", async (e) => {
+          const input = e.target.closest("[data-origin-file]");
+          if (!input || !input.files[0]) return;
+          const fd = new FormData();
+          fd.append("file", input.files[0], input.files[0].name);
+          const res = await fetch(
+            `/origins/${encodeURIComponent(input.dataset.originFile)}/image`,
+            { method: "POST", body: fd }
+          );
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            alert(data.message || "No se pudo subir");
+            return;
+          }
+          await reloadMeta();
+          await refreshOriginsModal();
+        });
+
+        $("origin-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            const created = await apiJson("/origins", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ label: $("origin-label").value }),
+            });
+            const file = $("origin-new-image").files[0];
+            if (file) {
+              const fd = new FormData();
+              fd.append("file", file, file.name);
+              const res = await fetch(
+                `/origins/${encodeURIComponent(created.key)}/image`,
+                { method: "POST", body: fd }
+              );
+              if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.message || "Origen creado, falló la imagen");
+              }
+            }
+            $("origin-form").reset();
+            await reloadMeta();
+            await refreshOriginsModal();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+
+        $("var-class").addEventListener("change", async () => {
+          fillSelect($("var-type"), meta.typesByClass[$("var-class").value] || []);
+          await refreshVariantsModal();
+        });
+        $("var-type").addEventListener("change", () => refreshVariantsModal());
+
+        $("sub-list").addEventListener("click", async (e) => {
+          const btn = e.target.closest("[data-del-sub]");
+          if (!btn) return;
+          if (!confirm("¿Eliminar subtipo?")) return;
+          try {
+            await apiJson(`/sub-types/${btn.dataset.delSub}`, { method: "DELETE" });
+            await reloadMeta();
+            await refreshVariantsModal();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+        $("spec-list").addEventListener("click", async (e) => {
+          const btn = e.target.closest("[data-del-spec]");
+          if (!btn) return;
+          if (!confirm("¿Eliminar especialización?")) return;
+          try {
+            await apiJson(`/specializations/${btn.dataset.delSpec}`, {
+              method: "DELETE",
+            });
+            await reloadMeta();
+            await refreshVariantsModal();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+        $("sub-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            await apiJson("/sub-types", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                class: $("var-class").value,
+                type: $("var-type").value,
+                label: $("sub-label").value,
+              }),
+            });
+            $("sub-label").value = "";
+            await reloadMeta();
+            await refreshVariantsModal();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+        $("spec-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            await apiJson("/specializations", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                class: $("var-class").value,
+                label: $("spec-label").value,
+              }),
+            });
+            $("spec-label").value = "";
+            await reloadMeta();
+            await refreshVariantsModal();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+
+        $("lang-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const word = $("lang-word").value.trim();
+          const direction = $("lang-dir").value;
+          try {
+            const data = await apiJson("/languages/sujfi/translate", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ word, direction }),
+            });
+            $("lang-result").hidden = false;
+            $("lang-result").textContent = data.result;
+            const imgRes = await fetch("/languages/sujfi/image", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ word: direction === "to" ? data.result : word }),
+            });
+            if (imgRes.ok) {
+              const blob = await imgRes.blob();
+              $("lang-img").src = URL.createObjectURL(blob);
+              $("lang-img").hidden = false;
+              $("lang-ph").hidden = true;
+            }
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      }
 
       const XP_STORAGE_KEY = "meye-xp-calc";
 
@@ -825,16 +1203,23 @@
         document.querySelectorAll("#app-nav button").forEach((b) => {
           b.classList.toggle("active", b.dataset.app === app);
         });
-        $("app-items").hidden = app !== "items";
+        $("app-info").hidden = app !== "info";
+        $("app-create").hidden = app !== "create";
+        $("app-view").hidden = app !== "view";
         $("app-xp").hidden = app !== "xp";
-        $("tagline").textContent =
-          app === "xp"
-            ? "Calculadora de experiencia · Tierras de Meye"
-            : "Editor de objetos y cartas · Tierras de Meye";
+        $("app-lang").hidden = app !== "lang";
+        const lines = {
+          info: "Definiciones y fórmulas · Tierras de Meye",
+          create: "Editor de objetos y cartas · Tierras de Meye",
+          view: "Colección de objetos · Tierras de Meye",
+          xp: "Calculadora de experiencia · Tierras de Meye",
+          lang: "Lenguajes construidos · Tierras de Meye",
+        };
+        $("tagline").textContent = lines[app] || lines.create;
         const url = new URL(location.href);
-        if (app === "xp") url.hash = "xp";
-        else url.hash = "";
+        url.hash = app === "create" ? "" : app;
         history.replaceState(null, "", url.pathname + url.search + url.hash);
+        if (app === "view") refreshList().catch((e) => showError(e.message));
       }
 
       function hintText(spent, next) {
@@ -1090,13 +1475,15 @@
       });
 
       fillXpForm();
-      if (location.hash === "#xp") setApp("xp");
+      const start = (location.hash || "").replace("#", "");
+      if (["info", "view", "xp", "lang"].includes(start)) setApp(start);
 
       window.addEventListener("pageshow", (e) => {
         if (!e.persisted) return;
         xpState = loadXpState();
         fillXpForm();
-        if (location.hash === "#xp") setApp("xp");
+        const h = (location.hash || "").replace("#", "");
+        if (["info", "view", "xp", "lang"].includes(h)) setApp(h);
       });
       window.addEventListener("pagehide", () => {
         readXpForm();
