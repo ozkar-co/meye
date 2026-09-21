@@ -49,6 +49,20 @@
           return Math.floor(sum / 2);
         }
 
+        function statAverage(values) {
+          if (!values.length) return 0;
+          return values.reduce((a, n) => a + clampStat(n), 0) / values.length;
+        }
+
+        function dieForAverage(avg) {
+          if (avg >= 50) return "d20";
+          if (avg >= 40) return "d12";
+          if (avg >= 30) return "d10";
+          if (avg >= 20) return "d8";
+          if (avg >= 10) return "d6";
+          return "d4";
+        }
+
         function independentGroup(stats, levelStep, firstLevelCost) {
           const out = {};
           let spent = 0;
@@ -206,6 +220,8 @@
         global.MeyeXp = {
           clampStat,
           maxLifeFromPhysical,
+          statAverage,
+          dieForAverage,
           calculateExperience,
         };
       })(window);

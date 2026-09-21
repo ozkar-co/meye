@@ -1469,19 +1469,95 @@
           `Gastado: <b>${fmtXp(group.spent)}</b>${extra}`;
         const pairExtra = (group) =>
           ` · suma ${fmtXp(group.sum)} · próximo <b>${fmtXp(group.next)}</b>`;
+        const avgExtra = (avg) => {
+          const rounded = Math.round(avg * 10) / 10;
+          return ` · promedio ${fmtXp(rounded)}`;
+        };
+
+        const phys = xpState.basic.physical;
+        const coord = xpState.basic.coordination;
+        const ment = xpState.basic.mental;
+        const physAvg = window.MeyeXp.statAverage([
+          phys.strength,
+          phys.agility,
+          phys.speed,
+          phys.resistance,
+        ]);
+        const coordAvg = window.MeyeXp.statAverage([
+          coord.precision,
+          coord.calculation,
+          coord.range,
+          coord.reflexes,
+        ]);
+        const mentAvg = window.MeyeXp.statAverage([
+          ment.intelligence,
+          ment.wisdom,
+          ment.concentration,
+          ment.will,
+        ]);
+        const tankAvg = window.MeyeXp.clampStat(xpState.special.energyTank);
+
+        const setDie = (key, avg) => {
+          const el = document.querySelector(`[data-xp-die="${key}"]`);
+          if (el) {
+            const die = window.MeyeXp.dieForAverage(avg);
+            el.textContent = die;
+            el.title = `Promedio ${fmtXp(Math.round(avg * 10) / 10)} · ${die}`;
+          }
+        };
+        setDie("basic.physical", physAvg);
+        setDie("basic.coordination", coordAvg);
+        setDie("basic.mental", mentAvg);
+        setDie("special.energyTank", tankAvg);
 
         document.querySelector('[data-xp-group="basic.physical"]').innerHTML =
-          groupText(result.basic.physical);
+          groupText(result.basic.physical, avgExtra(physAvg));
         document.querySelector('[data-xp-group="basic.mental"]').innerHTML =
-          groupText(result.basic.mental);
+          groupText(result.basic.mental, avgExtra(mentAvg));
         document.querySelector('[data-xp-group="basic.coordination"]').innerHTML =
-          groupText(result.basic.coordination);
+          groupText(result.basic.coordination, avgExtra(coordAvg));
         document.querySelector('[data-xp-group="special.physical"]').innerHTML =
           groupText(result.special.physical, pairExtra(result.special.physical));
         document.querySelector('[data-xp-group="special.energy"]').innerHTML =
           groupText(result.special.energy, pairExtra(result.special.energy));
         document.querySelector('[data-xp-group="special.mental"]').innerHTML =
           groupText(result.special.mental, pairExtra(result.special.mental));
+
+        const type1Talents = [
+          xpState.basic.physical.talented,
+          xpState.basic.coordination.talented,
+          xpState.basic.mental.talented,
+          xpState.special.energyTankTalented,
+        ].filter(Boolean).length;
+        const type2Talents = [
+          xpState.special.physical.talented,
+          xpState.special.mental.talented,
+          xpState.special.energy.talented,
+        ].filter(Boolean).length;
+        const warnBits = [];
+        if (type1Talents < 1) {
+          warnBits.push(
+            "Falta un fuerte de tipo 1 (físico, coordinación, mental o contenedor de energía)."
+          );
+        } else if (type1Talents > 1) {
+          warnBits.push(
+            "Más de un fuerte de tipo 1. Solo personajes con doble o triple fuerte pueden tener más de uno."
+          );
+        }
+        if (type2Talents < 1) {
+          warnBits.push(
+            "Falta un fuerte de tipo 2 (H. físicas, H. mentales o H. energía)."
+          );
+        } else if (type2Talents > 1) {
+          warnBits.push(
+            "Más de un fuerte de tipo 2. Solo personajes especiales pueden tener más de uno."
+          );
+        }
+        const warnBox = $("xp-talent-warn");
+        if (warnBox) {
+          warnBox.hidden = warnBits.length === 0;
+          warnBox.innerHTML = warnBits.map((m) => `<p>${m}</p>`).join("");
+        }
 
         document.querySelectorAll("[data-xp-skill]").forEach((el) => {
           const i = Number(el.dataset.xpSkill);

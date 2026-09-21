@@ -65,6 +65,23 @@ export function energyTankCost(talented: boolean): number {
   return talented ? ENERGY_TANK_TALENTED_COST : ENERGY_TANK_COST;
 }
 
+/** Average of a type-1 block; empty → 0. */
+export function statAverage(values: number[]): number {
+  if (!values.length) return 0;
+  const sum = values.reduce((a, n) => a + clampStat(n), 0);
+  return sum / values.length;
+}
+
+/** Type-1 check die from a block average. */
+export function dieForAverage(avg: number): "d4" | "d6" | "d8" | "d10" | "d12" | "d20" {
+  if (avg >= 50) return "d20";
+  if (avg >= 40) return "d12";
+  if (avg >= 30) return "d10";
+  if (avg >= 20) return "d8";
+  if (avg >= 10) return "d6";
+  return "d4";
+}
+
 /** Integer cap: 2 × average of the four physical stats (floor). */
 export function maxLifeFromPhysical(physical: {
   strength: number;

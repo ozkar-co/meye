@@ -46,7 +46,13 @@
               <li>
                 <a href="#info-experiencia">Experiencia</a>
                 <ol>
+                  <li><a href="#info-xp-costes">Costes y monedas</a></li>
+                  <li><a href="#info-fuertes">Fuertes (talentos)</a></li>
+                  <li><a href="#info-dados">Dados de tipo 1</a></li>
                   <li><a href="#info-vida">Vida</a></li>
+                  <li><a href="#info-energia">Contenedor de energía</a></li>
+                  <li><a href="#info-tipo2">Habilidades de tipo 2</a></li>
+                  <li><a href="#info-tipo3">Sobrenatural</a></li>
                 </ol>
               </li>
               <li>
@@ -244,14 +250,77 @@
           </div>
 
           <h2 id="info-experiencia">Experiencia</h2>
-          <p>Hay tres monedas: <b>tipo 1</b> (básico), <b>tipo 2</b> (especial) y <b>tipo 3</b> (sobrenatural).</p>
-          <p>El coste de un atributo es triangular: cada bloque de puntos cuesta 1 XP más que el anterior. En tipo 1 el bloque es 10 puntos; en tipo 2 y 3 es 100. El primer bloque cuesta 3 XP (básico) o 2 XP (especial), o 1 XP si hay <b>talento</b> en ese grupo.</p>
-          <p>Los grupos básicos (físico, mental, coordinación) cuentan cada estadística por separado. Vida cuesta 5 XP por punto, con el tope de abajo. En tipo 2, cada par (p. ej. potenciación + control vital) se <b>suma</b> antes de aplicar la fórmula. El tanque de energía cuesta 10 por punto (5 con talento). Cada habilidad sobrenatural suma sus transformaciones; cada 100 puntos el siguiente cuesta +1 XP.</p>
+          <p>Hay tres monedas: <b>tipo 1</b> (atributos básicos), <b>tipo 2</b> (habilidades especiales) y <b>tipo 3</b> (sobrenatural).</p>
+
+          <h3 id="info-xp-costes">Costes y monedas</h3>
+          <p>El coste de un atributo es triangular: cada bloque de puntos cuesta 1 XP más que el anterior.</p>
+          <ul>
+            <li><b>Tipo 1</b> — el bloque es 10 puntos. El primer bloque cuesta 3 XP, o <b>1 XP</b> si ese grupo es un <b>fuerte</b>.</li>
+            <li><b>Tipo 2</b> — el bloque es 100 puntos. El primer bloque cuesta 2 XP, o <b>1 XP</b> con fuerte. Las dos estadísticas de cada grupo de habilidades se <b>suman</b> antes de aplicar la fórmula.</li>
+            <li><b>Tipo 3</b> — el bloque es 100 puntos. El primer bloque cuesta 1 XP. Cada habilidad suma sus transformaciones.</li>
+          </ul>
+          <p>Los grupos de tipo 1 (físico, mental, coordinación) cuentan cada estadística por separado. Vida cuesta 5 XP por punto, con el tope de <a href="#info-vida">abajo</a>. El <a href="#info-energia">contenedor de energía</a> cuesta 10 XP por punto (5 con fuerte) y ese gasto se anota en la moneda de tipo 2.</p>
+
+          <h3 id="info-fuertes">Fuertes (talentos)</h3>
+          <p>Un <b>fuerte</b> (talento) abarata el primer bloque de ese grupo. En la ficha hay dos capas:</p>
+          <ul>
+            <li><b>Tipo 1</b> — físico, coordinación, mental y contenedor de energía. El personaje debe tener <b>como mínimo uno</b>. Más de uno solo lo tienen los de <b>doble o triple fuerte</b> (en la calculadora es una advertencia, no un bloqueo).</li>
+            <li><b>Tipo 2</b> — H. físicas, H. mentales y H. energía. Lo normal es <b>exactamente uno</b>. Más de uno solo lo tienen personajes <b>especiales</b> (también advertencia).</li>
+          </ul>
+          <p>El fuerte de contenedor de energía es de tipo 1; no cuenta como el fuerte de H. energía (tipo 2).</p>
+
+          <h3 id="info-dados">Dados de tipo 1</h3>
+          <p>Cada bloque de tipo 1 tira con un dado según el <b>promedio</b> de sus valores (en el contenedor de energía el “promedio” es el propio valor). El hexágono de la calculadora muestra ese dado:</p>
+          <div class="info-dice">
+            <figure><span class="xp-die">d4</span><figcaption>&lt; 10</figcaption></figure>
+            <figure><span class="xp-die">d6</span><figcaption>10 o más</figcaption></figure>
+            <figure><span class="xp-die">d8</span><figcaption>20 o más</figcaption></figure>
+            <figure><span class="xp-die">d10</span><figcaption>30 o más</figcaption></figure>
+            <figure><span class="xp-die">d12</span><figcaption>40 o más</figcaption></figure>
+            <figure><span class="xp-die">d20</span><figcaption>50 o más</figcaption></figure>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Promedio</th><th>Dado</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>50 o más</td><td>d20</td></tr>
+              <tr><td>40 o más</td><td>d12</td></tr>
+              <tr><td>30 o más</td><td>d10</td></tr>
+              <tr><td>20 o más</td><td>d8</td></tr>
+              <tr><td>10 o más</td><td>d6</td></tr>
+              <tr><td>menos de 10</td><td>d4</td></tr>
+            </tbody>
+          </table>
+          <p>Ejemplo: fuerza 60, resistencia 40, velocidad 50, agilidad 50 → promedio 50 → <b>d20</b>.</p>
+          <p>Bloques de tipo 1 y qué promedian:</p>
+          <ul>
+            <li><b>Físico</b> — fuerza, agilidad, velocidad, resistencia.</li>
+            <li><b>Coordinación</b> — precisión, cálculo, alcance, reflejos.</li>
+            <li><b>Mental</b> — inteligencia, sabiduría, concentración, voluntad.</li>
+            <li><b>Contenedor de energía</b> — el valor del contenedor.</li>
+          </ul>
 
           <h3 id="info-vida">Vida</h3>
           <p>La vida no puede superar el <b>doble del promedio</b> de los cuatro valores físicos (fuerza, resistencia, velocidad y agilidad). El tope entero es el suelo de esa cantidad: <code>suelo((F + R + Vel + A) / 2)</code>.</p>
           <p>Ejemplo: fuerza 60, resistencia 40, velocidad 50, agilidad 50 → promedio 50 → vida máxima <b>100</b>.</p>
-          <p>Si bajan los físicos, la vida se recorta al nuevo tope. Con todos los físicos a 0 el máximo es 0.</p>
+          <p>Si bajan los físicos, la vida se recorta al nuevo tope. Con todos los físicos a 0 el máximo es 0. Cuesta 5 XP por punto (moneda tipo 1). No tiene fuerte propio.</p>
+
+          <h3 id="info-energia">Contenedor de energía</h3>
+          <p>Es el depósito de energía del personaje. Cuesta <b>10 XP</b> por punto, o <b>5 XP</b> si es un fuerte de tipo 1. El gasto se cuenta en la moneda de tipo 2.</p>
+          <p>Su dado de chequeo usa el valor del contenedor con la misma tabla que los demás bloques de tipo 1.</p>
+
+          <h3 id="info-tipo2">Habilidades de tipo 2</h3>
+          <p>Tres pares. En cada uno las dos cifras se suman y esa suma entra en la fórmula triangular (bloques de 100).</p>
+          <ul>
+            <li><b>H. físicas</b> — potenciación y control vital.</li>
+            <li><b>H. mentales</b> — ilusión y control mental.</li>
+            <li><b>H. energía</b> — energía pura y manejo de objetos.</li>
+          </ul>
+          <p>Un fuerte en el grupo hace que el primer bloque cueste 1 XP en lugar de 2.</p>
+
+          <h3 id="info-tipo3">Sobrenatural</h3>
+          <p>Opcional (tipo 3). Cada habilidad suma sus transformaciones; cada 100 puntos el siguiente cuesta +1 XP. El primer bloque cuesta 1 XP.</p>
 
           <h2 id="info-lenguajes">Lenguajes</h2>
           <p>Por ahora hay un lenguaje construido: <b>Sujfi</b>. La pestaña <b>Lenguajes</b> traduce en ambos sentidos y pinta una imagen tipográfica; aquí está el mecanismo.</p>
@@ -539,12 +608,16 @@
               <button type="button" id="xp-reset">Reiniciar</button>
             </div>
           </div>
+          <div id="xp-talent-warn" class="xp-warn" hidden></div>
 
           <div class="xp-row xp-row-3">
             <article class="xp-card">
               <div class="section-head">
-                <h3>Físico</h3>
-                <label class="talent"><input type="checkbox" data-xp-flag="basic.physical.talented" /> Talento</label>
+                <div class="xp-head-left">
+                  <span class="xp-die" data-xp-die="basic.physical" title="Dado del bloque físico">d4</span>
+                  <h3>Físico</h3>
+                </div>
+                <label class="talent"><input type="checkbox" data-xp-flag="basic.physical.talented" /> Fuerte</label>
               </div>
               <div class="xp-fields">
                 <div>
@@ -569,8 +642,11 @@
 
             <article class="xp-card">
               <div class="section-head">
-                <h3>Coordinación</h3>
-                <label class="talent"><input type="checkbox" data-xp-flag="basic.coordination.talented" /> Talento</label>
+                <div class="xp-head-left">
+                  <span class="xp-die" data-xp-die="basic.coordination" title="Dado del bloque de coordinación">d4</span>
+                  <h3>Coordinación</h3>
+                </div>
+                <label class="talent"><input type="checkbox" data-xp-flag="basic.coordination.talented" /> Fuerte</label>
               </div>
               <div class="xp-fields">
                 <div>
@@ -595,8 +671,11 @@
 
             <article class="xp-card">
               <div class="section-head">
-                <h3>Mental</h3>
-                <label class="talent"><input type="checkbox" data-xp-flag="basic.mental.talented" /> Talento</label>
+                <div class="xp-head-left">
+                  <span class="xp-die" data-xp-die="basic.mental" title="Dado del bloque mental">d4</span>
+                  <h3>Mental</h3>
+                </div>
+                <label class="talent"><input type="checkbox" data-xp-flag="basic.mental.talented" /> Fuerte</label>
               </div>
               <div class="xp-fields">
                 <div>
@@ -623,8 +702,8 @@
           <div class="xp-row xp-row-3">
             <article class="xp-card">
               <div class="section-head">
-                <h3>Físicas</h3>
-                <label class="talent"><input type="checkbox" data-xp-flag="special.physical.talented" /> Talento</label>
+                <h3>H. físicas</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.physical.talented" /> Fuerte</label>
               </div>
               <div class="xp-fields">
                 <div>
@@ -641,8 +720,8 @@
 
             <article class="xp-card">
               <div class="section-head">
-                <h3>Mentales</h3>
-                <label class="talent"><input type="checkbox" data-xp-flag="special.mental.talented" /> Talento</label>
+                <h3>H. mentales</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.mental.talented" /> Fuerte</label>
               </div>
               <div class="xp-fields">
                 <div>
@@ -659,12 +738,12 @@
 
             <article class="xp-card">
               <div class="section-head">
-                <h3>Energía</h3>
-                <label class="talent"><input type="checkbox" data-xp-flag="special.energy.talented" /> Talento</label>
+                <h3>H. energía</h3>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.energy.talented" /> Fuerte</label>
               </div>
               <div class="xp-fields">
                 <div>
-                  <label class="field-label" for="xp-energy-handling">Manejo de energía</label>
+                  <label class="field-label" for="xp-energy-handling">Energía pura</label>
                   <input id="xp-energy-handling" type="number" min="0" step="1" data-xp-path="special.energy.energyHandling" />
                 </div>
                 <div>
@@ -689,10 +768,13 @@
 
             <article class="xp-card">
               <div class="section-head">
-                <h3>Tanque de energía</h3>
-                <label class="talent"><input type="checkbox" data-xp-flag="special.energyTankTalented" /> Talento</label>
+                <div class="xp-head-left">
+                  <span class="xp-die" data-xp-die="special.energyTank" title="Dado del contenedor de energía">d4</span>
+                  <h3>Contenedor de energía</h3>
+                </div>
+                <label class="talent"><input type="checkbox" data-xp-flag="special.energyTankTalented" /> Fuerte</label>
               </div>
-              <label class="field-label" for="xp-energy-tank">Tanque</label>
+              <label class="field-label" for="xp-energy-tank">Energía</label>
               <input id="xp-energy-tank" type="number" min="0" step="1" data-xp-path="special.energyTank" />
               <div class="xp-hint" data-xp-hint="special.energyTank"></div>
             </article>
