@@ -65,6 +65,21 @@ export function energyTankCost(talented: boolean): number {
   return talented ? ENERGY_TANK_TALENTED_COST : ENERGY_TANK_COST;
 }
 
+/** Integer cap: 2 × average of the four physical stats (floor). */
+export function maxLifeFromPhysical(physical: {
+  strength: number;
+  agility: number;
+  speed: number;
+  resistance: number;
+}): number {
+  const sum =
+    clampStat(physical.strength) +
+    clampStat(physical.agility) +
+    clampStat(physical.speed) +
+    clampStat(physical.resistance);
+  return Math.floor(sum / 2);
+}
+
 export type BasicStatsInput = {
   physical: {
     strength: number;
@@ -175,11 +190,13 @@ export function calculateBasicXp(stats: BasicStatsInput) {
     LEVEL_STEP_BASIC,
     coordCost
   );
-  const lifeValue = clampStat(stats.life);
+  const maxLife = maxLifeFromPhysical(stats.physical);
+  const lifeValue = Math.min(clampStat(stats.life), maxLife);
   const life = {
     value: lifeValue,
+    max: maxLife,
     spent: COST_LIFE * lifeValue,
-    next: COST_LIFE,
+    next: lifeValue < maxLife ? COST_LIFE : 0,
   };
 
   return {

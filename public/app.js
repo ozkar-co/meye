@@ -1299,6 +1299,25 @@
         wireNumericInputs(root);
       }
 
+      function enforceLifeCap() {
+        if (!window.MeyeXp) return 0;
+        const max = window.MeyeXp.maxLifeFromPhysical(xpState.basic.physical);
+        const lifeInput = $("xp-life");
+        if (lifeInput) lifeInput.max = String(max);
+        if (xpState.basic.life > max) {
+          xpState.basic.life = max;
+          if (lifeInput) lifeInput.value = String(max);
+        }
+        const capNote = $("xp-life-cap");
+        if (capNote) {
+          capNote.textContent =
+            max > 0
+              ? `Tope ${fmtXp(max)} · doble del promedio físico`
+              : "Tope 0 · sube los valores físicos para poder tener vida";
+        }
+        return max;
+      }
+
       function applyXpInput(t) {
         if (!(t instanceof HTMLInputElement)) return false;
         if (t.id === "xp-supernatural-toggle") {
@@ -1308,6 +1327,12 @@
         }
         if (t.dataset.xpPath) {
           setPath(xpState, t.dataset.xpPath, window.MeyeXp.clampStat(t.value));
+          if (
+            t.dataset.xpPath === "basic.life" ||
+            t.dataset.xpPath.startsWith("basic.physical.")
+          ) {
+            enforceLifeCap();
+          }
           return true;
         }
         if (t.dataset.xpFlag) {
@@ -1375,6 +1400,7 @@
             : "";
           renderXpSkills();
           wireNumericInputs($("xp-form"));
+          enforceLifeCap();
           refreshXp();
         } finally {
           xpHydrating = false;
@@ -1383,6 +1409,7 @@
 
       function refreshXp() {
         if (!window.MeyeXp) return;
+        enforceLifeCap();
         const result = window.MeyeXp.calculateExperience({
           basic: xpState.basic,
           special: xpState.special,
@@ -1424,7 +1451,11 @@
 
         const lifeHint = document.querySelector('[data-xp-hint="basic.life"]');
         if (lifeHint) {
-          lifeHint.innerHTML = hintText(result.basic.life.spent, result.basic.life.next);
+          const nextBit =
+            result.basic.life.next > 0
+              ? ` · próximo <b>${fmtXp(result.basic.life.next)}</b>`
+              : " · tope alcanzado";
+          lifeHint.innerHTML = `gastado <b>${fmtXp(result.basic.life.spent)}</b>${nextBit}`;
         }
         const tankHint = document.querySelector('[data-xp-hint="special.energyTank"]');
         if (tankHint) {

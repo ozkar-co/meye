@@ -40,6 +40,15 @@
           return talented ? ENERGY_TANK_TALENTED_COST : ENERGY_TANK_COST;
         }
 
+        function maxLifeFromPhysical(physical) {
+          const sum =
+            clampStat(physical.strength) +
+            clampStat(physical.agility) +
+            clampStat(physical.speed) +
+            clampStat(physical.resistance);
+          return Math.floor(sum / 2);
+        }
+
         function independentGroup(stats, levelStep, firstLevelCost) {
           const out = {};
           let spent = 0;
@@ -103,11 +112,13 @@
             LEVEL_STEP_BASIC,
             basicFirstLevelCost(stats.coordination.talented)
           );
-          const lifeValue = clampStat(stats.life);
+          const maxLife = maxLifeFromPhysical(stats.physical);
+          const lifeValue = Math.min(clampStat(stats.life), maxLife);
           const life = {
             value: lifeValue,
+            max: maxLife,
             spent: COST_LIFE * lifeValue,
-            next: COST_LIFE,
+            next: lifeValue < maxLife ? COST_LIFE : 0,
           };
           return {
             total: physical.spent + mental.spent + coordination.spent + life.spent,
@@ -194,6 +205,7 @@
 
         global.MeyeXp = {
           clampStat,
+          maxLifeFromPhysical,
           calculateExperience,
         };
       })(window);

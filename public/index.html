@@ -43,7 +43,12 @@
                   <li><a href="#info-arte">Arte de las cartas</a></li>
                 </ol>
               </li>
-              <li><a href="#info-experiencia">Experiencia</a></li>
+              <li>
+                <a href="#info-experiencia">Experiencia</a>
+                <ol>
+                  <li><a href="#info-vida">Vida</a></li>
+                </ol>
+              </li>
               <li>
                 <a href="#info-lenguajes">Lenguajes</a>
                 <ol>
@@ -241,7 +246,12 @@
           <h2 id="info-experiencia">Experiencia</h2>
           <p>Hay tres monedas: <b>tipo 1</b> (básico), <b>tipo 2</b> (especial) y <b>tipo 3</b> (sobrenatural).</p>
           <p>El coste de un atributo es triangular: cada bloque de puntos cuesta 1 XP más que el anterior. En tipo 1 el bloque es 10 puntos; en tipo 2 y 3 es 100. El primer bloque cuesta 3 XP (básico) o 2 XP (especial), o 1 XP si hay <b>talento</b> en ese grupo.</p>
-          <p>Los grupos básicos (físico, mental, coordinación) cuentan cada estadística por separado. Vida cuesta 5 XP por punto. En tipo 2, cada par (p. ej. potenciación + control vital) se <b>suma</b> antes de aplicar la fórmula. El tanque de energía cuesta 10 por punto (5 con talento). Cada habilidad sobrenatural suma sus transformaciones; cada 100 puntos el siguiente cuesta +1 XP.</p>
+          <p>Los grupos básicos (físico, mental, coordinación) cuentan cada estadística por separado. Vida cuesta 5 XP por punto, con el tope de abajo. En tipo 2, cada par (p. ej. potenciación + control vital) se <b>suma</b> antes de aplicar la fórmula. El tanque de energía cuesta 10 por punto (5 con talento). Cada habilidad sobrenatural suma sus transformaciones; cada 100 puntos el siguiente cuesta +1 XP.</p>
+
+          <h3 id="info-vida">Vida</h3>
+          <p>La vida no puede superar el <b>doble del promedio</b> de los cuatro valores físicos (fuerza, resistencia, velocidad y agilidad). El tope entero es el suelo de esa cantidad: <code>suelo((F + R + Vel + A) / 2)</code>.</p>
+          <p>Ejemplo: fuerza 60, resistencia 40, velocidad 50, agilidad 50 → promedio 50 → vida máxima <b>100</b>.</p>
+          <p>Si bajan los físicos, la vida se recorta al nuevo tope. Con todos los físicos a 0 el máximo es 0.</p>
 
           <h2 id="info-lenguajes">Lenguajes</h2>
           <p>Por ahora hay un lenguaje construido: <b>Sujfi</b>. La pestaña <b>Lenguajes</b> traduce en ambos sentidos y pinta una imagen tipográfica; aquí está el mecanismo.</p>
@@ -673,6 +683,7 @@
               </div>
               <label class="field-label" for="xp-life">Vida</label>
               <input id="xp-life" type="number" min="0" step="1" data-xp-path="basic.life" />
+              <p class="section-note" id="xp-life-cap">Tope: el doble del promedio físico.</p>
               <div class="xp-hint" data-xp-hint="basic.life"></div>
             </article>
 
