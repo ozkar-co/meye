@@ -731,6 +731,15 @@ input:focus, select:focus, textarea:focus {
 }
 .code-load input { flex: 1; min-width: 6rem; }
 .code-load button { flex: 0 0 auto; padding: 0.65rem 0.85rem; font-weight: 700; }
+#xp-code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.86rem;
+}
+#modal-xp-code {
+  width: min(560px, 94vw);
+}
+#modal-xp-code .code-load { margin-bottom: 0.45rem; }
+#modal-xp-code .section-note { margin-bottom: 0; }
 .view-actions { display: flex; gap: 0.4rem; }
 .danger-btn {
   appearance: none;

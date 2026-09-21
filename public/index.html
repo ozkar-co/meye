@@ -53,6 +53,7 @@
                   <li><a href="#info-energia">Contenedor de energía</a></li>
                   <li><a href="#info-tipo2">Habilidades de tipo 2</a></li>
                   <li><a href="#info-tipo3">Sobrenatural</a></li>
+                  <li><a href="#info-codigo">Código de personaje</a></li>
                 </ol>
               </li>
               <li>
@@ -320,6 +321,23 @@
 
           <h3 id="info-tipo3">Sobrenatural</h3>
           <p>Opcional (tipo 3). Cada habilidad suma sus transformaciones; cada 100 puntos el siguiente cuesta +1 XP. El primer bloque cuesta 1 XP.</p>
+
+          <h3 id="info-codigo">Código de personaje</h3>
+          <p>En la pestaña Experiencia, el botón <b>Código</b> abre el modal. La ficha se empaqueta en Base64 compacto, al estilo de las cartas: <code>BASE</code> o <code>BASE-EXTRA</code>.</p>
+          <ul>
+            <li>Sin guion no hay tipo 3 (sobrenatural apagado).</li>
+            <li>El tramo tras el guion es el extra de tipo 3.</li>
+          </ul>
+          <p>No se reserva el máximo de cada campo. Un bloque de ceros cabe en un bit. Si los valores están cerca, se guarda el mínimo del bloque y cuánto se aleja cada uno; si están muy dispersos, se usa el ancho justo para el máximo. Gana el más corto.</p>
+          <p>El <b>BASE</b> lleva, en este orden:</p>
+          <ul>
+            <li>8 bits de checks: fuertes de físico, coordinación, mental, contenedor de energía, H. físicas, H. mentales, H. energía, y doble fuerte tipo 1.</li>
+            <li>Tres clusters de tipo 1 (físico, coordinación, mental). Cada uno: 1 bit «¿hay algún valor?». Si no, acaba. Si sí, otro bit elige modo relativo (mínimo + distancias) o crudo (ancho del máximo + valores).</li>
+            <li>Seis H. de tipo 2: 6 bits de presencia (un 0 no ocupa más) y un cluster solo con los positivos.</li>
+            <li>Vida y contenedor de energía: 2 bits de presencia y el mismo esquema.</li>
+          </ul>
+          <p>El extra: 1 bit activo, 4 bits de cantidad de habilidades, 4 bits del ancho común de las transformaciones; por habilidad, 4 bits de cuántas hay y cada valor a ese ancho.</p>
+          <p>La XP ganada no entra en el código: solo la ficha (valores y fuertes).</p>
 
           <h2 id="info-lenguajes">Lenguajes</h2>
           <p>Por ahora hay un lenguaje construido: <b>Sujfi</b>. La pestaña <b>Lenguajes</b> traduce en ambos sentidos y pinta una imagen tipográfica; aquí está el mecanismo.</p>
@@ -609,6 +627,7 @@
               </label>
             </div>
             <div class="xp-toolbar-actions">
+              <button type="button" id="xp-open-code">Código</button>
               <button type="button" id="xp-recalc">Recalcular</button>
               <button type="button" id="xp-reset">Reiniciar</button>
             </div>
@@ -627,19 +646,19 @@
               <div class="xp-fields">
                 <div>
                   <label class="field-label" for="xp-strength">Fuerza</label>
-                  <input id="xp-strength" type="number" min="0" step="1" data-xp-path="basic.physical.strength" />
+                  <input id="xp-strength" type="number" min="0" max="255" step="1" data-xp-path="basic.physical.strength" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-agility">Agilidad</label>
-                  <input id="xp-agility" type="number" min="0" step="1" data-xp-path="basic.physical.agility" />
+                  <input id="xp-agility" type="number" min="0" max="255" step="1" data-xp-path="basic.physical.agility" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-speed">Velocidad</label>
-                  <input id="xp-speed" type="number" min="0" step="1" data-xp-path="basic.physical.speed" />
+                  <input id="xp-speed" type="number" min="0" max="255" step="1" data-xp-path="basic.physical.speed" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-resistance">Resistencia</label>
-                  <input id="xp-resistance" type="number" min="0" step="1" data-xp-path="basic.physical.resistance" />
+                  <input id="xp-resistance" type="number" min="0" max="255" step="1" data-xp-path="basic.physical.resistance" />
                 </div>
               </div>
               <div class="xp-group-spent" data-xp-group="basic.physical"></div>
@@ -656,19 +675,19 @@
               <div class="xp-fields">
                 <div>
                   <label class="field-label" for="xp-precision">Precisión</label>
-                  <input id="xp-precision" type="number" min="0" step="1" data-xp-path="basic.coordination.precision" />
+                  <input id="xp-precision" type="number" min="0" max="255" step="1" data-xp-path="basic.coordination.precision" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-calculation">Cálculo</label>
-                  <input id="xp-calculation" type="number" min="0" step="1" data-xp-path="basic.coordination.calculation" />
+                  <input id="xp-calculation" type="number" min="0" max="255" step="1" data-xp-path="basic.coordination.calculation" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-range">Alcance</label>
-                  <input id="xp-range" type="number" min="0" step="1" data-xp-path="basic.coordination.range" />
+                  <input id="xp-range" type="number" min="0" max="255" step="1" data-xp-path="basic.coordination.range" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-reflexes">Reflejos</label>
-                  <input id="xp-reflexes" type="number" min="0" step="1" data-xp-path="basic.coordination.reflexes" />
+                  <input id="xp-reflexes" type="number" min="0" max="255" step="1" data-xp-path="basic.coordination.reflexes" />
                 </div>
               </div>
               <div class="xp-group-spent" data-xp-group="basic.coordination"></div>
@@ -685,19 +704,19 @@
               <div class="xp-fields">
                 <div>
                   <label class="field-label" for="xp-intelligence">Inteligencia</label>
-                  <input id="xp-intelligence" type="number" min="0" step="1" data-xp-path="basic.mental.intelligence" />
+                  <input id="xp-intelligence" type="number" min="0" max="255" step="1" data-xp-path="basic.mental.intelligence" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-wisdom">Sabiduría</label>
-                  <input id="xp-wisdom" type="number" min="0" step="1" data-xp-path="basic.mental.wisdom" />
+                  <input id="xp-wisdom" type="number" min="0" max="255" step="1" data-xp-path="basic.mental.wisdom" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-concentration">Concentración</label>
-                  <input id="xp-concentration" type="number" min="0" step="1" data-xp-path="basic.mental.concentration" />
+                  <input id="xp-concentration" type="number" min="0" max="255" step="1" data-xp-path="basic.mental.concentration" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-will">Voluntad</label>
-                  <input id="xp-will" type="number" min="0" step="1" data-xp-path="basic.mental.will" />
+                  <input id="xp-will" type="number" min="0" max="255" step="1" data-xp-path="basic.mental.will" />
                 </div>
               </div>
               <div class="xp-group-spent" data-xp-group="basic.mental"></div>
@@ -713,11 +732,11 @@
               <div class="xp-fields">
                 <div>
                   <label class="field-label" for="xp-empowerment">Potenciación</label>
-                  <input id="xp-empowerment" type="number" min="0" step="1" data-xp-path="special.physical.empowerment" />
+                  <input id="xp-empowerment" type="number" min="0" max="1024" step="1" data-xp-path="special.physical.empowerment" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-vital">Control vital</label>
-                  <input id="xp-vital" type="number" min="0" step="1" data-xp-path="special.physical.vitalControl" />
+                  <input id="xp-vital" type="number" min="0" max="1024" step="1" data-xp-path="special.physical.vitalControl" />
                 </div>
               </div>
               <div class="xp-group-spent" data-xp-group="special.physical"></div>
@@ -731,11 +750,11 @@
               <div class="xp-fields">
                 <div>
                   <label class="field-label" for="xp-illusion">Ilusión</label>
-                  <input id="xp-illusion" type="number" min="0" step="1" data-xp-path="special.mental.illusion" />
+                  <input id="xp-illusion" type="number" min="0" max="1024" step="1" data-xp-path="special.mental.illusion" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-mental-control">Control mental</label>
-                  <input id="xp-mental-control" type="number" min="0" step="1" data-xp-path="special.mental.mentalControl" />
+                  <input id="xp-mental-control" type="number" min="0" max="1024" step="1" data-xp-path="special.mental.mentalControl" />
                 </div>
               </div>
               <div class="xp-group-spent" data-xp-group="special.mental"></div>
@@ -749,11 +768,11 @@
               <div class="xp-fields">
                 <div>
                   <label class="field-label" for="xp-energy-handling">Energía pura</label>
-                  <input id="xp-energy-handling" type="number" min="0" step="1" data-xp-path="special.energy.energyHandling" />
+                  <input id="xp-energy-handling" type="number" min="0" max="1024" step="1" data-xp-path="special.energy.energyHandling" />
                 </div>
                 <div>
                   <label class="field-label" for="xp-object-handling">Manejo de objetos</label>
-                  <input id="xp-object-handling" type="number" min="0" step="1" data-xp-path="special.energy.objectHandling" />
+                  <input id="xp-object-handling" type="number" min="0" max="1024" step="1" data-xp-path="special.energy.objectHandling" />
                 </div>
               </div>
               <div class="xp-group-spent" data-xp-group="special.energy"></div>
@@ -766,7 +785,7 @@
                 <h3>Contenedor de vida</h3>
               </div>
               <label class="field-label" for="xp-life">Vida</label>
-              <input id="xp-life" type="number" min="0" step="1" data-xp-path="basic.life" />
+              <input id="xp-life" type="number" min="0" max="1024" step="1" data-xp-path="basic.life" />
               <p class="section-note" id="xp-life-cap">Tope: el doble del promedio físico.</p>
               <div class="xp-hint" data-xp-hint="basic.life"></div>
             </article>
@@ -777,7 +796,7 @@
                 <label class="talent"><input type="checkbox" data-xp-flag="special.energyTankTalented" /> Fuerte</label>
               </div>
               <label class="field-label" for="xp-energy-tank">Energía</label>
-              <input id="xp-energy-tank" type="number" min="0" step="1" data-xp-path="special.energyTank" />
+              <input id="xp-energy-tank" type="number" min="0" max="1024" step="1" data-xp-path="special.energyTank" />
               <p class="section-note" id="xp-energy-note">Sin dado: se gasta con las H. físicas, H. mentales y H. energía. El fuerte cuenta en tipo 1.</p>
               <div class="xp-hint" data-xp-hint="special.energyTank"></div>
             </article>
@@ -948,6 +967,19 @@
         <input id="spec-label" required />
         <button class="primary" type="submit">Añadir especialización</button>
       </form>
+    </dialog>
+
+    <dialog id="modal-xp-code" class="modal">
+      <form method="dialog" class="modal-head">
+        <h2>Código de personaje</h2>
+        <button type="submit" class="ghost">Cerrar</button>
+      </form>
+      <div class="code-load">
+        <input id="xp-code" type="text" spellcheck="false" autocomplete="off" placeholder="Código del personaje" />
+        <button type="button" id="xp-code-load">Cargar</button>
+        <button type="button" id="xp-code-copy">Copiar</button>
+      </div>
+      <p class="section-note">Tras el guion va tipo 3. Sin extra, sobrenatural está apagado.</p>
     </dialog>
 
     <script src="/xp-calc.js"></script>

@@ -1278,7 +1278,7 @@
             <div class="trans-row">
               <div>
                 <label class="field-label">Transformación ${ti + 1}</label>
-                <input type="number" min="0" step="1" value="${value}" data-skill="${si}" data-trans="${ti}" />
+                <input type="number" min="0" max="1024" step="1" value="${value}" data-skill="${si}" data-trans="${ti}" />
               </div>
               <button type="button" class="remove" data-remove-trans="${si}:${ti}" ${
                 skill.transformations.length <= 1 ? "disabled" : ""
@@ -1305,11 +1305,12 @@
       function enforceLifeCap() {
         if (!window.MeyeXp) return 0;
         const max = window.MeyeXp.maxLifeFromPhysical(xpState.basic.physical);
+        const hard = Math.min(max, window.MeyeXp.MAX_CONTAINER || 1024);
         const lifeInput = $("xp-life");
-        if (lifeInput) lifeInput.max = String(max);
-        if (xpState.basic.life > max) {
-          xpState.basic.life = max;
-          if (lifeInput) lifeInput.value = String(max);
+        if (lifeInput) lifeInput.max = String(hard);
+        if (xpState.basic.life > hard) {
+          xpState.basic.life = hard;
+          if (lifeInput) lifeInput.value = String(hard);
         }
         const capNote = $("xp-life-cap");
         if (capNote) {
@@ -1333,7 +1334,9 @@
           return true;
         }
         if (t.dataset.xpPath) {
-          setPath(xpState, t.dataset.xpPath, window.MeyeXp.clampStat(t.value));
+          let n = window.MeyeXp.clampStat(t.value);
+          if (t.max !== "") n = Math.min(n, Number(t.max));
+          setPath(xpState, t.dataset.xpPath, n);
           if (
             t.dataset.xpPath === "basic.life" ||
             t.dataset.xpPath.startsWith("basic.physical.")
@@ -1355,7 +1358,10 @@
           const ti = Number(t.dataset.trans);
           if (xpState.supernatural.skills[si]) {
             xpState.supernatural.skills[si].transformations[ti] =
-              window.MeyeXp.clampStat(t.value);
+              Math.min(
+                window.MeyeXp.clampStat(t.value),
+                window.MeyeXp.MAX_TRANS || 1024
+              );
           }
           return true;
         }
@@ -1579,6 +1585,50 @@
             skill.spent
           )}</b> · próximo <b>${fmtXp(skill.next)}</b>`;
         });
+        refreshXpCode();
+      }
+
+      function characterPayload() {
+        return {
+          doubleType1: Boolean(xpState.doubleType1),
+          includeSupernatural: Boolean(xpState.includeSupernatural),
+          basic: xpState.basic,
+          special: xpState.special,
+          supernatural: xpState.supernatural,
+        };
+      }
+
+      function refreshXpCode() {
+        if (!window.MeyeXp?.encodeCharacter) return;
+        const modal = $("modal-xp-code");
+        if (modal && !modal.open) return;
+        const input = $("xp-code");
+        if (!input || document.activeElement === input) return;
+        input.value = window.MeyeXp.encodeCharacter(characterPayload());
+      }
+
+      function openXpCodeModal() {
+        $("modal-xp-code").showModal();
+        refreshXpCode();
+      }
+
+      function loadXpCode() {
+        if (!window.MeyeXp?.decodeCharacter) return;
+        try {
+          const decoded = window.MeyeXp.decodeCharacter($("xp-code").value);
+          xpState.doubleType1 = Boolean(decoded.doubleType1);
+          xpState.includeSupernatural = Boolean(decoded.includeSupernatural);
+          xpState.basic = decoded.basic;
+          xpState.special = decoded.special;
+          xpState.supernatural = decoded.supernatural?.skills?.length
+            ? decoded.supernatural
+            : { skills: [{ transformations: [0] }] };
+          fillXpForm();
+          saveXpState();
+          $("xp-code").value = window.MeyeXp.encodeCharacter(characterPayload());
+        } catch (err) {
+          alert(err.message || "Código inválido");
+        }
       }
 
       document.querySelectorAll("#app-nav button").forEach((b) => {
@@ -1593,6 +1643,26 @@
       $("xp-form").addEventListener("change", onXpFormUpdate);
       $("xp-form").addEventListener("focusout", onXpFormUpdate);
       $("xp-form").addEventListener("keyup", onXpFormUpdate);
+
+      $("xp-open-code").addEventListener("click", openXpCodeModal);
+      $("xp-code-load").addEventListener("click", loadXpCode);
+      $("xp-code-copy").addEventListener("click", async () => {
+        const input = $("xp-code");
+        if (document.activeElement !== input) refreshXpCode();
+        const value = input.value.trim();
+        if (!value) return;
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          input.select();
+          document.execCommand("copy");
+        }
+      });
+      $("xp-code").addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        loadXpCode();
+      });
 
       $("xp-skills").addEventListener("click", (e) => {
         const btn = e.target.closest("button");
