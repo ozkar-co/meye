@@ -1112,6 +1112,7 @@
       function defaultXpState() {
         return {
           includeSupernatural: false,
+          doubleType1: false,
           earned: { basic: 0, special: 0, supernatural: 0 },
           basic: {
             physical: {
@@ -1172,6 +1173,8 @@
           return {
             ...base,
             ...parsed,
+            includeSupernatural: Boolean(parsed.includeSupernatural),
+            doubleType1: Boolean(parsed.doubleType1),
             earned: { ...base.earned, ...(parsed.earned || {}) },
             basic: {
               physical: { ...base.basic.physical, ...(parsed.basic?.physical || {}) },
@@ -1325,6 +1328,10 @@
           $("xp-supernatural-section").hidden = !t.checked;
           return true;
         }
+        if (t.id === "xp-double-type1") {
+          xpState.doubleType1 = t.checked;
+          return true;
+        }
         if (t.dataset.xpPath) {
           setPath(xpState, t.dataset.xpPath, window.MeyeXp.clampStat(t.value));
           if (
@@ -1385,6 +1392,7 @@
         xpHydrating = true;
         try {
           $("xp-supernatural-toggle").checked = xpState.includeSupernatural;
+          $("xp-double-type1").checked = Boolean(xpState.doubleType1);
           $("xp-supernatural-section").hidden = !xpState.includeSupernatural;
           for (const input of document.querySelectorAll("[data-xp-path]")) {
             const value = getPath(xpState, input.dataset.xpPath);
@@ -1495,7 +1503,6 @@
           ment.concentration,
           ment.will,
         ]);
-        const tankAvg = window.MeyeXp.clampStat(xpState.special.energyTank);
 
         const setDie = (key, avg) => {
           const el = document.querySelector(`[data-xp-die="${key}"]`);
@@ -1508,7 +1515,6 @@
         setDie("basic.physical", physAvg);
         setDie("basic.coordination", coordAvg);
         setDie("basic.mental", mentAvg);
-        setDie("special.energyTank", tankAvg);
 
         document.querySelector('[data-xp-group="basic.physical"]').innerHTML =
           groupText(result.basic.physical, avgExtra(physAvg));
@@ -1535,13 +1541,19 @@
           xpState.special.energy.talented,
         ].filter(Boolean).length;
         const warnBits = [];
-        if (type1Talents < 1) {
+        if (xpState.doubleType1) {
+          if (type1Talents !== 2) {
+            warnBits.push(
+              "Doble fuerte tipo 1: marca exactamente dos (físico, coordinación, mental o contenedor de energía)."
+            );
+          }
+        } else if (type1Talents < 1) {
           warnBits.push(
             "Falta un fuerte de tipo 1 (físico, coordinación, mental o contenedor de energía)."
           );
         } else if (type1Talents > 1) {
           warnBits.push(
-            "Más de un fuerte de tipo 1. Solo personajes con doble o triple fuerte pueden tener más de uno."
+            "Más de un fuerte de tipo 1. Activa «Doble fuerte tipo 1» si el personaje tiene dos, o revisa los marcados."
           );
         }
         if (type2Talents < 1) {

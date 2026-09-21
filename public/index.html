@@ -264,13 +264,13 @@
           <h3 id="info-fuertes">Fuertes (talentos)</h3>
           <p>Un <b>fuerte</b> (talento) abarata el primer bloque de ese grupo. En la ficha hay dos capas:</p>
           <ul>
-            <li><b>Tipo 1</b> — físico, coordinación, mental y contenedor de energía. El personaje debe tener <b>como mínimo uno</b>. Más de uno solo lo tienen los de <b>doble o triple fuerte</b> (en la calculadora es una advertencia, no un bloqueo).</li>
+            <li><b>Tipo 1</b> — físico, coordinación, mental y contenedor de energía. Lo normal es <b>exactamente uno</b>. Si marcas <b>doble fuerte tipo 1</b> (lo más común entre los que tienen más de uno), deben estar marcados <b>dos</b> de esos grupos. Triple u otras combinaciones raras quedan fuera de ese check: la calculadora avisa, no bloquea.</li>
             <li><b>Tipo 2</b> — H. físicas, H. mentales y H. energía. Lo normal es <b>exactamente uno</b>. Más de uno solo lo tienen personajes <b>especiales</b> (también advertencia).</li>
           </ul>
-          <p>El fuerte de contenedor de energía es de tipo 1; no cuenta como el fuerte de H. energía (tipo 2).</p>
+          <p>El fuerte del <b>contenedor de energía</b> es un caso especial: <b>cuenta como fuerte de tipo 1</b> (entra en el cupo de uno o dos), pero el XP que gasta el contenedor es de <b>tipo 2</b>. No es el fuerte de H. energía.</p>
 
           <h3 id="info-dados">Dados de tipo 1</h3>
-          <p>Cada bloque de tipo 1 tira con un dado según el <b>promedio</b> de sus valores (en el contenedor de energía el “promedio” es el propio valor). El hexágono de la calculadora muestra ese dado:</p>
+          <p>Cada bloque de tipo 1 con atributos (físico, coordinación, mental) tira con un dado según el <b>promedio</b> de sus valores. El hexágono de la calculadora muestra ese dado. El contenedor de energía <b>no tiene dado</b>: se gasta al usar las habilidades de tipo 2.</p>
           <div class="info-dice">
             <figure><span class="xp-die">d4</span><figcaption>&lt; 10</figcaption></figure>
             <figure><span class="xp-die">d6</span><figcaption>10 o más</figcaption></figure>
@@ -293,12 +293,11 @@
             </tbody>
           </table>
           <p>Ejemplo: fuerza 60, resistencia 40, velocidad 50, agilidad 50 → promedio 50 → <b>d20</b>.</p>
-          <p>Bloques de tipo 1 y qué promedian:</p>
+          <p>Bloques con dado y qué promedian:</p>
           <ul>
             <li><b>Físico</b> — fuerza, agilidad, velocidad, resistencia.</li>
             <li><b>Coordinación</b> — precisión, cálculo, alcance, reflejos.</li>
             <li><b>Mental</b> — inteligencia, sabiduría, concentración, voluntad.</li>
-            <li><b>Contenedor de energía</b> — el valor del contenedor.</li>
           </ul>
 
           <h3 id="info-vida">Vida</h3>
@@ -307,8 +306,8 @@
           <p>Si bajan los físicos, la vida se recorta al nuevo tope. Con todos los físicos a 0 el máximo es 0. Cuesta 5 XP por punto (moneda tipo 1). No tiene fuerte propio.</p>
 
           <h3 id="info-energia">Contenedor de energía</h3>
-          <p>Es el depósito de energía del personaje. Cuesta <b>10 XP</b> por punto, o <b>5 XP</b> si es un fuerte de tipo 1. El gasto se cuenta en la moneda de tipo 2.</p>
-          <p>Su dado de chequeo usa el valor del contenedor con la misma tabla que los demás bloques de tipo 1.</p>
+          <p>Es el depósito de energía del personaje. Cuesta <b>10 XP</b> por punto, o <b>5 XP</b> si su fuerte está marcado. Ese gasto se anota en la moneda de <b>tipo 2</b>, aunque el fuerte sea restrictivo de <b>tipo 1</b>: ocupa plaza en el cupo de fuertes tipo 1 (uno, o dos si hay doble fuerte).</p>
+          <p>No tiene dado asociado. Se gasta al usar las <b>H. físicas</b>, <b>H. mentales</b> y <b>H. energía</b>.</p>
 
           <h3 id="info-tipo2">Habilidades de tipo 2</h3>
           <p>Tres pares. En cada uno las dos cifras se suman y esa suma entra en la fórmula triangular (bloques de 100).</p>
@@ -599,10 +598,16 @@
       <div id="app-xp" hidden>
         <form id="xp-form" class="xp-board" autocomplete="off">
           <div class="xp-toolbar">
-            <label class="talent">
-              <input id="xp-supernatural-toggle" type="checkbox" />
-              <span>Sobrenatural (tipo 3)</span>
-            </label>
+            <div class="xp-toolbar-flags">
+              <label class="talent">
+                <input id="xp-double-type1" type="checkbox" />
+                <span>Doble fuerte tipo 1</span>
+              </label>
+              <label class="talent">
+                <input id="xp-supernatural-toggle" type="checkbox" />
+                <span>Sobrenatural (tipo 3)</span>
+              </label>
+            </div>
             <div class="xp-toolbar-actions">
               <button type="button" id="xp-recalc">Recalcular</button>
               <button type="button" id="xp-reset">Reiniciar</button>
@@ -768,14 +773,12 @@
 
             <article class="xp-card">
               <div class="section-head">
-                <div class="xp-head-left">
-                  <span class="xp-die" data-xp-die="special.energyTank" title="Dado del contenedor de energía">d4</span>
-                  <h3>Contenedor de energía</h3>
-                </div>
+                <h3>Contenedor de energía</h3>
                 <label class="talent"><input type="checkbox" data-xp-flag="special.energyTankTalented" /> Fuerte</label>
               </div>
               <label class="field-label" for="xp-energy-tank">Energía</label>
               <input id="xp-energy-tank" type="number" min="0" step="1" data-xp-path="special.energyTank" />
+              <p class="section-note" id="xp-energy-note">Sin dado: se gasta con las H. físicas, H. mentales y H. energía. El fuerte cuenta en tipo 1.</p>
               <div class="xp-hint" data-xp-hint="special.energyTank"></div>
             </article>
           </div>
