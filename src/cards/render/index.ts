@@ -2,7 +2,12 @@ import {
   existsSync,
 } from "node:fs";
 import path from "node:path";
-import { createCanvas, loadImage, type CanvasRenderingContext2D } from "canvas";
+import {
+  createCanvas,
+  loadImage,
+  registerFont,
+  type CanvasRenderingContext2D,
+} from "canvas";
 import { ASSETS_DIR } from "../../paths.js";
 import { get as getMaterial, all as allMaterials } from "../materials.js";
 import * as util from "../util.js";
@@ -10,6 +15,16 @@ import { stringFormat as s, numberFormat as n, toCap } from "../i18n.js";
 import type { Item } from "../models.js";
 import { cacheKey, getOrCreatePng } from "../../cache.js";
 import * as L from "./layout.js";
+
+const BLACKLETTER = "UnifrakturCook";
+const blackletterFile = path.join(
+  ASSETS_DIR,
+  "fonts",
+  "UnifrakturCook-Bold.ttf"
+);
+if (existsSync(blackletterFile)) {
+  registerFont(blackletterFile, { family: BLACKLETTER });
+}
 
 function sanitizeFilename(filename: string): string {
   return filename.replace(/\//g, "|");
@@ -92,18 +107,26 @@ function restrictionLabel(
   value: string,
   center: [number, number]
 ): void {
-  const label = `${letter}${value}`;
   const cx = center[0];
   const cy = center[1] - 8;
+  const letterFont = `44pt ${BLACKLETTER}`;
+  const valueFont = "bold 40pt Sans";
+  const gap = 2;
 
   ctx.save();
-  ctx.font = "bold 44pt Sans";
-  ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  const w = ctx.measureText(label).width + 36;
-  const h = 78;
+  ctx.font = letterFont;
+  const letterW = ctx.measureText(letter).width;
+  ctx.font = valueFont;
+  const valueW = ctx.measureText(value).width;
+  const total = letterW + gap + valueW;
+  const x0 = cx - total / 2;
+  const scale = 1.5;
+  const w = (total + 36) * scale;
+  const h = 78 * scale;
+
   ctx.beginPath();
-  ctx.roundRect(cx - w / 2, cy - h / 2, w, h, 12);
+  ctx.roundRect(cx - w / 2, cy - h / 2, w, h, 12 * scale);
   ctx.clip();
   ctx.translate(cx, cy);
   ctx.scale(w / 2, h / 2);
@@ -116,16 +139,19 @@ function restrictionLabel(
   ctx.restore();
 
   ctx.save();
-  ctx.font = "bold 44pt Sans";
-  ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.lineJoin = "round";
   ctx.miterLimit = 2;
   ctx.strokeStyle = "#ead7a4";
   ctx.lineWidth = 12;
-  ctx.strokeText(label, cx, cy);
   ctx.fillStyle = "#1a1208";
-  ctx.fillText(label, cx, cy);
+  ctx.textAlign = "start";
+  ctx.font = letterFont;
+  ctx.strokeText(letter, x0, cy);
+  ctx.fillText(letter, x0, cy);
+  ctx.font = valueFont;
+  ctx.strokeText(value, x0 + letterW + gap, cy);
+  ctx.fillText(value, x0 + letterW + gap, cy);
   ctx.restore();
 }
 
@@ -429,7 +455,7 @@ export async function renderCard(
   side: "front" | "back" | "both" = "both"
 ): Promise<{ front?: Buffer; back?: Buffer }> {
   const keyBase = cacheKey({
-    rev: 5,
+    rev: 7,
     code: obj.code,
     custom: obj.custom_code,
     mods: obj.modifications,
