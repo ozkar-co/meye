@@ -85,6 +85,50 @@ function strokeText(
   ctx.fillText(value, pos[0], pos[1]);
 }
 
+/** Soft parchment wipe over the base glyph, then letter + value with a halo. */
+function restrictionLabel(
+  ctx: Ctx,
+  letter: string,
+  value: string,
+  center: [number, number]
+): void {
+  const label = `${letter}${value}`;
+  const cx = center[0];
+  const cy = center[1] - 8;
+
+  ctx.save();
+  ctx.font = "bold 44pt Sans";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const w = ctx.measureText(label).width + 36;
+  const h = 78;
+  ctx.beginPath();
+  ctx.roundRect(cx - w / 2, cy - h / 2, w, h, 12);
+  ctx.clip();
+  ctx.translate(cx, cy);
+  ctx.scale(w / 2, h / 2);
+  const fade = ctx.createRadialGradient(0, 0, 0.08, 0, 0, 1);
+  fade.addColorStop(0, "rgba(230, 208, 154, 0.92)");
+  fade.addColorStop(0.42, "rgba(222, 198, 142, 0.5)");
+  fade.addColorStop(1, "rgba(214, 188, 130, 0)");
+  ctx.fillStyle = fade;
+  ctx.fillRect(-1, -1, 2, 2);
+  ctx.restore();
+
+  ctx.save();
+  ctx.font = "bold 44pt Sans";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.lineJoin = "round";
+  ctx.miterLimit = 2;
+  ctx.strokeStyle = "#ead7a4";
+  ctx.lineWidth = 12;
+  ctx.strokeText(label, cx, cy);
+  ctx.fillStyle = "#1a1208";
+  ctx.fillText(label, cx, cy);
+  ctx.restore();
+}
+
 async function drawPng(
   ctx: Ctx,
   name: string,
@@ -208,18 +252,18 @@ async function renderFront(obj: Item): Promise<Buffer> {
     (rest) => (restrictions[rest.restriction] = util.plus(-rest.reduction))
   );
   const restPos: Record<string, [number, number]> = {
-    F: [1170, 1210],
-    A: [1170, 1310],
-    V: [1170, 1410],
-    R: [1170, 1510],
-    I: [1300, 1210],
-    S: [1300, 1310],
-    C: [1300, 1410],
-    W: [1300, 1510],
+    F: [1160, 1210],
+    A: [1160, 1310],
+    V: [1160, 1410],
+    R: [1160, 1510],
+    I: [1320, 1210],
+    S: [1320, 1310],
+    C: [1320, 1410],
+    W: [1320, 1510],
   };
   for (const [k, pos] of Object.entries(restPos)) {
     if (restrictions[k]) {
-      text(ctx, restrictions[k], pos, 50, "center", "#000", "bold");
+      restrictionLabel(ctx, k, restrictions[k], pos);
     }
   }
 
@@ -385,6 +429,7 @@ export async function renderCard(
   side: "front" | "back" | "both" = "both"
 ): Promise<{ front?: Buffer; back?: Buffer }> {
   const keyBase = cacheKey({
+    rev: 5,
     code: obj.code,
     custom: obj.custom_code,
     mods: obj.modifications,
