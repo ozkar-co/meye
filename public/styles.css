@@ -132,6 +132,16 @@ textarea {
   border-radius: var(--radius);
   padding: 0.7rem 0.8rem;
 }
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
 textarea { min-height: 4.5rem; resize: vertical; }
 input:focus, select:focus, textarea:focus {
   outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
@@ -399,6 +409,12 @@ input:focus, select:focus, textarea:focus {
 .xp-hint b { color: var(--accent); font-weight: 600; }
 #xp-life-cap {
   margin: 0.4rem 0 0;
+}
+#xp-life-cap.over-cap {
+  color: color-mix(in srgb, var(--danger) 70%, var(--muted));
+}
+input.over-cap {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--line));
 }
 .xp-group-spent {
   margin-top: 0.85rem;

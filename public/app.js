@@ -1302,24 +1302,29 @@
         wireNumericInputs(root);
       }
 
-      function enforceLifeCap() {
+      function lifeCap() {
         if (!window.MeyeXp) return 0;
         const max = window.MeyeXp.maxLifeFromPhysical(xpState.basic.physical);
-        const hard = Math.min(max, window.MeyeXp.MAX_CONTAINER || 1024);
+        return Math.min(max, window.MeyeXp.MAX_CONTAINER || 1024);
+      }
+
+      function updateLifeCapNote() {
+        const hard = lifeCap();
+        const over = xpState.basic.life > hard;
         const lifeInput = $("xp-life");
-        if (lifeInput) lifeInput.max = String(hard);
-        if (xpState.basic.life > hard) {
-          xpState.basic.life = hard;
-          if (lifeInput) lifeInput.value = String(hard);
+        if (lifeInput) {
+          lifeInput.max = String(window.MeyeXp?.MAX_CONTAINER || 1024);
+          lifeInput.classList.toggle("over-cap", over);
         }
         const capNote = $("xp-life-cap");
         if (capNote) {
+          capNote.classList.toggle("over-cap", over);
           capNote.textContent =
-            max > 0
-              ? `Tope ${fmtXp(max)} · doble del promedio físico`
+            hard > 0
+              ? `Tope ${fmtXp(hard)} · doble del promedio físico`
               : "Tope 0 · sube los valores físicos para poder tener vida";
         }
-        return max;
+        return hard;
       }
 
       function applyXpInput(t) {
@@ -1341,7 +1346,7 @@
             t.dataset.xpPath === "basic.life" ||
             t.dataset.xpPath.startsWith("basic.physical.")
           ) {
-            enforceLifeCap();
+            updateLifeCapNote();
           }
           return true;
         }
@@ -1414,7 +1419,7 @@
             : "";
           renderXpSkills();
           wireNumericInputs($("xp-form"));
-          enforceLifeCap();
+          updateLifeCapNote();
           refreshXp();
         } finally {
           xpHydrating = false;
@@ -1423,7 +1428,7 @@
 
       function refreshXp() {
         if (!window.MeyeXp) return;
-        enforceLifeCap();
+        const hardLife = updateLifeCapNote();
         const result = window.MeyeXp.calculateExperience({
           basic: xpState.basic,
           special: xpState.special,
@@ -1569,6 +1574,13 @@
         } else if (type2Talents > 1) {
           warnBits.push(
             "Más de un fuerte de tipo 2. Solo personajes especiales pueden tener más de uno."
+          );
+        }
+        if (xpState.basic.life > hardLife) {
+          warnBits.push(
+            `La vida (${fmtXp(xpState.basic.life)}) supera el tope ${fmtXp(
+              hardLife
+            )} (doble del promedio físico). El gasto de XP se cuenta solo hasta el tope.`
           );
         }
         const warnBox = $("xp-talent-warn");
