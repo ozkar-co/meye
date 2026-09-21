@@ -176,7 +176,6 @@ async function renderFront(obj: Item): Promise<Buffer> {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, L.FOOTER_Y, L.CARD_W, L.CARD_H);
 
-  const name = toCap(obj.type);
   let suffix = "";
   if (!isNaN(Number(obj.size_type)) && String(obj.size_type) !== "") {
     suffix = Number(obj.size_type) === 1 ? "pieza_completa" : "pieza_completas";
@@ -202,7 +201,9 @@ async function renderFront(obj: Item): Promise<Buffer> {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, L.FOOTER_Y, L.CARD_W, L.CARD_H);
 
-  text(ctx, obj.name || name, L.TITLE_POS, 60, "start", "#000", "bold");
+  const title =
+    (obj.name && String(obj.name).trim()) || s(toCap(obj.type));
+  text(ctx, title, L.TITLE_POS, 60, "start", "#000", "bold");
   text(ctx, s(toCap(desc)), L.SUBTITLE_POS, 40, "start", "#555", "italic");
 
   text(ctx, "tamaño", [1230, 110], 40, "center", "#555", "bold");
@@ -454,7 +455,7 @@ export async function renderCard(
   side: "front" | "back" | "both" = "both"
 ): Promise<{ front?: Buffer; back?: Buffer }> {
   const keyBase = cacheKey({
-    rev: 8,
+    rev: 9,
     code: obj.code,
     custom: obj.custom_code,
     mods: obj.modifications,

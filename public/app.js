@@ -454,8 +454,14 @@
         const id = item.custom_code
           ? `${item.code}-${item.custom_code}`
           : item.code;
-        $(prefix ? `${prefix}-code-line` : "code-line").textContent = `#${id} · ${label(item.crafting_level) || item.crafting_level} · ${label(item.rarity) || item.rarity}`;
+        $(prefix ? `${prefix}-code-line` : "code-line").textContent = `#${id}`;
 
+        const rangeText = Array.isArray(item.range)
+          ? item.range.map((u) => cleanNum(u)).join(" / ")
+          : item.range != null
+          ? String(cleanNum(item.range))
+          : "—";
+        const price = item.price || {};
         const stats = [
           ["Daño", item.damage],
           ["Corte", item.slice],
@@ -465,6 +471,13 @@
           ["Amort.", item.damping],
           ["Resist.", item.resistence],
           ["Vida", item.useful_life],
+          ["Rango", rangeText],
+          ["Nivel", label(item.crafting_level) || item.crafting_level],
+          ["Calidad", cleanNum(item.quality)],
+          ["Rareza", label(item.rarity) || item.rarity],
+          ["Raw", price.raw != null ? `${cleanNum(price.raw)} R` : "—"],
+          ["Taller", price.crafting != null ? `${cleanNum(price.crafting)} R` : "—"],
+          ["Tasa", price.fee != null ? `${cleanNum(price.fee)} R` : "—"],
         ];
         $(prefix ? `${prefix}-stats` : "stats").innerHTML = stats
           .map(
@@ -497,10 +510,12 @@
         frontPh.textContent = "generando frente…";
         backPh.textContent = "generando reverso…";
 
-        const bust = `?t=${Date.now()}`;
+        const params = new URLSearchParams({ t: String(Date.now()) });
+        if (item.name) params.set("name", item.name);
+        const q = `?${params.toString()}`;
         const [frontRes, backRes] = await Promise.all([
-          fetch(cardPath(item.code, item.custom_code, "front") + bust),
-          fetch(cardPath(item.code, item.custom_code, "back") + bust),
+          fetch(cardPath(item.code, item.custom_code, "front") + q),
+          fetch(cardPath(item.code, item.custom_code, "back") + q),
         ]);
         if (!frontRes.ok) throw new Error("No se pudo generar el frente");
         if (!backRes.ok) throw new Error("No se pudo generar el reverso");
@@ -871,10 +886,12 @@
       }
 
       function wireCatalogUi() {
-        $("open-materials").addEventListener("click", async () => {
-          await refreshMaterialsModal();
-          $("modal-materials").showModal();
-        });
+        if ($("open-materials")) {
+          $("open-materials").addEventListener("click", async () => {
+            await refreshMaterialsModal();
+            $("modal-materials").showModal();
+          });
+        }
         $("open-origins").addEventListener("click", async () => {
           await refreshOriginsModal();
           $("modal-origins").showModal();
@@ -1199,7 +1216,21 @@
 
       let xpHydrating = false;
 
-      function setApp(app) {
+      function appFromHash() {
+        const h = (location.hash || "").replace(/^#/, "");
+        if (h === "view" || h === "xp" || h === "lang") return h;
+        if (h === "info" || h.startsWith("info-")) return "info";
+        return "create";
+      }
+
+      function scrollInfoAnchor() {
+        const id = (location.hash || "").replace(/^#/, "");
+        if (!id.startsWith("info-")) return;
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function setApp(app, opts = {}) {
         document.querySelectorAll("#app-nav button").forEach((b) => {
           b.classList.toggle("active", b.dataset.app === app);
         });
@@ -1216,9 +1247,15 @@
           lang: "Lenguajes construidos · Tierras de Meye",
         };
         $("tagline").textContent = lines[app] || lines.create;
-        const url = new URL(location.href);
-        url.hash = app === "create" ? "" : app;
-        history.replaceState(null, "", url.pathname + url.search + url.hash);
+        if (!opts.keepHash) {
+          const url = new URL(location.href);
+          url.hash = app === "create" ? "" : app;
+          history.replaceState(null, "", url.pathname + url.search + url.hash);
+          if (app === "info") {
+            const toc = document.querySelector(".info-toc");
+            if (toc) toc.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
         if (app === "view") refreshList().catch((e) => showError(e.message));
       }
 
@@ -1475,15 +1512,20 @@
       });
 
       fillXpForm();
-      const start = (location.hash || "").replace("#", "");
-      if (["info", "view", "xp", "lang"].includes(start)) setApp(start);
+      setApp(appFromHash(), { keepHash: true });
+      scrollInfoAnchor();
+
+      window.addEventListener("hashchange", () => {
+        setApp(appFromHash(), { keepHash: true });
+        scrollInfoAnchor();
+      });
 
       window.addEventListener("pageshow", (e) => {
         if (!e.persisted) return;
         xpState = loadXpState();
         fillXpForm();
-        const h = (location.hash || "").replace("#", "");
-        if (["info", "view", "xp", "lang"].includes(h)) setApp(h);
+        setApp(appFromHash(), { keepHash: true });
+        scrollInfoAnchor();
       });
       window.addEventListener("pagehide", () => {
         readXpForm();

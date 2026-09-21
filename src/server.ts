@@ -16,6 +16,7 @@ import { metaRoutes } from "./routes/meta.js";
 import { xpRoutes } from "./routes/xp.js";
 import { catalogRoutes } from "./routes/catalog.js";
 import multipart from "@fastify/multipart";
+import { ASSETS_DIR } from "./paths.js";
 
 const PORT = Number(process.env.PORT || 3008);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -67,6 +68,13 @@ async function main() {
   await app.register(materialsRoutes);
   await app.register(languagesRoutes);
   await app.register(xpRoutes);
+
+  await app.register(fastifyStatic, {
+    root: ASSETS_DIR,
+    prefix: "/media/",
+    wildcard: true,
+    decorateReply: false,
+  });
 
   const publicDir = path.join(root, "public");
   await app.register(fastifyStatic, {

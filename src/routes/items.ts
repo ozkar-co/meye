@@ -117,28 +117,27 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
     }
   );
 
-  const loadByCodes = (base: string, custom?: string) => {
+  const loadByCodes = (
+    base: string,
+    custom?: string,
+    nameHint?: string
+  ) => {
     const stored = findItem(itemId(base, custom));
-    return load(
-      base,
-      custom,
-      stored
-        ? {
-            name: stored.name,
-            effects: stored.effects,
-            modifications: stored.modifications,
-          }
-        : undefined
-    );
+    return load(base, custom, {
+      name: stored?.name || nameHint,
+      effects: stored?.effects,
+      modifications: stored?.modifications,
+    });
   };
 
   const sendCard = async (
     reply: FastifyReply,
     base: string,
     custom: string | undefined,
-    side: "front" | "back"
+    side: "front" | "back",
+    nameHint?: string
   ) => {
-    const item = loadByCodes(base, custom);
+    const item = loadByCodes(base, custom, nameHint);
     const pngs = await renderCard(item, side);
     const buf = side === "back" ? pngs.back! : pngs.front!;
     return reply.type("image/png").send(buf);
@@ -149,6 +148,10 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
     custom: Type.String(),
   });
   const baseParams = Type.Object({ base: Type.String() });
+  const nameQuery = Type.Object({
+    name: Type.Optional(Type.String()),
+    t: Type.Optional(Type.String()),
+  });
 
   const removeStored = (base: string, custom?: string) => {
     const id = itemId(base, custom);
@@ -237,11 +240,13 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
         tags: ["items"],
         summary: "Render card front PNG",
         params: cardParams,
+        querystring: nameQuery,
       },
     },
     async (req, reply) => {
       const { base, custom } = req.params as { base: string; custom: string };
-      return sendCard(reply, base, custom, "front");
+      const { name } = req.query as { name?: string };
+      return sendCard(reply, base, custom, "front", name);
     }
   );
 
@@ -252,11 +257,13 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
         tags: ["items"],
         summary: "Render card back PNG",
         params: cardParams,
+        querystring: nameQuery,
       },
     },
     async (req, reply) => {
       const { base, custom } = req.params as { base: string; custom: string };
-      return sendCard(reply, base, custom, "back");
+      const { name } = req.query as { name?: string };
+      return sendCard(reply, base, custom, "back", name);
     }
   );
 
@@ -267,11 +274,13 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
         tags: ["items"],
         summary: "Render card front PNG (base code only)",
         params: baseParams,
+        querystring: nameQuery,
       },
     },
     async (req, reply) => {
       const { base } = req.params as { base: string };
-      return sendCard(reply, base, undefined, "front");
+      const { name } = req.query as { name?: string };
+      return sendCard(reply, base, undefined, "front", name);
     }
   );
 
@@ -282,11 +291,13 @@ export const itemsRoutes: FastifyPluginAsync = async (app) => {
         tags: ["items"],
         summary: "Render card back PNG (base code only)",
         params: baseParams,
+        querystring: nameQuery,
       },
     },
     async (req, reply) => {
       const { base } = req.params as { base: string };
-      return sendCard(reply, base, undefined, "back");
+      const { name } = req.query as { name?: string };
+      return sendCard(reply, base, undefined, "back", name);
     }
   );
 

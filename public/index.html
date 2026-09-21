@@ -29,9 +29,34 @@
 
       <div id="app-info" hidden>
         <article class="panel info-doc">
-          <h2>Objetos</h2>
+          <nav class="info-toc" aria-label="Índice">
+            <h2>Índice</h2>
+            <ol>
+              <li>
+                <a href="#info-objetos">Objetos</a>
+                <ol>
+                  <li><a href="#info-clases">Clases y tipos</a></li>
+                  <li><a href="#info-materiales">Materiales</a></li>
+                  <li><a href="#info-calidad">Calidad</a></li>
+                  <li><a href="#info-artesania">Nivel de artesanía</a></li>
+                  <li><a href="#info-calculos">Cómo se calcula el resto</a></li>
+                  <li><a href="#info-arte">Arte de las cartas</a></li>
+                </ol>
+              </li>
+              <li><a href="#info-experiencia">Experiencia</a></li>
+              <li>
+                <a href="#info-lenguajes">Lenguajes</a>
+                <ol>
+                  <li><a href="#info-sujfi">Sujfi</a></li>
+                </ol>
+              </li>
+            </ol>
+          </nav>
+
+          <h2 id="info-objetos">Objetos</h2>
           <p>Un objeto se identifica por <b>clase</b> y <b>tipo</b>. El tipo entra en el código base y en las fórmulas. El <b>subtipo</b> depende del tipo; la <b>especialización</b> depende de la clase. Ambos son flavor: no cambian daño, peso ni precio.</p>
-          <h3>Clases y tipos</h3>
+
+          <h3 id="info-clases">Clases y tipos</h3>
           <ul>
             <li><b>Arma</b> — proyectil, penetrante, de hoja, cizallante, contundente, de tensión. Subtipos de hoja: recta, curva, hoz, media luna, flamígera. Especializaciones: simple, doble filo, aserrada.</li>
             <li><b>Armadura</b> — coraza, placas, escamada, tachonada, malla, fibras (cada una limita el grosor máximo). Especialización: reforzado.</li>
@@ -39,15 +64,241 @@
             <li><b>Explosivo</b> — deflagrante o detonante.</li>
             <li><b>Escudo</b> — la forma (trigonal, rodela, scutum…) es el tipo.</li>
           </ul>
-          <h3>Cómo se calcula</h3>
-          <p>Tamaño = dimensión × grosor. Peso y precio de materia prima = stats del material × tamaño. En objetos comunes el peso se multiplica por un factor del tipo (hueco ×0.5, sólido ×1.5…).</p>
+
+          <h3 id="info-materiales">Materiales</h3>
+          <p>Cada material aporta un <b>símbolo</b> (FE, MA, AC…) que entra en el código, más stats que se multiplican por el <b>tamaño</b> del objeto (<code>dimensión × grosor</code>):</p>
+          <ul>
+            <li><b>Peso</b> = peso del material × tamaño. En objetos comunes se aplica además el factor del tipo (hueco ×0.5, sólido ×1.5, instrumento ×0.8…).</li>
+            <li><b>Precio de materia prima (raw)</b> = precio del material × tamaño.</li>
+            <li><b>Resistencia</b> = la del material (si hay material extra se muestra como principal/extra).</li>
+            <li><b>Amortiguación</b> = <code>min(grosor/5, 1) × amort. del material</code>. En explosivos: amort. × tamaño.</li>
+            <li><b>Vida útil</b> = suelo de <code>calidad × vida útil del material</code>. Los explosivos valen 1.</li>
+            <li><b>Corte</b> de un arma no puede superar el corte del material.</li>
+            <li><b>Decadencia</b> (p. ej. FE → FE+): se pinta en la carta como cadena del símbolo.</li>
+            <li><b>Nivel del material</b> (aprendiz… divino) entra en el nivel de fabricación: no puedes bajar del oficio que exige el material.</li>
+          </ul>
+          <p>Un <b>material extra</b> (empuñadura, alma, etc.) suma otro bloque de tamaño: añade peso, raw, un segundo valor de amortiguación/resistencia/vida útil y, si pesa, una restricción de Resistencia (R). Encarece el crafting ×1.1 y la tasa ×1.5.</p>
+
+          <h3 id="info-calidad">Calidad</h3>
+          <p>Va de <b>0.1 a 1.0</b> (en la carta, el badge de rareza usa el dígito 1–10: calidad × 10). No es un adorno: baja el daño variable de armas y explosivos (<code>daño × (1 − variable × (1 − calidad))</code>) y acorta la vida útil. Calidad <b>1.0</b> marca rareza <b>magistral</b> (si el oficio no es ya místico/divino).</p>
+          <p>Cada oficio tiene una calidad máxima que sabe producir. El nivel mínimo por calidad es el de menor rango cuya columna <code>quality</code> cubre la pieza:</p>
+          <ul>
+            <li><b>Aprendiz</b> — hasta 0.3 · tasa 10 R</li>
+            <li><b>Función</b> — hasta 0.5 · tasa 30 R</li>
+            <li><b>Disciplina</b> — hasta 0.7 · tasa 50 R</li>
+            <li><b>Ciencia</b> — hasta 1.0 · tasa 100 R · rareza <b>raro</b> (salvo magistral)</li>
+            <li><b>Místico</b> — calidad 1.0 · tasa 200 R · rareza <b>especial</b></li>
+            <li><b>Divino</b> — calidad 1.0 · tasa −1 (no se encargan) · rareza <b>legendario</b></li>
+          </ul>
+
+          <h3 id="info-artesania">Nivel de artesanía</h3>
+          <p>El oficio de la pieza es el <b>máximo</b> entre: nivel del material, nivel del tipo o del tamaño (armas largas, algunos escudos), el mínimo que exige la calidad, y <b>místico</b> si el grosor es menor que la mitad de la dimensión (fuera de límites). Las flags místicas suben a místico (o dejan divino) y la rareza a especial; <b>cenobia</b> la sube a sobrenatural.</p>
+
+          <h3 id="info-calculos">Cómo se calcula el resto</h3>
+          <p>Tamaño = dimensión × grosor. El resto de stats de combate (daño, corte, desangre, alcance) sale del <b>tipo</b>, no del material, salvo donde el material pone techo (corte) o base (contundente usa el peso; tensión usa la amortiguación).</p>
           <p><b>Armas.</b> Daño: polinomio del grosor según tipo, o peso (contundente), o amortiguación×dimensión (tensión). Corte y desangre también salen de coeficientes del tipo (0 en contundente y tensión). El daño variable reduce el golpe si la calidad &lt; 1. Alcance: dimensión × factor del tipo, o logaritmo en tensión.</p>
           <p><b>Explosivos.</b> Daño ≈ resistencia × grosor × dimensión. El “rango” son radios de peso.</p>
-          <p><b>Nivel de fabricación</b> = el más alto entre material, tipo/tamaño, calidad y grosor fuera de límites. Rareza sube con ese nivel (comun → raro/especial/legendario; calidad 1 es magistral). Precio = raw + crafting (según |dim−grosor|) + tasa del nivel. Origen/flags/material extra van en el código custom; las flags místicas suben rareza y tasa.</p>
-          <h2>Experiencia</h2>
+          <p><b>Precio</b> = raw + crafting (<code>raw × (0.2 + |dimensión − grosor|)</code>; en explosivos <code>raw × grosor</code>) + tasa del oficio. Origen/flags/material extra van en el código custom.</p>
+
+          <h3 id="info-arte">Arte de las cartas</h3>
+          <p>La ilustración se elige en este orden: imagen del <b>origen</b> (si hay), imagen propia del objeto, ilustración por defecto del <b>tipo</b>, y si nada de eso existe, el placeholder <b>desconocido</b>. Encima van el pergamino (anverso o reverso), el sello de oficio, el badge de rareza/calidad, los iconos de precio y las flags místicas.</p>
+
+          <h4>Fondos</h4>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/backgrounds/front.png" alt="Anverso" /><figcaption>Anverso</figcaption></figure>
+            <figure><img src="/media/backgrounds/back.png" alt="Reverso" /><figcaption>Reverso</figcaption></figure>
+          </div>
+
+          <h4>Armas</h4>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/objects/types/arma__proyectil.png" alt="Proyectil" /><figcaption>Proyectil</figcaption></figure>
+            <figure><img src="/media/objects/types/arma__penetrante.png" alt="Penetrante" /><figcaption>Penetrante</figcaption></figure>
+            <figure><img src="/media/objects/types/arma__de_hoja.png" alt="De hoja" /><figcaption>De hoja</figcaption></figure>
+            <figure><img src="/media/objects/types/arma__cizallante.png" alt="Cizallante" /><figcaption>Cizallante</figcaption></figure>
+            <figure><img src="/media/objects/types/arma__contundente.png" alt="Contundente" /><figcaption>Contundente</figcaption></figure>
+            <figure><img src="/media/objects/types/arma__de_tension.png" alt="De tensión" /><figcaption>De tensión</figcaption></figure>
+          </div>
+
+          <h4>Armaduras</h4>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/objects/types/armadura__coraza.png" alt="Coraza" /><figcaption>Coraza</figcaption></figure>
+            <figure><img src="/media/objects/types/armadura__placas.png" alt="Placas" /><figcaption>Placas</figcaption></figure>
+            <figure><img src="/media/objects/types/armadura__escamada.png" alt="Escamada" /><figcaption>Escamada</figcaption></figure>
+            <figure><img src="/media/objects/types/armadura__tachonada.png" alt="Tachonada" /><figcaption>Tachonada</figcaption></figure>
+            <figure><img src="/media/objects/types/armadura__malla.png" alt="Malla" /><figcaption>Malla</figcaption></figure>
+            <figure><img src="/media/objects/types/armadura__fibras.png" alt="Fibras" /><figcaption>Fibras</figcaption></figure>
+          </div>
+
+          <h4>Comunes</h4>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/objects/types/comun__hueco.png" alt="Hueco" /><figcaption>Hueco</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__solido.png" alt="Sólido" /><figcaption>Sólido</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__instrumento_musical.png" alt="Instrumento musical" /><figcaption>Instrumento</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__comestible.png" alt="Comestible" /><figcaption>Comestible</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__contenedor.png" alt="Contenedor" /><figcaption>Contenedor</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__utilitario.png" alt="Utilitario" /><figcaption>Utilitario</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__escritura.png" alt="Escritura" /><figcaption>Escritura</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__amuleto.png" alt="Amuleto" /><figcaption>Amuleto</figcaption></figure>
+            <figure><img src="/media/objects/types/comun__ornamento.png" alt="Ornamento" /><figcaption>Ornamento</figcaption></figure>
+          </div>
+
+          <h4>Explosivos</h4>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/objects/types/explosivo__deflagrante.png" alt="Deflagrante" /><figcaption>Deflagrante</figcaption></figure>
+            <figure><img src="/media/objects/types/explosivo__detonante.png" alt="Detonante" /><figcaption>Detonante</figcaption></figure>
+          </div>
+
+          <h4>Escudos</h4>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/objects/types/escudo__trigonal.png" alt="Trigonal" /><figcaption>Trigonal</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__ojivado.png" alt="Ojivado" /><figcaption>Ojivado</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__tripuntado.png" alt="Tripuntado" /><figcaption>Tripuntado</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__bourbon.png" alt="Bourbon" /><figcaption>Bourbon</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__tarja.png" alt="Tarja" /><figcaption>Tarja</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__rodela.png" alt="Rodela" /><figcaption>Rodela</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__pelta.png" alt="Pelta" /><figcaption>Pelta</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__gota_de_agua.png" alt="Gota de agua" /><figcaption>Gota de agua</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__parma.png" alt="Parma" /><figcaption>Parma</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__aspis.png" alt="Aspis" /><figcaption>Aspis</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__escotado.png" alt="Escotado" /><figcaption>Escotado</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__rectangular.png" alt="Rectangular" /><figcaption>Rectangular</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__scutum.png" alt="Scutum" /><figcaption>Scutum</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__glagwa.png" alt="Glagwa" /><figcaption>Glagwa</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__adarga.png" alt="Adarga" /><figcaption>Adarga</figcaption></figure>
+            <figure><img src="/media/objects/types/escudo__medialuna.png" alt="Medialuna" /><figcaption>Medialuna</figcaption></figure>
+          </div>
+
+          <h4>Placeholder</h4>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/objects/desconocido.png" alt="Desconocido" /><figcaption>Desconocido</figcaption></figure>
+          </div>
+
+          <h4>Orígenes</h4>
+          <p>Sello del origen cuando la pieza tiene uno. Solo se muestran los que ya tienen ilustración.</p>
+          <div class="info-gallery gallery-art">
+            <figure><img src="/media/origins/stevfel" alt="Stevfel" /><figcaption>Stevfel</figcaption></figure>
+            <figure><img src="/media/origins/pherros" alt="Pherros" /><figcaption>Pherros</figcaption></figure>
+            <figure><img src="/media/origins/sujfi" alt="Sujfi" /><figcaption>Sujfi</figcaption></figure>
+            <figure><img src="/media/origins/tagyef" alt="Tagyef" /><figcaption>Tagyef</figcaption></figure>
+            <figure><img src="/media/origins/imperio_vestkou_de_kozan" alt="Imperio Vestkou de Kozan" /><figcaption>Imperio Vestkou de Kozan</figcaption></figure>
+            <figure><img src="/media/origins/vestkou_berrem_velor" alt="Vestkou Berrem Velor" /><figcaption>Vestkou Berrem Velor</figcaption></figure>
+          </div>
+
+          <h4>Niveles de oficio</h4>
+          <div class="info-gallery">
+            <figure><img src="/media/levels/aprendiz.png" alt="Aprendiz" /><figcaption>Aprendiz</figcaption></figure>
+            <figure><img src="/media/levels/funcion.png" alt="Función" /><figcaption>Función</figcaption></figure>
+            <figure><img src="/media/levels/disciplina.png" alt="Disciplina" /><figcaption>Disciplina</figcaption></figure>
+            <figure><img src="/media/levels/ciencia.png" alt="Ciencia" /><figcaption>Ciencia</figcaption></figure>
+            <figure><img src="/media/levels/mistico.png" alt="Místico" /><figcaption>Místico</figcaption></figure>
+            <figure><img src="/media/levels/divino.png" alt="Divino" /><figcaption>Divino</figcaption></figure>
+          </div>
+
+          <h4>Rareza</h4>
+          <p>El badge combina rareza + dígito de calidad (1–9; el 10 es magistral). Aquí, un ejemplo de cada rareza y la escala de calidad sobre común.</p>
+          <div class="info-gallery">
+            <figure><img src="/media/rarities/comun_7.png" alt="Común" /><figcaption>Común</figcaption></figure>
+            <figure><img src="/media/rarities/raro_7.png" alt="Raro" /><figcaption>Raro</figcaption></figure>
+            <figure><img src="/media/rarities/especial_7.png" alt="Especial" /><figcaption>Especial</figcaption></figure>
+            <figure><img src="/media/rarities/legendario_7.png" alt="Legendario" /><figcaption>Legendario</figcaption></figure>
+            <figure><img src="/media/rarities/sobrenatural_7.png" alt="Sobrenatural" /><figcaption>Sobrenatural</figcaption></figure>
+            <figure><img src="/media/rarities/magistral_10.png" alt="Magistral" /><figcaption>Magistral</figcaption></figure>
+          </div>
+          <h4>Calidad (dígito)</h4>
+          <div class="info-gallery">
+            <figure><img src="/media/rarities/comun_1.png" alt="Calidad 0.1" /><figcaption>0.1</figcaption></figure>
+            <figure><img src="/media/rarities/comun_2.png" alt="Calidad 0.2" /><figcaption>0.2</figcaption></figure>
+            <figure><img src="/media/rarities/comun_3.png" alt="Calidad 0.3" /><figcaption>0.3</figcaption></figure>
+            <figure><img src="/media/rarities/comun_4.png" alt="Calidad 0.4" /><figcaption>0.4</figcaption></figure>
+            <figure><img src="/media/rarities/comun_5.png" alt="Calidad 0.5" /><figcaption>0.5</figcaption></figure>
+            <figure><img src="/media/rarities/comun_6.png" alt="Calidad 0.6" /><figcaption>0.6</figcaption></figure>
+            <figure><img src="/media/rarities/comun_7.png" alt="Calidad 0.7" /><figcaption>0.7</figcaption></figure>
+            <figure><img src="/media/rarities/comun_8.png" alt="Calidad 0.8" /><figcaption>0.8</figcaption></figure>
+            <figure><img src="/media/rarities/comun_9.png" alt="Calidad 0.9" /><figcaption>0.9</figcaption></figure>
+          </div>
+
+          <h4>Precios</h4>
+          <div class="info-gallery">
+            <figure><img src="/media/prices/raw.png" alt="Materia prima" /><figcaption>Materia prima</figcaption></figure>
+            <figure><img src="/media/prices/crafting.png" alt="Artesanía" /><figcaption>Artesanía</figcaption></figure>
+            <figure><img src="/media/prices/fee.png" alt="Tasa" /><figcaption>Tasa</figcaption></figure>
+          </div>
+
+          <h4>Flags místicas</h4>
+          <div class="info-gallery gallery-wide">
+            <figure><img src="/media/flags/graphy.png" alt="Grafía" /><figcaption>Grafía</figcaption></figure>
+            <figure><img src="/media/flags/lacing.png" alt="Lazado" /><figcaption>Lazado</figcaption></figure>
+            <figure><img src="/media/flags/alchemy.png" alt="Alquimia" /><figcaption>Alquimia</figcaption></figure>
+            <figure><img src="/media/flags/cenobism.png" alt="Cenobia" /><figcaption>Cenobia</figcaption></figure>
+            <figure><img src="/media/flags/energy.png" alt="Energía pura" /><figcaption>Energía pura</figcaption></figure>
+            <figure><img src="/media/flags/object_manipulation.png" alt="Objetos" /><figcaption>Objetos</figcaption></figure>
+            <figure><img src="/media/flags/ilusion.png" alt="Ilusión" /><figcaption>Ilusión</figcaption></figure>
+            <figure><img src="/media/flags/mental_manipulation.png" alt="Mental" /><figcaption>Mental</figcaption></figure>
+            <figure><img src="/media/flags/potentiation.png" alt="Potenciación" /><figcaption>Potenciación</figcaption></figure>
+            <figure><img src="/media/flags/vital_control.png" alt="Control vital" /><figcaption>Control vital</figcaption></figure>
+          </div>
+
+          <h2 id="info-experiencia">Experiencia</h2>
           <p>Hay tres monedas: <b>tipo 1</b> (básico), <b>tipo 2</b> (especial) y <b>tipo 3</b> (sobrenatural).</p>
           <p>El coste de un atributo es triangular: cada bloque de puntos cuesta 1 XP más que el anterior. En tipo 1 el bloque es 10 puntos; en tipo 2 y 3 es 100. El primer bloque cuesta 3 XP (básico) o 2 XP (especial), o 1 XP si hay <b>talento</b> en ese grupo.</p>
           <p>Los grupos básicos (físico, mental, coordinación) cuentan cada estadística por separado. Vida cuesta 5 XP por punto. En tipo 2, cada par (p. ej. potenciación + control vital) se <b>suma</b> antes de aplicar la fórmula. El tanque de energía cuesta 10 por punto (5 con talento). Cada habilidad sobrenatural suma sus transformaciones; cada 100 puntos el siguiente cuesta +1 XP.</p>
+
+          <h2 id="info-lenguajes">Lenguajes</h2>
+          <p>Por ahora hay un lenguaje construido: <b>Sujfi</b>. La pestaña <b>Lenguajes</b> traduce en ambos sentidos y pinta una imagen tipográfica; aquí está el mecanismo.</p>
+
+          <h3 id="info-sujfi">Sujfi</h3>
+          <p>No es una transcripción fonética del español: se limpia la palabra, se parte en sílabas <b>consonante+vocal</b> (codiciosas, no las del español) y cada trozo se sustituye por un token del diccionario. Los tokens son únicos, así que el camino inverso también es determinista.</p>
+
+          <h4>1. Normalización</h4>
+          <p>Minúsculas; se quita toda <b>h</b>; <code>ñ → n</code>; se pierden tildes y diéresis (<code>áéíóúü → aeiou</code>); todo lo que no sea <code>a–z</code> desaparece. <i>Thaeslok</i> queda <code>taeslok</code>.</p>
+
+          <h4>2. Corte en sílabas</h4>
+          <p>Se recorre de izquierda a derecha:</p>
+          <ul>
+            <li>consonante seguida de vocal → un bloque CV (<code>me</code>, <code>ye</code>);</li>
+            <li>vocal suelta → una sílaba;</li>
+            <li>consonante sin vocal detrás → una sílaba.</li>
+          </ul>
+          <p><code>meye</code> → <code>me · ye</code>. <code>tierra</code> → <code>ti · e · r · ra</code> (la doble erre no se agrupa).</p>
+
+          <h4>3. Al sujfi</h4>
+          <p>Cada sílaba se busca en el mapa. Si no hay entrada, se escribe <code>-</code>. Luego se concatenan sin espacios ni puntos.</p>
+          <p>Las vocales sueltas se intercambian: <code>a↔u</code>, <code>e↔o</code>, <code>i</code> se queda. Las consonantes sueltas y los pares CV tienen token propio (p. ej. <code>me → his</code>, <code>re → suj</code>, <code>ba → fol</code>).</p>
+          <table>
+            <thead>
+              <tr><th>Español</th><th>Sujfi</th><th>Notas</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>meye</code></td><td><code>hisnem</code></td><td><code>me→his</code>, <code>ye→nem</code></td></tr>
+              <tr><td><code>tierra</code></td><td><code>rujolimuj</code></td><td><code>ti·e·r·ra</code></td></tr>
+              <tr><td><code>re</code></td><td><code>suj</code></td><td>el fragmento del nombre</td></tr>
+              <tr><td><code>sujfi</code></td><td><code>lam-ji</code></td><td><code>j</code> no tiene token suelto</td></tr>
+            </tbody>
+          </table>
+          <p>Vocales y consonantes sueltas (los pares CV son otra tabla, ~100 entradas):</p>
+          <table>
+            <thead>
+              <tr><th colspan="5">Vocales</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>a → u</td><td>e → o</td><td>i → i</td><td>o → e</td><td>u → a</td></tr>
+            </tbody>
+          </table>
+          <table>
+            <thead>
+              <tr><th colspan="5">Consonantes</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>b → fa</td><td>c → ha</td><td>d → ja</td><td>f → ke</td><td>g → le</td></tr>
+              <tr><td>k → na</td><td>l → ra</td><td>m → ta</td><td>n → fe</td><td>p → he</td></tr>
+              <tr><td>q → ki</td><td>r → li</td><td>s → me</td><td>t → ne</td><td>v → ru</td></tr>
+              <tr><td>w → se</td><td>x → ti</td><td>y → ko</td><td>z → je</td><td></td></tr>
+            </tbody>
+          </table>
+
+          <h4>4. Desde sujfi</h4>
+          <p>Se recorre la cadena tomando el token más largo que exista en el diccionario inverso: primero 3 letras, si no 2, si no 1. Lo que no encaje se vuelve <code>-</code>. Cada token se sustituye por su sílaba española y se pegan otra vez.</p>
+          <p><code>hisnem</code> → <code>his</code> + <code>nem</code> → <code>meye</code>.</p>
         </article>
       </div>
 
@@ -90,10 +341,7 @@
             </div>
 
             <div class="section">
-              <div class="section-head">
-                <h3>Físico</h3>
-                <button type="button" class="text-btn" id="open-materials">Administrar materiales</button>
-              </div>
+              <h3>Físico</h3>
               <label class="field-label" for="material_q">Material</label>
               <div class="combo" id="material_combo">
                 <input id="material_q" type="text" placeholder="Buscar material…" autocomplete="off" />
